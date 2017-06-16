@@ -40,4 +40,18 @@ public class GameMaster : NetworkBehaviour {
         return (PlayerColorEnum)nextColor;
     }
 
+    [Command]
+    public void CmdTestEnter()
+    {
+        TockPlayer blop = GameObject.FindGameObjectWithTag("Blue_Player").GetComponent<TockPlayer>();
+        blop.CmdEnterPawn(1);
+    }
+
+    [Command]
+    public void CmdTestMove()
+    {
+        TockPlayer blop = GameObject.FindGameObjectWithTag("Blue_Player").GetComponent<TockPlayer>();
+        blop.CmdMovePawn(1);
+
+    }
 }

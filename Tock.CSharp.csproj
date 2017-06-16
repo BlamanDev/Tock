@@ -93,14 +93,11 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Script\BluePawn.cs" />
     <Compile Include="Assets\Script\GameMaster.cs" />
-    <Compile Include="Assets\Script\GreenPawn.cs" />
     <Compile Include="Assets\Script\Pawn.cs" />
     <Compile Include="Assets\Script\PlayerColorEnum.cs" />
-    <Compile Include="Assets\Script\RedPawn.cs" />
+    <Compile Include="Assets\Script\TockBoard.cs" />
     <Compile Include="Assets\Script\TockPlayer.cs" />
-    <Compile Include="Assets\Script\YellowPawn.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Plugins\Pixelplacement\iTween\ReadMe!\ReadMe!.txt" />
