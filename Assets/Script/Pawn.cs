@@ -9,7 +9,6 @@ public class Pawn : NetworkBehaviour
 {
     public int Progress = -1;
     private PlayerColorEnum Player;
-    private GameObject PawnObject;
     private LayerMask PawnLayer;
     private Animator PawnAnimator;
     private int progressHash;
