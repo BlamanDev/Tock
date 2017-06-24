@@ -49,7 +49,11 @@ public class TockPlayer : NetworkBehaviour
         this.tag = blop + "_Player";
         goBoard = GameObject.Find("toc");
         board = goBoard.GetComponent<TockBoard>();
-        this.CmdPopulatePawns();
+        if (isServer)
+        {
+            //gMaster.CmdPopulatePawns(this.PlayerColor);
+
+        }
     }
 
     [Command]
@@ -80,24 +84,11 @@ public class TockPlayer : NetworkBehaviour
         }
         return inHouse == 4;
     }
-    /*
-    [Command]
-    public void CmdMovePawn(Pawn pawn)
-    {
-        pawn.Move();
-    }
-*/
     [Command]
     public void CmdMovePawn(int pawnIndex)
     {
         this.Pawns[pawnIndex].Move();
     }
-    /*
-    [Command]
-    public void CmdEnterPawn(Pawn pawn)
-    {
-        pawn.Enter();
-    }*/
 
     public void CmdEnterPawn(int pawnIndex)
     {

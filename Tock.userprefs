@@ -1,8 +1,8 @@
-﻿<Properties StartupItem="Tock.CSharp.Plugins.csproj">
+﻿<Properties StartupItem="Tock.Plugins.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\BluePawn.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Script\Pawn.cs">
     <Files>
-      <File FileName="Assets\BluePawn.cs" Line="1" Column="1" />
+      <File FileName="Assets\Script\Pawn.cs" Line="1" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

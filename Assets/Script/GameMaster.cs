@@ -4,8 +4,10 @@ using Assets.Script;
 using UnityEngine;
 using UnityEngine.Networking;
 
-public class GameMaster : NetworkBehaviour {
+public class GameMaster : NetworkBehaviour
+{
     public static GameMaster GMaster;
+    public GameObject PawnPrefab;
     private int nextColor = 0;
 
     // Use this for initialization
@@ -53,5 +55,10 @@ public class GameMaster : NetworkBehaviour {
         TockPlayer blop = GameObject.FindGameObjectWithTag("Blue_Player").GetComponent<TockPlayer>();
         blop.CmdMovePawn(1);
 
+    }
+
+
+    public override void OnStartServer()
+    {
     }
 }
