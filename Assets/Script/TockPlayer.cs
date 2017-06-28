@@ -4,12 +4,14 @@ using System.Collections.Generic;
 using Assets.Script;
 using UnityEngine;
 using UnityEngine.Networking;
+using UnityEngine.UI;
 
 public class TockPlayer : NetworkBehaviour
 {
     [SyncVar]
     public String PlayerName = "Player";
     public List<Pawn> Pawns;
+
     [SyncVar]
     public PlayerColorEnum PlayerColor;
 
@@ -19,9 +21,20 @@ public class TockPlayer : NetworkBehaviour
     private GameObject goBoard;
     private TockBoard board;
 
+    public Text text;
+
+
     // Use this for initialization
     void Start()
     {
+        text = GameObject.Find("TextTockPlayer").GetComponent<Text>();
+        goGMaster = GameObject.Find("NetworkGameMaster");
+        gMaster = goGMaster.GetComponent<GameMaster>();
+        PlayerColor = gMaster.CmdGiveNewPlayerColor();
+        String blop = PlayerColor.ToString();
+        this.tag = blop + "_Player";
+        goBoard = GameObject.Find("toc");
+        board = goBoard.GetComponent<TockBoard>();
 
     }
 
@@ -34,7 +47,6 @@ public class TockPlayer : NetworkBehaviour
     public override void OnStartLocalPlayer()
     {
         base.OnStartLocalPlayer();
-
     }
 
 
@@ -42,37 +54,12 @@ public class TockPlayer : NetworkBehaviour
     public override void OnStartServer()
     {
         base.OnStartServer();
-        goGMaster = GameObject.Find("NetworkGameMaster");
-        gMaster = goGMaster.GetComponent<GameMaster>();
-        PlayerColor = gMaster.CmdGiveNewPlayerColor();
-        String blop = PlayerColor.ToString();
-        this.tag = blop + "_Player";
-        goBoard = GameObject.Find("toc");
-        board = goBoard.GetComponent<TockBoard>();
-        if (isServer)
-        {
-            //gMaster.CmdPopulatePawns(this.PlayerColor);
-
-        }
     }
 
-    [Command]
-    private void CmdPopulatePawns()
+    [ClientRpc]
+    public void RpcBuildPawnList()
     {
-        for (int i = 0; i < 4; i++)
-        {
-            Pawns.Add(CreatePawn(i));
-        }
-    }
-
-
-    private Pawn CreatePawn(int pawnIndex)
-    {
-        GameObject newPawn = Instantiate(PawnPrefab);
-        Pawn retour = newPawn.GetComponent<Pawn>();
-        retour.Initialise(PlayerColor,pawnIndex);
-        NetworkServer.Spawn(newPawn);
-        return retour;
+        Pawns=gMaster.getPawnOfAColor(PlayerColor);
     }
 
     private bool hasWin()

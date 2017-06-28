@@ -5,48 +5,69 @@ using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
 
-public class PawnSpawner : NetworkBehaviour {
+public class PawnSpawner : NetworkBehaviour
+{
+    public delegate void OnAllPawnsCreation();
+    [SyncEvent]
+    public static event OnAllPawnsCreation EventAllPawnsCreated;
+
     public GameObject PawnPrefab;
-    private TockPlayer[] playerList;
+    public TockPlayer[] playerList;
     public Text text;
+
+
+    private void OnEnable()
+    {
+
+
+    }
+
     // Use this for initialization
-    void Start () {
+    void Start()
+    {
 
-        playerList = FindObjectsOfType<TockPlayer>();
-
-        foreach (TockPlayer plop in playerList)
-        {
-                CmdPopulatePawns(plop.PlayerColor);
-
-        }
 
     }
 
     // Update is called once per frame
-    void Update () {
-		
-	}
+    void Update()
+    {
 
-    
+    }
+
 
     private Pawn CreatePawn(PlayerColorEnum player, int pawnIndex)
     {
         GameObject newPawn = Instantiate(PawnPrefab);
+
         Pawn retour = newPawn.GetComponent<Pawn>();
         retour.Initialise(player, pawnIndex);
         NetworkServer.Spawn(newPawn);
         return retour;
     }
 
-    [Command]
-    public void CmdPopulatePawns(PlayerColorEnum player)
+    public void PopulatePawns()
     {
-        text = FindObjectOfType<Text>();
-        text.text += "Populating " + player.ToString() + " Pawn : ";
-        for (int i = 0; i < 4; i++)
+        if (text == null)
         {
-            text.text += CreatePawn(player, i).Player.ToString() +" ";
+            text = GameObject.Find("TextPawnSpawner").GetComponent<Text>();
+        }
+
+        playerList = FindObjectsOfType<TockPlayer>();
+        foreach (TockPlayer player in playerList)
+        {
+            text.text += "Populating " + player.PlayerColor.ToString() + " Pawn : ";
+            for (int i = 0; i < 4; i++)
+            {
+                text.text += CreatePawn(player.PlayerColor, i).Player.ToString() + " ";
+            }
+
+        }
+        EventAllPawnsCreated();
+        foreach (TockPlayer player in playerList)
+        {
+            player.RpcBuildPawnList();
+
         }
     }
-
-}
+    }

@@ -12,20 +12,31 @@ public class Pawn : NetworkBehaviour
 
     [SyncVar]
     public int nbLayer = 0;
+
+    [SyncVar]
+    public String PawnName;
+
     public bool OnBoard = false;
 
     [SyncVar]
     public PlayerColorEnum Player;
+
     private LayerMask PawnLayer;
     private Animator PawnAnimator;
-    private int progressHash;
+    private MeshRenderer PawnMeshRenderer;
+    private int progressHash = Animator.StringToHash("Progress");
 
 
+    private void OnEnable()
+    {
+        PawnAnimator = GetComponent<Animator>();
+        PawnMeshRenderer = this.GetComponentInChildren<MeshRenderer>();
+
+    }
 
     // Use this for initialization
     void Start()
     {
-
     }
 
     // Update is called once per frame
@@ -47,27 +58,26 @@ public class Pawn : NetworkBehaviour
     public void Initialise(PlayerColorEnum color,int pawnIndex)
     {
         Player = color;
+        this.name = color.ToString() + pawnIndex.ToString();
+
         switch (Player)
         {
             case PlayerColorEnum.Blue:
-                this.GetComponentInChildren<MeshRenderer>().material.color = Color.blue;
+                PawnMeshRenderer.material.color = Color.blue;
                 break;
             case PlayerColorEnum.Green:
-                this.GetComponentInChildren<MeshRenderer>().material.color = Color.green;
+                PawnMeshRenderer.material.color = Color.green;
                 break;
             case PlayerColorEnum.Red:
-                this.GetComponentInChildren<MeshRenderer>().material.color = Color.red;
+                PawnMeshRenderer.material.color = Color.red;
                 break;
             case PlayerColorEnum.Yellow:
-                this.GetComponentInChildren<MeshRenderer>().material.color = Color.yellow;
+                PawnMeshRenderer.material.color = Color.yellow;
                 break;
         }
-        PawnAnimator = GetComponent<Animator>();
         PawnAnimator.SetLayerWeight((int)Player,1);
-        nbLayer = PawnAnimator.layerCount;
+        PawnName = color.ToString() + pawnIndex.ToString();
 
-        progressHash = Animator.StringToHash("Progress");
-        this.name = color.ToString() + pawnIndex.ToString();
     }
 
     public void Enter()
