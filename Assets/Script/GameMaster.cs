@@ -6,14 +6,23 @@ using UnityEngine.Networking;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
+/// <summary>
+/// Script for the GameMaster
+/// 
+/// </summary>
 public class GameMaster : NetworkBehaviour
 {
+    //Used for the Singleton
     public static GameMaster GMaster;
+    //Prefab used for the Pawn
     public GameObject PawnPrefab;
+    //to avoid giving the same color to different players
     private int nextColor = 0;
 
+    //For debugging
     public Text text;
 
+    //Contains the list of Pawns sorted by color
     public Dictionary<PlayerColorEnum, List<Pawn>> AllPawns;
 
 
@@ -21,6 +30,7 @@ public class GameMaster : NetworkBehaviour
     // Use this for initialization
     void Start()
     {
+        //Attach to Event AllPawnCreated
         PawnSpawner.EventAllPawnsCreated += buildPawnList;
         AllPawns = new Dictionary<PlayerColorEnum, List<Pawn>>();
     }
@@ -31,6 +41,9 @@ public class GameMaster : NetworkBehaviour
 
     }
 
+    /// <summary>
+    /// Singleton business
+    /// </summary>
     void Awake()
     {
         if (GMaster == null)
@@ -52,9 +65,14 @@ public class GameMaster : NetworkBehaviour
 
     }
 
+    /// <summary>
+    /// Build the AllPawns dictionnary
+    /// </summary>
     private void buildPawnList()
     {
+        //Get all the pawns present in the game
         Pawn[] listPawn = GameObject.FindObjectsOfType<Pawn>();
+        //FOR EACH pawn, add it to the list corresponding its color
         foreach (Pawn item in listPawn)
         {
             if (!AllPawns.ContainsKey(item.Player))
@@ -65,6 +83,11 @@ public class GameMaster : NetworkBehaviour
         }
     }
 
+    /// <summary>
+    /// Return the list of pawns corresponding to the given color
+    /// </summary>
+    /// <param name="color"></param>
+    /// <returns></returns>
     public List<Pawn> getPawnOfAColor(PlayerColorEnum color)
     {
         if (AllPawns.Count==0)
@@ -74,9 +97,14 @@ public class GameMaster : NetworkBehaviour
         return AllPawns[color];
     }
 
+    /// <summary>
+    /// Cycle between colors and return the next one
+    /// </summary>
+    /// <returns></returns>
     public PlayerColorEnum CmdGiveNewPlayerColor()
     {
         nextColor++;
+        //if nextcolor > number of possible color
         if (nextColor > 4)
         {
             nextColor = 1;
@@ -88,14 +116,14 @@ public class GameMaster : NetworkBehaviour
     [Command]
     public void CmdTestEnter()
     {
-        TockPlayer blop = GameObject.FindGameObjectWithTag("Blue_Player").GetComponent<TockPlayer>();
+        TockPlayer blop = GameObject.FindGameObjectWithTag("Red_Player").GetComponent<TockPlayer>();
         blop.CmdEnterPawn(1);
     }
 
     [Command]
     public void CmdTestMove()
     {
-        TockPlayer blop = GameObject.FindGameObjectWithTag("Blue_Player").GetComponent<TockPlayer>();
+        TockPlayer blop = GameObject.FindGameObjectWithTag("Red_Player").GetComponent<TockPlayer>();
         blop.CmdMovePawn(1);
 
     }
