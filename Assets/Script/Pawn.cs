@@ -13,7 +13,7 @@ public class Pawn : NetworkBehaviour
 {
     //Progress of the Pawn on its path
     [SyncVar(hook ="OnChangeProgress")]
-    public int Progress = -1;
+    public int Progress = 0;
 
     //Layer used by the pawn
     [SyncVar(hook = "OnChangeNbLayer")]
@@ -42,7 +42,13 @@ public class Pawn : NetworkBehaviour
     //Components of the pawn
     private Animator PawnAnimator;
     private MeshRenderer PawnMeshRenderer;
+
+    //Hash of Animator parameters
     private int progressHash = Animator.StringToHash("Progress");
+    private int onBoardHash = Animator.StringToHash("OnBoard");
+    private int enterHash = Animator.StringToHash("EnterBoard");
+    private int exitHash = Animator.StringToHash("ExitBoard");
+
 
 
 
@@ -68,7 +74,6 @@ public class Pawn : NetworkBehaviour
         PawnAnimator = GetComponent<Animator>();
         PawnMeshRenderer = this.GetComponentInChildren<MeshRenderer>();
         spawnPositions = FindObjectOfType<SpawnPositions>();
-
     }
 
     /// <summary>
@@ -78,12 +83,10 @@ public class Pawn : NetworkBehaviour
     /// <param name="progress"></param>
     void OnChangeProgress(int progress)
     {
-        this.Progress = progress;
-        if ((this.Progress > -1) && (PawnAnimator != null))
+        if ((this.OnBoard) && (PawnAnimator != null))
         {
-            PawnAnimator.SetInteger(progressHash, this.Progress);
+            PawnAnimator.SetInteger(progressHash, progress);
         }
-
     }
 
     /// <summary>
@@ -113,7 +116,8 @@ public class Pawn : NetworkBehaviour
         PawnName = newColor.ToString() + PawnIndex.ToString();
         //Get the out position for this pawn
         outPosition = spawnPositions.getOutPosition(newColor,PawnIndex);
-    }
+        PawnAnimator.runtimeAnimatorController = GameObject.Find(newColor.ToString() + "_Animator").GetComponent<Animator>().runtimeAnimatorController;
+            }
 
     /// <summary>
     /// Event called when the number of the layer is changed
@@ -123,7 +127,7 @@ public class Pawn : NetworkBehaviour
     public void OnChangeNbLayer(int newLayer)
     {
         PawnAnimator.SetLayerWeight(newLayer, 1);
-
+        
     }
 
     /// <summary>
@@ -135,11 +139,15 @@ public class Pawn : NetworkBehaviour
         if (onBoard)
         {
             this.transform.position = spawnPositions.getStartPosition(Player).transform.position;
+            PawnAnimator.SetTrigger(enterHash);
         }
         else
         {
             this.transform.position = outPosition.transform.position;
+            PawnAnimator.SetTrigger(exitHash);
+
         }
+
     }
     #endregion
 
@@ -153,7 +161,7 @@ public class Pawn : NetworkBehaviour
     {
         this.PawnIndex = pawnIndex;
         Player = color;
-        NbLayer = (int)color;
+        //NbLayer = (int)color;
         this.transform.position = outPosition.transform.position;
     }
 
@@ -163,7 +171,6 @@ public class Pawn : NetworkBehaviour
     public void Enter()
     {
         OnBoard = true;
-        this.Progress = 1;
     }
 
     /// <summary>
@@ -183,7 +190,7 @@ public class Pawn : NetworkBehaviour
     public void Exit()
     {
         OnBoard = false;
-        this.Progress = -1;
+        this.Progress = 0;
 
     }
     #endregion

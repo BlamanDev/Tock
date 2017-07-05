@@ -2,13 +2,13 @@ Mono path[0] = 'I:/Dev/Projets/Unity/Tock/Win3264/Tock_Data/Managed'
 Mono path[1] = 'I:/Dev/Projets/Unity/Tock/Win3264/Tock_Data/Mono'
 Mono config path = 'I:/Dev/Projets/Unity/Tock/Win3264/Tock_Data/Mono/etc'
 PlayerConnection initialized from I:/Dev/Projets/Unity/Tock/Win3264/Tock_Data (debug = 0)
-PlayerConnection initialized network socket : 0.0.0.0 55303
-Multi-casting "[IP] 192.168.1.2 [Port] 55303 [Flags] 3 [Guid] 843862854 [EditorId] 3101970473 [Version] 1048832 [Id] WindowsPlayer(Blaman10) [Debug] 1" to [225.0.0.222:54997]...
-Waiting for connection from host on [0.0.0.0:55303]...
-PlayerConnection accepted from [192.168.1.2] handle:0x334
-Started listening to [0.0.0.0:55303]
-Using monoOptions --debugger-agent=transport=dt_socket,embedding=1,defer=y,address=0.0.0.0:56854
-PlayerConnection already initialized - listening to [0.0.0.0:55303]
+PlayerConnection initialized network socket : 0.0.0.0 55009
+Multi-casting "[IP] 192.168.1.2 [Port] 55009 [Flags] 3 [Guid] 3275870089 [EditorId] 191331210 [Version] 1048832 [Id] WindowsPlayer(Blaman10) [Debug] 1" to [225.0.0.222:54997]...
+Waiting for connection from host on [0.0.0.0:55009]...
+PlayerConnection accepted from [192.168.1.2] handle:0x2c4
+Started listening to [0.0.0.0:55009]
+Using monoOptions --debugger-agent=transport=dt_socket,embedding=1,defer=y,address=0.0.0.0:56089
+PlayerConnection already initialized - listening to [0.0.0.0:55009]
 Player data archive not found at `I:/Dev/Projets/Unity/Tock/Win3264/Tock_Data/data.unity3d`, using local filesystemInitialize engine version: 5.6.1f1 (2860b30f0b54)
 GfxDevice: creating device client; threaded=1
 Direct3D:
@@ -30,7 +30,7 @@ Platform assembly: I:\Dev\Projets\Unity\Tock\Win3264\Tock_Data\Managed\UnityEngi
 Loading I:\Dev\Projets\Unity\Tock\Win3264\Tock_Data\Managed\UnityEngine.Networking.dll into Unity Child Domain
 Platform assembly: I:\Dev\Projets\Unity\Tock\Win3264\Tock_Data\Managed\UnityEngine.Analytics.dll (this message is harmless)
 Loading I:\Dev\Projets\Unity\Tock\Win3264\Tock_Data\Managed\UnityEngine.Analytics.dll into Unity Child Domain
-- Completed reload, in  0.337 seconds
+- Completed reload, in  0.217 seconds
 Platform assembly: I:\Dev\Projets\Unity\Tock\Win3264\Tock_Data\Managed\System.Core.dll (this message is harmless)
 Platform assembly: I:\Dev\Projets\Unity\Tock\Win3264\Tock_Data\Managed\System.dll (this message is harmless)
 OnLevelWasLoaded was found on GameMaster
@@ -44,33 +44,34 @@ desktop: 1024x768 75Hz; virtual: 2304x1024 at 0,0
 XInput1_3.dll not found. Trying XInput9_1_0.dll instead...
 <RI> Input initialized.
 <RI> Initialized touch support.
-UnloadTime: 8.469015 ms
+UnloadTime: 4.986451 ms
 Setting up 2 worker threads for Enlighten.
-  Thread -> id: 3248 -> priority: 1 
-  Thread -> id: 19bc -> priority: 1 
-Unloading 4 Unused Serialized files (Serialized files now loaded: 0)
-UnloadTime: 1.129202 ms
-System memory in use before: 34.2 MB.
-System memory in use after: 34.2 MB.
+  Thread -> id: 898 -> priority: 1 
+  Thread -> id: 19f4 -> priority: 1 
+Unloading 5 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 0.839629 ms
+System memory in use before: 44.4 MB.
+System memory in use after: 43.5 MB.
 
-Unloading 4 unused Assets to reduce memory usage. Loaded Objects now: 419.
-Total: 2.193389 ms (FindLiveObjects: 0.048761 ms CreateObjectMapping: 0.028230 ms MarkObjects: 2.091590 ms  DeleteObjects: 0.023525 ms)
+Unloading 5 unused Assets to reduce memory usage. Loaded Objects now: 626.
+Total: 2.257975 ms (FindLiveObjects: 0.177507 ms CreateObjectMapping: 0.044911 ms MarkObjects: 1.996206 ms  DeleteObjects: 0.038067 ms)
 
-Unloading 4 Unused Serialized files (Serialized files now loaded: 0)
-UnloadTime: 0.497020 ms
-System memory in use before: 40.6 MB.
-System memory in use after: 40.7 MB.
-
-Unloading 3 unused Assets to reduce memory usage. Loaded Objects now: 607.
-Total: 0.948700 ms (FindLiveObjects: 0.111637 ms CreateObjectMapping: 0.040206 ms MarkObjects: 0.773332 ms  DeleteObjects: 0.022241 ms)
+NullReferenceException: Object reference not set to an instance of an object
+  at Pawn.OnChangeColor (PlayerColorEnum newColor) [0x00112] in I:\Dev\Projets\Unity\Tock\Assets\Script\Pawn.cs:119 
+  at Pawn.OnDeserialize (UnityEngine.Networking.NetworkReader reader, Boolean initialState) [0x00000] in <filename unknown>:0 
+  at UnityEngine.Networking.NetworkIdentity.OnUpdateVars (UnityEngine.Networking.NetworkReader reader, Boolean initialState) [0x00034] in C:\buildslave\unity\build\Extensions\Networking\Runtime\NetworkIdentity.cs:750 
+  at UnityEngine.Networking.ClientScene.OnUpdateVarsMessage (UnityEngine.Networking.NetworkMessage netMsg) [0x0006b] in C:\buildslave\unity\build\Extensions\Networking\Runtime\ClientScene.cs:721 
+  at UnityEngine.Networking.NetworkConnection.HandleReader (UnityEngine.Networking.NetworkReader reader, Int32 receivedSize, Int32 channelId) [0x00130] in C:\buildslave\unity\build\Extensions\Networking\Runtime\NetworkConnection.cs:469 
+  at UnityEngine.Networking.NetworkConnection.HandleBytes (System.Byte[] buffer, Int32 receivedSize, Int32 channelId) [0x0000c] in C:\buildslave\unity\build\Extensions\Networking\Runtime\NetworkConnection.cs:425 
+  at UnityEngine.Networking.NetworkConnection.TransportReceive (System.Byte[] bytes, Int32 numBytes, Int32 channelId) [0x00005] in C:\buildslave\unity\build\Extensions\Networking\Runtime\NetworkConnection.cs:576 
+  at UnityEngine.Networking.NetworkClient.Update () [0x001d5] in C:\buildslave\unity\build\Extensions\Networking\Runtime\NetworkClient.cs:735 
+  at UnityEngine.Networking.NetworkClient.UpdateClients () [0x00024] in C:\buildslave\unity\build\Extensions\Networking\Runtime\NetworkClient.cs:947 
+  at UnityEngine.Networking.NetworkIdentity.UNetStaticUpdate () [0x00006] in C:\buildslave\unity\build\Extensions\Networking\Runtime\NetworkIdentity.cs:1091 
+ 
+(Filename: I:/Dev/Projets/Unity/Tock/Assets/Script/Pawn.cs Line: 119)
 
 reactor filed to acomplish request with code {1234}, bytesReceived {0}
-Unloading 3 Unused Serialized files (Serialized files now loaded: 0)
-UnloadTime: 13.868654 ms
-System memory in use before: 47.2 MB.
-System memory in use after: 47.1 MB.
-
-Unloading 26 unused Assets to reduce memory usage. Loaded Objects now: 426.
-Total: 1.497475 ms (FindLiveObjects: 0.099232 ms CreateObjectMapping: 0.029940 ms MarkObjects: 0.818671 ms  DeleteObjects: 0.548347 ms)
-
+reactor filed to acomplish request with code {1234}, bytesReceived {0}
+reactor filed to acomplish request with code {1234}, bytesReceived {0}
+Log: connection {1} has been disconnected by timeout; address {::ffff:127.0.0.1:7777}
 Waiting for finish
