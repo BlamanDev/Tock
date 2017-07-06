@@ -101,7 +101,7 @@ public class PawnSpawner : NetworkBehaviour
     public void CmdTestMove(string player)
     {
         TockPlayer blop = GameObject.FindGameObjectWithTag(player + "_Player").GetComponent<TockPlayer>();
-        blop.CmdMovePawn(1);
+        blop.CmdMovePawn(1,3);
 
     }
 

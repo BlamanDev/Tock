@@ -124,7 +124,7 @@ public class GameMaster : NetworkBehaviour
     public void CmdTestMove()
     {
         TockPlayer blop = GameObject.FindGameObjectWithTag("Red_Player").GetComponent<TockPlayer>();
-        blop.CmdMovePawn(1);
+        blop.CmdMovePawn(1,3);
 
     }
 

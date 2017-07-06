@@ -139,9 +139,13 @@ public class TockPlayer : NetworkBehaviour
     /// </summary>
     /// <param name="pawnIndex"></param>
     [Command]
-    public void CmdMovePawn(int pawnIndex)
+    public void CmdMovePawn(int pawnIndex, int nbMoves)
     {
-        this.Pawns[pawnIndex].Move();
+        for (int i = 0; i<nbMoves;i++)
+        {
+            this.Pawns[pawnIndex].Move();
+
+        }
     }
 
     /// <summary>
