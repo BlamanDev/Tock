@@ -12,7 +12,7 @@ using UnityEngine.Networking;
 public class Pawn : NetworkBehaviour
 {
     //Progress of the Pawn on its path
-    [SyncVar(hook ="OnChangeProgress")]
+    [SyncVar(hook = "OnChangeProgress")]
     public int Progress = 0;
 
     //Layer used by the pawn
@@ -32,7 +32,7 @@ public class Pawn : NetworkBehaviour
     public bool OnBoard = false;
 
     //Owning player of this Pawn
-    [SyncVar(hook="OnChangeColor")]
+    [SyncVar(hook = "OnChangeColor")]
     public PlayerColorEnum Player;
 
     //Spawn positions for the pawns
@@ -44,10 +44,11 @@ public class Pawn : NetworkBehaviour
     private MeshRenderer PawnMeshRenderer;
 
     //Hash of Animator parameters
-    private int progressHash = Animator.StringToHash("Progress");
-    private int onBoardHash = Animator.StringToHash("OnBoard");
+    /*private int progressHash = Animator.StringToHash("Progress");
+    private int onBoardHash = Animator.StringToHash("OnBoard");*/
     private int enterHash = Animator.StringToHash("EnterBoard");
     private int exitHash = Animator.StringToHash("ExitBoard");
+    private int StateHash = Animator.StringToHash("ProgressOnBoard_Blue");
 
 
 
@@ -85,7 +86,8 @@ public class Pawn : NetworkBehaviour
     {
         if ((this.OnBoard) && (PawnAnimator != null))
         {
-            PawnAnimator.SetInteger(progressHash, progress);
+            //PawnAnimator.SetInteger(progressHash, progress);
+
         }
     }
 
@@ -93,7 +95,7 @@ public class Pawn : NetworkBehaviour
     /// Event called when changing the owning Player
     /// </summary>
     /// <param name="newColor"></param>
-    public  void OnChangeColor(PlayerColorEnum newColor)
+    public void OnChangeColor(PlayerColorEnum newColor)
     {
         //Change the material color of the pawn
         switch (newColor)
@@ -115,9 +117,9 @@ public class Pawn : NetworkBehaviour
         this.name = newColor.ToString() + PawnIndex.ToString();
         PawnName = newColor.ToString() + PawnIndex.ToString();
         //Get the out position for this pawn
-        outPosition = spawnPositions.getOutPosition(newColor,PawnIndex);
-        PawnAnimator.runtimeAnimatorController = GameObject.Find(newColor.ToString() + "_Animator").GetComponent<Animator>().runtimeAnimatorController;
-            }
+        outPosition = spawnPositions.getOutPosition(newColor, PawnIndex);
+        //PawnAnimator.runtimeAnimatorController = GameObject.Find(newColor.ToString() + "_Animator").GetComponent<Animator>().runtimeAnimatorController;
+    }
 
     /// <summary>
     /// Event called when the number of the layer is changed
@@ -127,7 +129,7 @@ public class Pawn : NetworkBehaviour
     public void OnChangeNbLayer(int newLayer)
     {
         PawnAnimator.SetLayerWeight(newLayer, 1);
-        
+
     }
 
     /// <summary>
@@ -138,7 +140,10 @@ public class Pawn : NetworkBehaviour
     {
         if (onBoard)
         {
-            this.transform.position = spawnPositions.getStartPosition(Player).transform.position;
+            Transform startTransform = spawnPositions.getStartPosition(Player).transform;
+            this.transform.position = startTransform.position;
+            this.transform.rotation = startTransform.rotation;
+
             PawnAnimator.SetTrigger(enterHash);
         }
         else
@@ -149,6 +154,14 @@ public class Pawn : NetworkBehaviour
         }
 
     }
+
+    public void CheckProgress(int animationProgress)
+    {
+        if (animationProgress == Progress)
+        {
+            PawnAnimator.enabled = false;
+        }
+    }
     #endregion
 
     #region methods
@@ -157,7 +170,7 @@ public class Pawn : NetworkBehaviour
     /// </summary>
     /// <param name="color"></param>
     /// <param name="pawnIndex"></param>
-    public void Initialise(PlayerColorEnum color,int pawnIndex)
+    public void Initialise(PlayerColorEnum color, int pawnIndex)
     {
         this.PawnIndex = pawnIndex;
         Player = color;
@@ -177,13 +190,20 @@ public class Pawn : NetworkBehaviour
     /// Make the pawn move one cell on the board 
     /// </summary>
     /// <param name="recul"></param>
-    public void Move(bool recul = false)
+    /*public void Move(bool recul = false)
     {
         if (recul) this.Progress--;
         else this.Progress++;
 
-    }
+    }*/
 
+    public void Move(int nbCell)
+    {
+        PawnAnimator.enabled = true;
+
+        Progress += nbCell;
+        PawnAnimator.Play(StateHash);
+    }
     /// <summary>
     /// Get the pawn of the board
     /// </summary>

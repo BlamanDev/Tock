@@ -114,17 +114,17 @@ public class GameMaster : NetworkBehaviour
     }
 
     [Command]
-    public void CmdTestEnter()
+    public void CmdTestEnter(string player)
     {
-        TockPlayer blop = GameObject.FindGameObjectWithTag("Red_Player").GetComponent<TockPlayer>();
+        TockPlayer blop = GameObject.FindGameObjectWithTag(player + "_Player").GetComponent<TockPlayer>();
         blop.CmdEnterPawn(1);
     }
 
     [Command]
-    public void CmdTestMove()
+    public void CmdTestMove(string player)
     {
-        TockPlayer blop = GameObject.FindGameObjectWithTag("Red_Player").GetComponent<TockPlayer>();
-        blop.CmdMovePawn(1,3);
+        TockPlayer blop = GameObject.FindGameObjectWithTag(player + "_Player").GetComponent<TockPlayer>();
+        blop.CmdMovePawn(1, 3);
 
     }
 
