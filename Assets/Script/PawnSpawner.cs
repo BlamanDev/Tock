@@ -22,16 +22,20 @@ public class PawnSpawner : NetworkBehaviour
     //Used for debugging
     public Text text;
 
+    private GameMaster gMaster;
+
+
 
     // Use this for initialization
     void Start()
     {
+        gMaster = GameObject.Find("NetworkGameMaster").GetComponent<GameMaster>();
 
 
     }
 
-    // Update is called once per frame
-    void Update()
+// Update is called once per frame
+void Update()
     {
 
     }
@@ -66,8 +70,11 @@ public class PawnSpawner : NetworkBehaviour
             text = GameObject.Find("TextPawnSpawner").GetComponent<Text>();
         }
 
+        if (playerList.Length <= 0)
+        {
+            playerList = FindObjectsOfType<TockPlayer>();
+        }
 
-        playerList = FindObjectsOfType<TockPlayer>();
         //FOR EACH player, create 4 pawns
         foreach (TockPlayer player in playerList)
         {
@@ -90,19 +97,18 @@ public class PawnSpawner : NetworkBehaviour
     }
 
 
-    [Command]
-    public void CmdTestEnter(string player)
+    public void TestEnter(string player)
     {
-        TockPlayer blop = GameObject.FindGameObjectWithTag(player +"_Player").GetComponent<TockPlayer>();
-        blop.CmdEnterPawn(1);
+        gMaster.EnterPawn(player,1);
     }
 
-    [Command]
-    public void CmdTestMove(string player)
+    public void TestMove(string player)
     {
-        TockPlayer blop = GameObject.FindGameObjectWithTag(player + "_Player").GetComponent<TockPlayer>();
-        blop.CmdMovePawn(1,3);
+        gMaster.MovePawn(player, 1, 3);
+    }
 
+    public void EnterPawn(string player, int pawnIndex)
+    {
     }
 
 }

@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using UnityEngine.Events;
 
 /// <summary>
 /// Script for the GameMaster
@@ -25,7 +26,7 @@ public class GameMaster : NetworkBehaviour
     //Contains the list of Pawns sorted by color
     public Dictionary<PlayerColorEnum, List<Pawn>> AllPawns;
 
-
+    public TockPlayer localPlayer;
 
     // Use this for initialization
     void Start()
@@ -113,20 +114,47 @@ public class GameMaster : NetworkBehaviour
         return (PlayerColorEnum)nextColor;
     }
 
-    [Command]
-    public void CmdTestEnter(string player)
+    public void EnterPawn(string player,int PawnIndex)
     {
-        TockPlayer blop = GameObject.FindGameObjectWithTag(player + "_Player").GetComponent<TockPlayer>();
-        blop.CmdEnterPawn(1);
+        TockPlayer tockPlayer = GameObject.FindGameObjectWithTag(player + "_Player").GetComponent<TockPlayer>();
+        tockPlayer.CmdEnterPawn(PawnIndex);
     }
 
-    [Command]
-    public void CmdTestMove(string player)
+    public void MovePawn(string player, int pawnIndex, int nbMoves)
     {
-        TockPlayer blop = GameObject.FindGameObjectWithTag(player + "_Player").GetComponent<TockPlayer>();
-        blop.CmdMovePawn(1, 3);
+        if (player!=localPlayer.PlayerColor.ToString())
+        {
+            localPlayer.CmdMoveOtherColor(player, pawnIndex, nbMoves);
+        }
+        else
+        {
+            localPlayer.CmdMovePawn(pawnIndex, nbMoves);
+        }
+        //TockPlayer tockPlayer = GameObject.FindGameObjectWithTag(player + "_Player").GetComponent<TockPlayer>();
+        //tockPlayer.CmdMovePawn(pawnIndex, nbMoves);
 
     }
 
-
+    public PlayerColorEnum StringToPlayerColorEnum(string color)
+    {
+        PlayerColorEnum blop=0;
+        switch (color)
+        {
+            case "Blue":
+                blop = PlayerColorEnum.Blue;
+                    break;
+            case "Red":
+                blop = PlayerColorEnum.Red;
+                break;
+            case "Yellow":
+                blop = PlayerColorEnum.Yellow;
+                break;
+            case "Green":
+                blop = PlayerColorEnum.Green;
+                break;
+            default:
+                break;
+        }
+        return blop;
+    }
 }

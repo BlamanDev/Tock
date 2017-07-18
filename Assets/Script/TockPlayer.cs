@@ -24,9 +24,7 @@ public class TockPlayer : NetworkBehaviour
     //Prefab used for the Pawn
     public GameObject PawnPrefab;
     //references to the the component used by the script
-    private GameObject goGMaster;
     private GameMaster gMaster;
-    private GameObject goBoard;
     private TockBoard board;
 
     //for debugging
@@ -39,11 +37,7 @@ public class TockPlayer : NetworkBehaviour
     void Start()
     {
         //Find references
-        text = GameObject.Find("TextTockPlayer").GetComponent<Text>();
-        goGMaster = GameObject.Find("NetworkGameMaster");
-        gMaster = goGMaster.GetComponent<GameMaster>();
-        goBoard = GameObject.Find("toc");
-        board = goBoard.GetComponent<TockBoard>();
+        FindReferences();
 
         //colorize player
         PlayerColor = gMaster.CmdGiveNewPlayerColor();
@@ -55,6 +49,23 @@ public class TockPlayer : NetworkBehaviour
 
     }
 
+    private void FindReferences()
+    {
+        if (text == null)
+        {
+            text = GameObject.Find("TextTockPlayer").GetComponent<Text>();
+        }
+
+        if (gMaster == null)
+        {
+            gMaster = GameObject.Find("NetworkGameMaster").GetComponent<GameMaster>();
+        }
+        if (board == null)
+        {
+            board = GameObject.Find("toc").GetComponent<TockBoard>();
+        }
+    }
+
     // Update is called once per frame
     void Update()
     {
@@ -64,6 +75,11 @@ public class TockPlayer : NetworkBehaviour
     public override void OnStartLocalPlayer()
     {
         base.OnStartLocalPlayer();
+        FindReferences();
+        if (isLocalPlayer)
+        {
+            gMaster.localPlayer = this;
+        }
     }
 
 
@@ -148,8 +164,17 @@ public class TockPlayer : NetworkBehaviour
     /// Command to make a pawn enter the board
     /// </summary>
     /// <param name="pawnIndex"></param>
+    [Command]
     public void CmdEnterPawn(int pawnIndex)
     {
         this.Pawns[pawnIndex].Enter();
+    }
+
+    [Command]
+    public void CmdMoveOtherColor(String otherPlayer, int PawnIndex, int nbMoves)
+    {
+        TockPlayer otherTockPlayer = GameObject.FindGameObjectWithTag(otherPlayer + "_Player").GetComponent<TockPlayer>();
+        otherTockPlayer.CmdMovePawn(PawnIndex, nbMoves);
+
     }
 }

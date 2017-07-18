@@ -11,13 +11,10 @@ using UnityEngine.Networking;
 /// </summary>
 public class Pawn : NetworkBehaviour
 {
+    #region Properties
     //Progress of the Pawn on its path
     [SyncVar(hook = "OnChangeProgress")]
     public int Progress = 0;
-
-    //Layer used by the pawn
-    [SyncVar(hook = "OnChangeNbLayer")]
-    public int NbLayer = 0;
 
     //Name of the pawn (perhaps useless)
     [SyncVar]
@@ -51,7 +48,7 @@ public class Pawn : NetworkBehaviour
     private int StateHash = Animator.StringToHash("ProgressOnBoard_Blue");
 
 
-
+    #endregion
 
     // Use this for initialization
     void Start()
@@ -118,19 +115,8 @@ public class Pawn : NetworkBehaviour
         PawnName = newColor.ToString() + PawnIndex.ToString();
         //Get the out position for this pawn
         outPosition = spawnPositions.getOutPosition(newColor, PawnIndex);
-        //PawnAnimator.runtimeAnimatorController = GameObject.Find(newColor.ToString() + "_Animator").GetComponent<Animator>().runtimeAnimatorController;
     }
 
-    /// <summary>
-    /// Event called when the number of the layer is changed
-    /// Update the Layer weight in the Animator
-    /// </summary>
-    /// <param name="newLayer"></param>
-    public void OnChangeNbLayer(int newLayer)
-    {
-        PawnAnimator.SetLayerWeight(newLayer, 1);
-
-    }
 
     /// <summary>
     /// Update the position of the pawn regarding if it is entering or exiting the board
@@ -174,7 +160,6 @@ public class Pawn : NetworkBehaviour
     {
         this.PawnIndex = pawnIndex;
         Player = color;
-        //NbLayer = (int)color;
         this.transform.position = outPosition.transform.position;
     }
 
