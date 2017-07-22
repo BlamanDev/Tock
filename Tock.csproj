@@ -91,6 +91,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Script\GameMaster.cs" />
+    <Compile Include="Assets\Script\GhostPawn.cs" />
     <Compile Include="Assets\Script\Pawn.cs" />
     <Compile Include="Assets\Script\PawnSpawner.cs" />
     <Compile Include="Assets\Script\PlayerColorEnum.cs" />

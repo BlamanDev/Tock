@@ -23,7 +23,7 @@ public class PawnSpawner : NetworkBehaviour
     public Text text;
 
     private GameMaster gMaster;
-
+     
 
 
     // Use this for initialization
@@ -52,7 +52,7 @@ void Update()
         GameObject newPawn = Instantiate(PawnPrefab);
         Pawn retour = newPawn.GetComponent<Pawn>();
 
-        retour.Initialise(player, pawnIndex);
+        retour.Initialize(player, pawnIndex);
 
         NetworkServer.Spawn(newPawn);
 
@@ -107,8 +107,8 @@ void Update()
         gMaster.MovePawn(player, 1, 3);
     }
 
-    public void EnterPawn(string player, int pawnIndex)
+public void TestProjection()
     {
+        gMaster.localPlayer.Projection(3);
     }
-
 }

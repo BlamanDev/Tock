@@ -13,7 +13,7 @@ public class Pawn : NetworkBehaviour
 {
     #region Properties
     //Progress of the Pawn on its path
-    [SyncVar(hook = "OnChangeProgress")]
+    [SyncVar]
     public int Progress = 0;
 
     //Name of the pawn (perhaps useless)
@@ -37,17 +37,15 @@ public class Pawn : NetworkBehaviour
     private GameObject outPosition;
 
     //Components of the pawn
-    private Animator PawnAnimator;
+    public Animator PawnAnimator;
     private MeshRenderer PawnMeshRenderer;
 
     //Hash of Animator parameters
-    /*private int progressHash = Animator.StringToHash("Progress");
-    private int onBoardHash = Animator.StringToHash("OnBoard");*/
     private int enterHash = Animator.StringToHash("EnterBoard");
     private int exitHash = Animator.StringToHash("ExitBoard");
-    private int StateHash = Animator.StringToHash("ProgressOnBoard_Blue");
+    private int StateHash = Animator.StringToHash("ProgressOnBoard");
 
-
+    public GameObject GhostPawnPrefab;
     #endregion
 
     // Use this for initialization
@@ -66,7 +64,7 @@ public class Pawn : NetworkBehaviour
     /// <summary>
     /// Event called when the pawn is created
     /// Get the component attached to the pawn
-    /// </summary>
+    /// </summary> 
     private void OnEnable()
     {
         PawnAnimator = GetComponent<Animator>();
@@ -74,19 +72,6 @@ public class Pawn : NetworkBehaviour
         spawnPositions = FindObjectOfType<SpawnPositions>();
     }
 
-    /// <summary>
-    /// Event called when the progress is changed
-    /// Update the progress attribute in the Animator
-    /// </summary>
-    /// <param name="progress"></param>
-    void OnChangeProgress(int progress)
-    {
-        if ((this.OnBoard) && (PawnAnimator != null))
-        {
-            //PawnAnimator.SetInteger(progressHash, progress);
-
-        }
-    }
 
     /// <summary>
     /// Event called when changing the owning Player
@@ -124,6 +109,10 @@ public class Pawn : NetworkBehaviour
     /// <param name="onBoard"></param>
     public void OnChangeOnBoard(bool onBoard)
     {
+        if (!PawnAnimator.enabled)
+        {
+            PawnAnimator.enabled = true;
+        }
         if (onBoard)
         {
             Transform startTransform = spawnPositions.getStartPosition(Player).transform;
@@ -134,11 +123,19 @@ public class Pawn : NetworkBehaviour
         }
         else
         {
-            this.transform.position = outPosition.transform.position;
             PawnAnimator.SetTrigger(exitHash);
-
         }
+    }
 
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.name == "PawnModel")
+        {
+            if (PawnAnimator.enabled && !other.GetComponentInParent<Pawn>().PawnAnimator.enabled)
+            {
+                (other.GetComponentInParent<Pawn>()).Exit();
+            }
+        }
     }
 
     public void CheckProgress(int animationProgress)
@@ -156,7 +153,7 @@ public class Pawn : NetworkBehaviour
     /// </summary>
     /// <param name="color"></param>
     /// <param name="pawnIndex"></param>
-    public void Initialise(PlayerColorEnum color, int pawnIndex)
+    public void Initialize(PlayerColorEnum color, int pawnIndex)
     {
         this.PawnIndex = pawnIndex;
         Player = color;
@@ -171,16 +168,6 @@ public class Pawn : NetworkBehaviour
         OnBoard = true;
     }
 
-    /// <summary>
-    /// Make the pawn move one cell on the board 
-    /// </summary>
-    /// <param name="recul"></param>
-    /*public void Move(bool recul = false)
-    {
-        if (recul) this.Progress--;
-        else this.Progress++;
-
-    }*/
 
     public void Move(int nbCell)
     {
@@ -196,7 +183,27 @@ public class Pawn : NetworkBehaviour
     {
         OnBoard = false;
         this.Progress = 0;
+    }
 
+    public void PlacePawnOut()
+    {
+        this.transform.position = outPosition.transform.position;
+    }
+
+    public bool CanMove(int nbCell)
+    {
+        bool canMove = false;
+        if (OnBoard)
+        {
+            List<Pawn> PawnsEncoutered = new List<Pawn>();
+            GameObject ghostObject = Instantiate(GhostPawnPrefab);
+            GhostPawn ghost = ghostObject.GetComponent<GhostPawn>();
+            ghost.Initialize(this);
+            PawnsEncoutered = ghost.Projection(nbCell);
+            canMove = true;
+        }
+
+        return canMove;
     }
     #endregion
 }

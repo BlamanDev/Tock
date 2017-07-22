@@ -130,8 +130,6 @@ public class GameMaster : NetworkBehaviour
         {
             localPlayer.CmdMovePawn(pawnIndex, nbMoves);
         }
-        //TockPlayer tockPlayer = GameObject.FindGameObjectWithTag(player + "_Player").GetComponent<TockPlayer>();
-        //tockPlayer.CmdMovePawn(pawnIndex, nbMoves);
 
     }
 

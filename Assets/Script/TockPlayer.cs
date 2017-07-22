@@ -69,7 +69,7 @@ public class TockPlayer : NetworkBehaviour
     // Update is called once per frame
     void Update()
     {
-
+         
     }
 
     public override void OnStartLocalPlayer()
@@ -176,5 +176,17 @@ public class TockPlayer : NetworkBehaviour
         TockPlayer otherTockPlayer = GameObject.FindGameObjectWithTag(otherPlayer + "_Player").GetComponent<TockPlayer>();
         otherTockPlayer.CmdMovePawn(PawnIndex, nbMoves);
 
+    }
+
+    public void Projection(int nbCells)
+    {
+        List<Pawn> PlayablePawns = new List<Pawn>();
+        foreach (Pawn item in Pawns)
+        {
+            if(item.CanMove(nbCells))
+            {
+                PlayablePawns.Add(item);
+            }
+        }
     }
 }
