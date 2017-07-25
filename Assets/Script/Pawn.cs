@@ -32,6 +32,8 @@ public class Pawn : NetworkBehaviour
     [SyncVar(hook = "OnChangeColor")]
     public PlayerColorEnum Player;
 
+    public PawnTestedEnum Status = PawnTestedEnum.UNTESTED;
+
     //Spawn positions for the pawns
     public SpawnPositions spawnPositions;
     private GameObject outPosition;
@@ -190,20 +192,41 @@ public class Pawn : NetworkBehaviour
         this.transform.position = outPosition.transform.position;
     }
 
-    public bool CanMove(int nbCell)
+    public void MakeProjection(int nbCell)
     {
-        bool canMove = false;
         if (OnBoard)
         {
             List<Pawn> PawnsEncoutered = new List<Pawn>();
             GameObject ghostObject = Instantiate(GhostPawnPrefab);
             GhostPawn ghost = ghostObject.GetComponent<GhostPawn>();
             ghost.Initialize(this);
-            PawnsEncoutered = ghost.Projection(nbCell);
-            canMove = true;
+            GhostPawn.EventOnProjectionFinished += testProjection;
+            ghost.Projection(nbCell);
         }
-
-        return canMove;
     }
+
+    public void testProjection(List<Pawn> pawnEncoutered)
+    {
+        pawnEncoutered.RemoveAt(0);
+        if (pawnEncoutered.Count>0)
+        {
+            foreach (Pawn item in pawnEncoutered)
+            {
+                if (item.Progress == 0)
+                {
+                    this.Status = PawnTestedEnum.CANNOT_MOVE;
+                }
+            }
+            if (pawnEncoutered[pawnEncoutered.Count - 1].Progress > 70)
+            {
+                this.Status = PawnTestedEnum.CANNOT_MOVE;
+            }
+            if (this.Status == PawnTestedEnum.UNTESTED)
+            {
+                this.Status = PawnTestedEnum.CAN_MOVE;
+            }
+        }
+    }
+
     #endregion
 }

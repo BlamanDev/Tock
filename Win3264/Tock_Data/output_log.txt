@@ -1,15 +1,15 @@
 Mono path[0] = 'I:/Dev/Projets/Unity/Tock/Win3264/Tock_Data/Managed'
-Mono path[1] = 'I:/Dev/Projets/Unity/Tock/Win3264/Tock_Data/Mono'
 Mono config path = 'I:/Dev/Projets/Unity/Tock/Win3264/Tock_Data/Mono/etc'
 PlayerConnection initialized from I:/Dev/Projets/Unity/Tock/Win3264/Tock_Data (debug = 0)
-PlayerConnection initialized network socket : 0.0.0.0 55055
-Multi-casting "[IP] 192.168.1.2 [Port] 55055 [Flags] 3 [Guid] 986185363 [EditorId] 853000328 [Version] 1048832 [Id] WindowsPlayer(Blaman10) [Debug] 1" to [225.0.0.222:54997]...
-Waiting for connection from host on [0.0.0.0:55055]...
-PlayerConnection accepted from [192.168.1.2] handle:0x2c8
-Started listening to [0.0.0.0:55055]
-Using monoOptions --debugger-agent=transport=dt_socket,embedding=1,defer=y,address=0.0.0.0:56363
-PlayerConnection already initialized - listening to [0.0.0.0:55055]
-Player data archive not found at `I:/Dev/Projets/Unity/Tock/Win3264/Tock_Data/data.unity3d`, using local filesystemInitialize engine version: 5.6.1f1 (2860b30f0b54)
+PlayerConnection initialized network socket : 0.0.0.0 55344
+Multi-casting "[IP] 192.168.1.2 [Port] 55344 [Flags] 3 [Guid] 1310239734 [EditorId] 2958462913 [Version] 1048832 [Id] WindowsPlayer(Blaman10) [Debug] 1" to [225.0.0.222:54997]...
+Waiting for connection from host on [0.0.0.0:55344]...
+PlayerConnection accepted from [192.168.1.2] handle:0x354
+Started listening to [0.0.0.0:55344]
+Using monoOptions --debugger-agent=transport=dt_socket,embedding=1,defer=y,address=0.0.0.0:56734
+PlayerConnection already initialized - listening to [0.0.0.0:55344]
+Player data archive not found at `I:/Dev/Projets/Unity/Tock/Win3264/Tock_Data/data.unity3d`, using local filesystem
+Initialize engine version: 2017.1.0f3 (472613c02cf7)
 GfxDevice: creating device client; threaded=1
 Direct3D:
     Version:  Direct3D 11.0 [level 11.0]
@@ -28,276 +28,106 @@ Platform assembly: I:\Dev\Projets\Unity\Tock\Win3264\Tock_Data\Managed\UnityEngi
 Loading I:\Dev\Projets\Unity\Tock\Win3264\Tock_Data\Managed\UnityEngine.UI.dll into Unity Child Domain
 Platform assembly: I:\Dev\Projets\Unity\Tock\Win3264\Tock_Data\Managed\UnityEngine.Networking.dll (this message is harmless)
 Loading I:\Dev\Projets\Unity\Tock\Win3264\Tock_Data\Managed\UnityEngine.Networking.dll into Unity Child Domain
+Platform assembly: I:\Dev\Projets\Unity\Tock\Win3264\Tock_Data\Managed\UnityEngine.Timeline.dll (this message is harmless)
+Loading I:\Dev\Projets\Unity\Tock\Win3264\Tock_Data\Managed\UnityEngine.Timeline.dll into Unity Child Domain
 Platform assembly: I:\Dev\Projets\Unity\Tock\Win3264\Tock_Data\Managed\UnityEngine.Analytics.dll (this message is harmless)
 Loading I:\Dev\Projets\Unity\Tock\Win3264\Tock_Data\Managed\UnityEngine.Analytics.dll into Unity Child Domain
-- Completed reload, in  0.369 seconds
-Platform assembly: I:\Dev\Projets\Unity\Tock\Win3264\Tock_Data\Managed\System.Core.dll (this message is harmless)
 Platform assembly: I:\Dev\Projets\Unity\Tock\Win3264\Tock_Data\Managed\System.dll (this message is harmless)
+Platform assembly: I:\Dev\Projets\Unity\Tock\Win3264\Tock_Data\Managed\System.Core.dll (this message is harmless)
+- Completed reload, in  0.666 seconds
 OnLevelWasLoaded was found on GameMaster
 This message has been deprecated and will be removed in a later version of Unity.
 Add a delegate to SceneManager.sceneLoaded instead to get notifications after scene loading has completed
  
-(Filename: C:\buildslave\unity\build\Runtime/Mono/MonoScriptCache.cpp Line: 376)
+(Filename: C:\buildslave\unity\build\Runtime/Mono/MonoScriptCache.cpp Line: 380)
 
-desktop: 1024x768 75Hz; virtual: 4224x1080 at -1280,0
 <RI> Initializing input.
 XInput1_3.dll not found. Trying XInput9_1_0.dll instead...
 <RI> Input initialized.
 <RI> Initialized touch support.
-UnloadTime: 8.803495 ms
+UnloadTime: 7.631093 ms
 Setting up 2 worker threads for Enlighten.
-  Thread -> id: c14 -> priority: 1 
-  Thread -> id: 20a8 -> priority: 1 
+  Thread -> id: 2774 -> priority: 1 
+  Thread -> id: 239c -> priority: 1 
 Unloading 5 Unused Serialized files (Serialized files now loaded: 0)
-UnloadTime: 0.730559 ms
-System memory in use before: 43.1 MB.
-System memory in use after: 43.1 MB.
+UnloadTime: 0.707461 ms
+System memory in use before: 44.4 MB.
+System memory in use after: 44.5 MB.
 
-Unloading 5 unused Assets to reduce memory usage. Loaded Objects now: 680.
-Total: 1.083007 ms (FindLiveObjects: 0.134734 ms CreateObjectMapping: 0.039778 ms MarkObjects: 0.881119 ms  DeleteObjects: 0.026519 ms)
+Unloading 5 unused Assets to reduce memory usage. Loaded Objects now: 713.
+Total: 1.740424 ms (FindLiveObjects: 0.124896 ms CreateObjectMapping: 0.041917 ms MarkObjects: 1.524849 ms  DeleteObjects: 0.046622 ms)
 
-reactor filed to acomplish request with code {1234}, bytesReceived {0}
-reactor filed to acomplish request with code {1234}, bytesReceived {0}
-reactor filed to acomplish request with code {1234}, bytesReceived {0}
-reactor filed to acomplish request with code {1234}, bytesReceived {0}
-Log: connection {1} has been disconnected by timeout; address {::ffff:127.0.0.1:7777}
+Unloading 3 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 15.825931 ms
+System memory in use before: 156.3 MB.
+System memory in use after: 155.6 MB.
+
+Unloading 134 unused Assets to reduce memory usage. Loaded Objects now: 382.
+Total: 2.585187 ms (FindLiveObjects: 0.092389 ms CreateObjectMapping: 0.087256 ms MarkObjects: 0.641164 ms  DeleteObjects: 1.761811 ms)
+
+Unloading 4 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 4.923147 ms
+System memory in use before: 0.83 GB.
+System memory in use after: 0.83 GB.
+
+Unloading 3 unused Assets to reduce memory usage. Loaded Objects now: 713.
+Total: 4.532204 ms (FindLiveObjects: 0.142861 ms CreateObjectMapping: 0.112492 ms MarkObjects: 4.232367 ms  DeleteObjects: 0.041489 ms)
+
+Log: connection {1} has been disconnected by timeout; address {::ffff:127.0.0.1:7777} time {3190383}, last rec time {3187900} rtt {11} timeout {2000}
 Unloading 3 Unused Serialized files (Serialized files now loaded: 0)
 ClientDisconnected due to error: Timeout
 UnityEngine.DebugLogHandler:Internal_Log(LogType, String, Object)
 UnityEngine.DebugLogHandler:LogFormat(LogType, Object, String, Object[])
 UnityEngine.Logger:Log(LogType, Object)
 UnityEngine.Debug:LogError(Object)
-UnityEngine.Networking.NetworkManager:OnClientDisconnect(NetworkConnection) (at C:\buildslave\unity\build\Extensions\Networking\Runtime\NetworkManager.cs:1128)
+UnityEngine.Networking.NetworkManager:OnClientDisconnect(NetworkConnection) (at C:\buildslave\unity\build\Extensions\Networking\Runtime\NetworkManager.cs:1134)
 UnityEngine.Networking.NetworkLobbyManager:OnClientDisconnect(NetworkConnection) (at C:\buildslave\unity\build\Extensions\Networking\Runtime\NetworkLobbyManager.cs:563)
-UnityEngine.Networking.NetworkManager:OnClientDisconnectInternal(NetworkMessage) (at C:\buildslave\unity\build\Extensions\Networking\Runtime\NetworkManager.cs:958)
+UnityEngine.Networking.NetworkManager:OnClientDisconnectInternal(NetworkMessage) (at C:\buildslave\unity\build\Extensions\Networking\Runtime\NetworkManager.cs:964)
 UnityEngine.Networking.NetworkConnection:InvokeHandler(Int16, NetworkReader, Int32) (at C:\buildslave\unity\build\Extensions\Networking\Runtime\NetworkConnection.cs:220)
 UnityEngine.Networking.NetworkConnection:InvokeHandlerNoData(Int16) (at C:\buildslave\unity\build\Extensions\Networking\Runtime\NetworkConnection.cs:202)
-UnityEngine.Networking.NetworkClient:Update() (at C:\buildslave\unity\build\Extensions\Networking\Runtime\NetworkClient.cs:753)
-UnityEngine.Networking.NetworkClient:UpdateClients() (at C:\buildslave\unity\build\Extensions\Networking\Runtime\NetworkClient.cs:947)
+UnityEngine.Networking.NetworkClient:Update() (at C:\buildslave\unity\build\Extensions\Networking\Runtime\NetworkClient.cs:771)
+UnityEngine.Networking.NetworkClient:UpdateClients() (at C:\buildslave\unity\build\Extensions\Networking\Runtime\NetworkClient.cs:965)
 UnityEngine.Networking.NetworkIdentity:UNetStaticUpdate() (at C:\buildslave\unity\build\Extensions\Networking\Runtime\NetworkIdentity.cs:1091)
  
-(Filename: C:/buildslave/unity/build/Extensions/Networking/Runtime/NetworkManager.cs Line: 1128)
+(Filename: C:/buildslave/unity/build/Extensions/Networking/Runtime/NetworkManager.cs Line: 1134)
 
-UnloadTime: 14.881080 ms
-System memory in use before: 163.2 MB.
-System memory in use after: 162.5 MB.
+UnloadTime: 2.106987 ms
+System memory in use before: 0.86 GB.
+System memory in use after: 0.86 GB.
 
-Unloading 134 unused Assets to reduce memory usage. Loaded Objects now: 355.
-Total: 2.426500 ms (FindLiveObjects: 0.107787 ms CreateObjectMapping: 0.034218 ms MarkObjects: 0.538509 ms  DeleteObjects: 1.745129 ms)
-
-Unloading 4 Unused Serialized files (Serialized files now loaded: 0)
-UnloadTime: 0.638170 ms
-System memory in use before: 169.0 MB.
-System memory in use after: 169.0 MB.
-
-Unloading 3 unused Assets to reduce memory usage. Loaded Objects now: 686.
-Total: 0.970514 ms (FindLiveObjects: 0.123613 ms CreateObjectMapping: 0.041917 ms MarkObjects: 0.779747 ms  DeleteObjects: 0.023525 ms)
-
-reactor filed to acomplish request with code {1234}, bytesReceived {0}
-reactor filed to acomplish request with code {1234}, bytesReceived {0}
-reactor filed to acomplish request with code {1234}, bytesReceived {0}
-reactor filed to acomplish request with code {1234}, bytesReceived {0}
-Log: connection {1} has been disconnected by timeout; address {::ffff:127.0.0.1:7777}
-ClientDisconnected due to error: Timeout
-UnityEngine.DebugLogHandler:Internal_Log(LogType, String, Object)
-UnityEngine.DebugLogHandler:LogFormat(LogType, Object, String, Object[])
-UnityEngine.Logger:Log(LogType, Object)
-UnityEngine.Debug:LogError(Object)
-UnityEngine.Networking.NetworkManager:OnClientDisconnect(NetworkConnection) (at C:\buildslave\unity\build\Extensions\Networking\Runtime\NetworkManager.cs:1128)
-UnityEngine.Networking.NetworkLobbyManager:OnClientDisconnect(NetworkConnection) (at C:\buildslave\unity\build\Extensions\Networking\Runtime\NetworkLobbyManager.cs:563)
-UnityEngine.Networking.NetworkManager:OnClientDisconnectInternal(NetworkMessage) (at C:\buildslave\unity\build\Extensions\Networking\Runtime\NetworkManager.cs:958)
-UnityEngine.Networking.NetworkConnection:InvokeHandler(Int16, NetworkReader, Int32) (at C:\buildslave\unity\build\Extensions\Networking\Runtime\NetworkConnection.cs:220)
-UnityEngine.Networking.NetworkConnection:InvokeHandlerNoData(Int16) (at C:\buildslave\unity\build\Extensions\Networking\Runtime\NetworkConnection.cs:202)
-UnityEngine.Networking.NetworkClient:Update() (at C:\buildslave\unity\build\Extensions\Networking\Runtime\NetworkClient.cs:753)
-UnityEngine.Networking.NetworkClient:UpdateClients() (at C:\buildslave\unity\build\Extensions\Networking\Runtime\NetworkClient.cs:947)
-UnityEngine.Networking.NetworkIdentity:UNetStaticUpdate() (at C:\buildslave\unity\build\Extensions\Networking\Runtime\NetworkIdentity.cs:1091)
- 
-(Filename: C:/buildslave/unity/build/Extensions/Networking/Runtime/NetworkManager.cs Line: 1128)
-
-Unloading 3 Unused Serialized files (Serialized files now loaded: 0)
-UnloadTime: 1.667711 ms
-System memory in use before: 1.42 GB.
-System memory in use after: 1.42 GB.
-
-Unloading 134 unused Assets to reduce memory usage. Loaded Objects now: 355.
-Total: 2.227606 ms (FindLiveObjects: 0.112064 ms CreateObjectMapping: 0.033362 ms MarkObjects: 0.583848 ms  DeleteObjects: 1.496192 ms)
+Unloading 134 unused Assets to reduce memory usage. Loaded Objects now: 388.
+Total: 1.974819 ms (FindLiveObjects: 0.097094 ms CreateObjectMapping: 0.036784 ms MarkObjects: 0.540220 ms  DeleteObjects: 1.299009 ms)
 
 Unloading 4 Unused Serialized files (Serialized files now loaded: 0)
-UnloadTime: 0.594541 ms
-System memory in use before: 1.44 GB.
-System memory in use after: 1.44 GB.
+UnloadTime: 0.867004 ms
+System memory in use before: 0.90 GB.
+System memory in use after: 0.90 GB.
 
-Unloading 3 unused Assets to reduce memory usage. Loaded Objects now: 686.
-Total: 1.085145 ms (FindLiveObjects: 0.132167 ms CreateObjectMapping: 0.047050 ms MarkObjects: 0.876842 ms  DeleteObjects: 0.028230 ms)
+Unloading 3 unused Assets to reduce memory usage. Loaded Objects now: 719.
+Total: 1.152726 ms (FindLiveObjects: 0.132167 ms CreateObjectMapping: 0.046622 ms MarkObjects: 0.945278 ms  DeleteObjects: 0.025663 ms)
 
-reactor filed to acomplish request with code {1234}, bytesReceived {0}
 Unloading 3 Unused Serialized files (Serialized files now loaded: 0)
-UnloadTime: 1.692519 ms
-System memory in use before: 1.59 GB.
-System memory in use after: 1.59 GB.
+UnloadTime: 1.862754 ms
+System memory in use before: 0.90 GB.
+System memory in use after: 0.90 GB.
 
-Unloading 134 unused Assets to reduce memory usage. Loaded Objects now: 346.
-Total: 2.624538 ms (FindLiveObjects: 0.061592 ms CreateObjectMapping: 0.034218 ms MarkObjects: 0.582137 ms  DeleteObjects: 1.944023 ms)
+Unloading 134 unused Assets to reduce memory usage. Loaded Objects now: 388.
+Total: 2.202798 ms (FindLiveObjects: 0.111209 ms CreateObjectMapping: 0.053893 ms MarkObjects: 0.669821 ms  DeleteObjects: 1.365307 ms)
 
 Unloading 4 Unused Serialized files (Serialized files now loaded: 0)
-UnloadTime: 0.650574 ms
-System memory in use before: 1.69 GB.
-System memory in use after: 1.69 GB.
+UnloadTime: 0.714733 ms
+System memory in use before: 0.91 GB.
+System memory in use after: 0.91 GB.
 
-Unloading 3 unused Assets to reduce memory usage. Loaded Objects now: 686.
-Total: 1.133478 ms (FindLiveObjects: 0.144144 ms CreateObjectMapping: 0.044911 ms MarkObjects: 0.915337 ms  DeleteObjects: 0.026519 ms)
-
-Unloading 3 Unused Serialized files (Serialized files now loaded: 0)
-UnloadTime: 2.148477 ms
-System memory in use before: 1.86 GB.
-System memory in use after: 1.86 GB.
-
-Unloading 134 unused Assets to reduce memory usage. Loaded Objects now: 346.
-Total: 2.148904 ms (FindLiveObjects: 0.050471 ms CreateObjectMapping: 0.032935 ms MarkObjects: 0.550058 ms  DeleteObjects: 1.514156 ms)
-
-Unloading 4 Unused Serialized files (Serialized files now loaded: 0)
-UnloadTime: 0.741680 ms
-System memory in use before: 1.98 GB.
-System memory in use after: 1.98 GB.
-
-Unloading 3 unused Assets to reduce memory usage. Loaded Objects now: 686.
-Total: 1.139894 ms (FindLiveObjects: 0.129173 ms CreateObjectMapping: 0.049188 ms MarkObjects: 0.932446 ms  DeleteObjects: 0.026091 ms)
-
-reactor filed to acomplish request with code {1234}, bytesReceived {0}
-reactor filed to acomplish request with code {1234}, bytesReceived {0}
-reactor filed to acomplish request with code {1234}, bytesReceived {0}
-reactor filed to acomplish request with code {1234}, bytesReceived {0}
-Log: connection {1} has been disconnected by timeout; address {::ffff:127.0.0.1:7777}
-ClientDisconnected due to error: Timeout
-UnityEngine.DebugLogHandler:Internal_Log(LogType, String, Object)
-UnityEngine.DebugLogHandler:LogFormat(LogType, Object, String, Object[])
-UnityEngine.Logger:Log(LogType, Object)
-UnityEngine.Debug:LogError(Object)
-UnityEngine.Networking.NetworkManager:OnClientDisconnect(NetworkConnection) (at C:\buildslave\unity\build\Extensions\Networking\Runtime\NetworkManager.cs:1128)
-UnityEngine.Networking.NetworkLobbyManager:OnClientDisconnect(NetworkConnection) (at C:\buildslave\unity\build\Extensions\Networking\Runtime\NetworkLobbyManager.cs:563)
-UnityEngine.Networking.NetworkManager:OnClientDisconnectInternal(NetworkMessage) (at C:\buildslave\unity\build\Extensions\Networking\Runtime\NetworkManager.cs:958)
-UnityEngine.Networking.NetworkConnection:InvokeHandler(Int16, NetworkReader, Int32) (at C:\buildslave\unity\build\Extensions\Networking\Runtime\NetworkConnection.cs:220)
-UnityEngine.Networking.NetworkConnection:InvokeHandlerNoData(Int16) (at C:\buildslave\unity\build\Extensions\Networking\Runtime\NetworkConnection.cs:202)
-UnityEngine.Networking.NetworkClient:Update() (at C:\buildslave\unity\build\Extensions\Networking\Runtime\NetworkClient.cs:753)
-UnityEngine.Networking.NetworkClient:UpdateClients() (at C:\buildslave\unity\build\Extensions\Networking\Runtime\NetworkClient.cs:947)
-UnityEngine.Networking.NetworkIdentity:UNetStaticUpdate() (at C:\buildslave\unity\build\Extensions\Networking\Runtime\NetworkIdentity.cs:1091)
- 
-(Filename: C:/buildslave/unity/build/Extensions/Networking/Runtime/NetworkManager.cs Line: 1128)
+Unloading 3 unused Assets to reduce memory usage. Loaded Objects now: 719.
+Total: 1.544953 ms (FindLiveObjects: 0.298981 ms CreateObjectMapping: 0.045766 ms MarkObjects: 1.165986 ms  DeleteObjects: 0.032507 ms)
 
 Unloading 3 Unused Serialized files (Serialized files now loaded: 0)
-UnloadTime: 1.754539 ms
-System memory in use before: 2.18 GB.
-System memory in use after: 2.18 GB.
+UnloadTime: 1.636914 ms
+System memory in use before: 0.95 GB.
+System memory in use after: 0.95 GB.
 
-Unloading 134 unused Assets to reduce memory usage. Loaded Objects now: 346.
-Total: 2.068492 ms (FindLiveObjects: 0.050044 ms CreateObjectMapping: 0.034218 ms MarkObjects: 0.638597 ms  DeleteObjects: 1.343493 ms)
-
-Unloading 4 Unused Serialized files (Serialized files now loaded: 0)
-UnloadTime: 0.688214 ms
-System memory in use before: 2.31 GB.
-System memory in use after: 2.31 GB.
-
-Unloading 3 unused Assets to reduce memory usage. Loaded Objects now: 686.
-Total: 1.112947 ms (FindLiveObjects: 0.102654 ms CreateObjectMapping: 0.044055 ms MarkObjects: 0.944423 ms  DeleteObjects: 0.019247 ms)
-
-reactor filed to acomplish request with code {1234}, bytesReceived {0}
-reactor filed to acomplish request with code {1234}, bytesReceived {0}
-reactor filed to acomplish request with code {1234}, bytesReceived {0}
-reactor filed to acomplish request with code {1234}, bytesReceived {0}
-Log: connection {1} has been disconnected by timeout; address {::ffff:127.0.0.1:7777}
-ClientDisconnected due to error: Timeout
-UnityEngine.DebugLogHandler:Internal_Log(LogType, String, Object)
-UnityEngine.DebugLogHandler:LogFormat(LogType, Object, String, Object[])
-UnityEngine.Logger:Log(LogType, Object)
-UnityEngine.Debug:LogError(Object)
-UnityEngine.Networking.NetworkManager:OnClientDisconnect(NetworkConnection) (at C:\buildslave\unity\build\Extensions\Networking\Runtime\NetworkManager.cs:1128)
-UnityEngine.Networking.NetworkLobbyManager:OnClientDisconnect(NetworkConnection) (at C:\buildslave\unity\build\Extensions\Networking\Runtime\NetworkLobbyManager.cs:563)
-UnityEngine.Networking.NetworkManager:OnClientDisconnectInternal(NetworkMessage) (at C:\buildslave\unity\build\Extensions\Networking\Runtime\NetworkManager.cs:958)
-UnityEngine.Networking.NetworkConnection:InvokeHandler(Int16, NetworkReader, Int32) (at C:\buildslave\unity\build\Extensions\Networking\Runtime\NetworkConnection.cs:220)
-UnityEngine.Networking.NetworkConnection:InvokeHandlerNoData(Int16) (at C:\buildslave\unity\build\Extensions\Networking\Runtime\NetworkConnection.cs:202)
-UnityEngine.Networking.NetworkClient:Update() (at C:\buildslave\unity\build\Extensions\Networking\Runtime\NetworkClient.cs:753)
-UnityEngine.Networking.NetworkClient:UpdateClients() (at C:\buildslave\unity\build\Extensions\Networking\Runtime\NetworkClient.cs:947)
-UnityEngine.Networking.NetworkIdentity:UNetStaticUpdate() (at C:\buildslave\unity\build\Extensions\Networking\Runtime\NetworkIdentity.cs:1091)
- 
-(Filename: C:/buildslave/unity/build/Extensions/Networking/Runtime/NetworkManager.cs Line: 1128)
-
-Unloading 3 Unused Serialized files (Serialized files now loaded: 0)
-UnloadTime: 1.854200 ms
-System memory in use before: 2.35 GB.
-System memory in use after: 2.35 GB.
-
-Unloading 134 unused Assets to reduce memory usage. Loaded Objects now: 346.
-Total: 2.683992 ms (FindLiveObjects: 0.052610 ms CreateObjectMapping: 0.029513 ms MarkObjects: 0.585987 ms  DeleteObjects: 2.014598 ms)
-
-Unloading 4 Unused Serialized files (Serialized files now loaded: 0)
-UnloadTime: 0.785308 ms
-System memory in use before: 2.36 GB.
-System memory in use after: 2.36 GB.
-
-Unloading 3 unused Assets to reduce memory usage. Loaded Objects now: 686.
-Total: 1.257092 ms (FindLiveObjects: 0.118052 ms CreateObjectMapping: 0.042772 ms MarkObjects: 1.046650 ms  DeleteObjects: 0.047905 ms)
-
-reactor filed to acomplish request with code {1234}, bytesReceived {0}
-reactor filed to acomplish request with code {1234}, bytesReceived {0}
-reactor filed to acomplish request with code {1234}, bytesReceived {0}
-reactor filed to acomplish request with code {1234}, bytesReceived {0}
-Log: connection {1} has been disconnected by timeout; address {::ffff:127.0.0.1:7777}
-ClientDisconnected due to error: Timeout
-UnityEngine.DebugLogHandler:Internal_Log(LogType, String, Object)
-UnityEngine.DebugLogHandler:LogFormat(LogType, Object, String, Object[])
-UnityEngine.Logger:Log(LogType, Object)
-UnityEngine.Debug:LogError(Object)
-UnityEngine.Networking.NetworkManager:OnClientDisconnect(NetworkConnection) (at C:\buildslave\unity\build\Extensions\Networking\Runtime\NetworkManager.cs:1128)
-UnityEngine.Networking.NetworkLobbyManager:OnClientDisconnect(NetworkConnection) (at C:\buildslave\unity\build\Extensions\Networking\Runtime\NetworkLobbyManager.cs:563)
-UnityEngine.Networking.NetworkManager:OnClientDisconnectInternal(NetworkMessage) (at C:\buildslave\unity\build\Extensions\Networking\Runtime\NetworkManager.cs:958)
-UnityEngine.Networking.NetworkConnection:InvokeHandler(Int16, NetworkReader, Int32) (at C:\buildslave\unity\build\Extensions\Networking\Runtime\NetworkConnection.cs:220)
-UnityEngine.Networking.NetworkConnection:InvokeHandlerNoData(Int16) (at C:\buildslave\unity\build\Extensions\Networking\Runtime\NetworkConnection.cs:202)
-UnityEngine.Networking.NetworkClient:Update() (at C:\buildslave\unity\build\Extensions\Networking\Runtime\NetworkClient.cs:753)
-UnityEngine.Networking.NetworkClient:UpdateClients() (at C:\buildslave\unity\build\Extensions\Networking\Runtime\NetworkClient.cs:947)
-UnityEngine.Networking.NetworkIdentity:UNetStaticUpdate() (at C:\buildslave\unity\build\Extensions\Networking\Runtime\NetworkIdentity.cs:1091)
- 
-(Filename: C:/buildslave/unity/build/Extensions/Networking/Runtime/NetworkManager.cs Line: 1128)
-
-Unloading 3 Unused Serialized files (Serialized files now loaded: 0)
-UnloadTime: 1.845218 ms
-System memory in use before: 2.42 GB.
-System memory in use after: 2.42 GB.
-
-Unloading 134 unused Assets to reduce memory usage. Loaded Objects now: 346.
-Total: 1.971825 ms (FindLiveObjects: 0.050044 ms CreateObjectMapping: 0.030368 ms MarkObjects: 0.567167 ms  DeleteObjects: 1.322962 ms)
-
-Unloading 4 Unused Serialized files (Serialized files now loaded: 0)
-UnloadTime: 0.591547 ms
-System memory in use before: 2.43 GB.
-System memory in use after: 2.43 GB.
-
-Unloading 3 unused Assets to reduce memory usage. Loaded Objects now: 686.
-Total: 1.191222 ms (FindLiveObjects: 0.159970 ms CreateObjectMapping: 0.043200 ms MarkObjects: 0.961960 ms  DeleteObjects: 0.023952 ms)
-
-Unloading 3 Unused Serialized files (Serialized files now loaded: 0)
-UnloadTime: 1.790041 ms
-System memory in use before: 2.46 GB.
-System memory in use after: 2.46 GB.
-
-Unloading 134 unused Assets to reduce memory usage. Loaded Objects now: 346.
-Total: 2.912399 ms (FindLiveObjects: 0.047477 ms CreateObjectMapping: 0.034645 ms MarkObjects: 0.748096 ms  DeleteObjects: 2.080896 ms)
-
-Unloading 4 Unused Serialized files (Serialized files now loaded: 0)
-UnloadTime: 0.576149 ms
-System memory in use before: 2.47 GB.
-System memory in use after: 2.47 GB.
-
-Unloading 3 unused Assets to reduce memory usage. Loaded Objects now: 686.
-Total: 1.550941 ms (FindLiveObjects: 0.120619 ms CreateObjectMapping: 0.045766 ms MarkObjects: 1.349909 ms  DeleteObjects: 0.031651 ms)
-
-reactor filed to acomplish request with code {1234}, bytesReceived {0}
-reactor filed to acomplish request with code {1234}, bytesReceived {0}
-Unloading 3 Unused Serialized files (Serialized files now loaded: 0)
-UnloadTime: 1.881147 ms
-System memory in use before: 2.54 GB.
-System memory in use after: 2.54 GB.
-
-Unloading 134 unused Assets to reduce memory usage. Loaded Objects now: 346.
-Total: 2.538137 ms (FindLiveObjects: 0.049188 ms CreateObjectMapping: 0.029513 ms MarkObjects: 0.624482 ms  DeleteObjects: 1.833669 ms)
+Unloading 134 unused Assets to reduce memory usage. Loaded Objects now: 388.
+Total: 2.715644 ms (FindLiveObjects: 0.189911 ms CreateObjectMapping: 0.064586 ms MarkObjects: 0.763066 ms  DeleteObjects: 1.695941 ms)
 
 Waiting for finish

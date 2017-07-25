@@ -135,24 +135,24 @@ public class GameMaster : NetworkBehaviour
 
     public PlayerColorEnum StringToPlayerColorEnum(string color)
     {
-        PlayerColorEnum blop=0;
+        PlayerColorEnum result=0;
         switch (color)
         {
             case "Blue":
-                blop = PlayerColorEnum.Blue;
+                result = PlayerColorEnum.Blue;
                     break;
             case "Red":
-                blop = PlayerColorEnum.Red;
+                result = PlayerColorEnum.Red;
                 break;
             case "Yellow":
-                blop = PlayerColorEnum.Yellow;
+                result = PlayerColorEnum.Yellow;
                 break;
             case "Green":
-                blop = PlayerColorEnum.Green;
+                result = PlayerColorEnum.Green;
                 break;
             default:
                 break;
         }
-        return blop;
+        return result;
     }
 }

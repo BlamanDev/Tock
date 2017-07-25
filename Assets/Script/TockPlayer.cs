@@ -178,15 +178,22 @@ public class TockPlayer : NetworkBehaviour
 
     }
 
-    public void Projection(int nbCells)
+    public IEnumerator<List<Pawn>> Projection(int nbCells)
     {
         List<Pawn> PlayablePawns = new List<Pawn>();
         foreach (Pawn item in Pawns)
         {
-            if(item.CanMove(nbCells))
+            item.MakeProjection(nbCells);
+            while (item.Status == PawnTestedEnum.UNTESTED)
+            {
+                yield return null;
+            }
+            if (item.Status == PawnTestedEnum.CAN_MOVE)
             {
                 PlayablePawns.Add(item);
             }
+            item.Status = PawnTestedEnum.UNTESTED;
         }
+        yield return PlayablePawns;
     }
 }

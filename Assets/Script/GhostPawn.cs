@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Threading;
 using UnityEngine;
 
 public class GhostPawn : MonoBehaviour {
@@ -10,6 +11,10 @@ public class GhostPawn : MonoBehaviour {
     public int Progress;
     public List<Pawn> PawnsEncoutered;
     public float Normaltime;
+
+    public delegate void OnProjectionFinished(List<Pawn> pawnEncoutered);
+    public static event OnProjectionFinished EventOnProjectionFinished;
+
 
     // Use this for initialization
     void Start () {
@@ -39,26 +44,22 @@ public class GhostPawn : MonoBehaviour {
         Normaltime = origin.PawnAnimator.GetCurrentAnimatorStateInfo(0).normalizedTime;
     }
 
-    public List<Pawn> Projection(int nbCells)
+    public void Projection(int nbCells)
     {
         Progress += nbCells;
-        StartCoroutine(playProjection());
-        return PawnsEncoutered;
-    }
-
-    IEnumerator playProjection()
-    {
         PawnAnimator.enabled = true;
-        PawnAnimator.Play(StateHash,0,Normaltime);
-        yield return new WaitWhile(()=>PawnAnimator.enabled == true);
-
+        PawnAnimator.speed = 10f;
+        PawnAnimator.PlayInFixedTime(StateHash, 0, Normaltime);
     }
+
 
     public void CheckProgress(int animationProgress)
     {
         if (animationProgress == Progress)
         {
             PawnAnimator.enabled = false;
+            EventOnProjectionFinished(this.PawnsEncoutered);
+            Destroy(this.gameObject);
         }
     }
 

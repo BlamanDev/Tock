@@ -6,10 +6,10 @@
 # Write a line equal to 'keep-all' (without quotes) to keep files regardless their modification (preserved accross builds)
 # Default behavior is to never overwrite files
 Tock.sln: CAC06C904B66616A49CEBA27495116B1
-Tock\App.cs: D0A4FF39DC1468877C3AE4BC496EDEFD
-Tock\Package.appxmanifest: 036347C6E58452E98B02C718805526DF
+Tock\App.cs: modified
+Tock\Package.appxmanifest: 9546482921DFC49B787C56568D455C0A
 Tock\project.json: 1D02BC64BAC0D041019673A1C4C51737
-Tock\Tock.csproj: B520311A5A9E90D139DA05582BBB10A5
+Tock\Tock.csproj: 2A887E4D558EDA8C63A5C00B9E1D786E
 Tock\Tock.csproj.user: BEFB8AC4886C4CFDD3C68445D6F19B04
 Tock\Assets\SplashScreen.scale-200.png: 60618416282ED104FD1473935716045D
 Tock\Assets\Square150x150Logo.scale-200.png: E02834B4A5DFB97FF8E212C1CACBB084
@@ -24,5 +24,5 @@ Tock\bin\x86\Release\AppX\Assets\Square44x44Logo.targetsize-24_altform-unplated.
 Tock\bin\x86\Release\AppX\Assets\StoreLogo.png: 90BD194CA4A7CFFF3E8B8222229857FB
 Tock\bin\x86\Release\AppX\Assets\Wide310x150Logo.scale-200.png: C96846A80DF667F87355569CD816192D
 Tock\bin\x86\Release\AppX\Properties\Default.rd.xml: 72EB282657164E79A1C42F6240984826
-Tock\Properties\AssemblyInfo.cs: 56987451EDB93D06045AA1C50F28FDEF
+Tock\Properties\AssemblyInfo.cs: modified
 Tock\Properties\Default.rd.xml: 72EB282657164E79A1C42F6240984826
