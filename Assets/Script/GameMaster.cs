@@ -6,6 +6,7 @@ using UnityEngine.Networking;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using UnityEngine.Events;
+using System;
 
 /// <summary>
 /// Script for the GameMaster
@@ -13,10 +14,12 @@ using UnityEngine.Events;
 /// </summary>
 public class GameMaster : NetworkBehaviour
 {
+#region properties
     //Used for the Singleton
     public static GameMaster GMaster;
     //Prefab used for the Pawn
     public GameObject PawnPrefab;
+    public GameObject CardPrefab;
     //to avoid giving the same color to different players
     private int nextColor = 0;
 
@@ -28,6 +31,8 @@ public class GameMaster : NetworkBehaviour
 
     public TockPlayer localPlayer;
 
+    #endregion
+    #region initialisation
     // Use this for initialization
     void Start()
     {
@@ -65,7 +70,8 @@ public class GameMaster : NetworkBehaviour
         if (level==1) text = GameObject.Find("TextGameMaster").GetComponent<Text>();
 
     }
-
+    #endregion
+#region Pawns Methods
     /// <summary>
     /// Build the AllPawns dictionnary
     /// </summary>
@@ -98,21 +104,6 @@ public class GameMaster : NetworkBehaviour
         return AllPawns[color];
     }
 
-    /// <summary>
-    /// Cycle between colors and return the next one
-    /// </summary>
-    /// <returns></returns>
-    public PlayerColorEnum CmdGiveNewPlayerColor()
-    {
-        nextColor++;
-        //if nextcolor > number of possible color
-        if (nextColor > 4)
-        {
-            nextColor = 1;
-        }
-        text.text += "Giving new color : " + ((PlayerColorEnum)nextColor).ToString() + " ";
-        return (PlayerColorEnum)nextColor;
-    }
 
     public void EnterPawn(string player,int PawnIndex)
     {
@@ -132,27 +123,38 @@ public class GameMaster : NetworkBehaviour
         }
 
     }
-
-    public PlayerColorEnum StringToPlayerColorEnum(string color)
+    #endregion
+    #region Players Methods
+    /// <summary>
+    /// Cycle between colors and return the next one
+    /// </summary>
+    /// <returns></returns>
+    public PlayerColorEnum CmdGiveNewPlayerColor()
     {
-        PlayerColorEnum result=0;
-        switch (color)
+        nextColor++;
+        //if nextcolor > number of possible color
+        if (nextColor > 4)
         {
-            case "Blue":
-                result = PlayerColorEnum.Blue;
-                    break;
-            case "Red":
-                result = PlayerColorEnum.Red;
-                break;
-            case "Yellow":
-                result = PlayerColorEnum.Yellow;
-                break;
-            case "Green":
-                result = PlayerColorEnum.Green;
-                break;
-            default:
-                break;
+            nextColor = 1;
         }
-        return result;
+        text.text += "Giving new color : " + ((PlayerColorEnum)nextColor).ToString() + " ";
+        return (PlayerColorEnum)nextColor;
     }
+
+    #endregion
+    #region Cards Methods
+    public void BuildDeck()
+    {
+        foreach (string CardColor in Enum.GetNames(typeof(CardsColorsEnum)))
+        {
+            foreach (string CardValue in Enum.GetNames(typeof(CardsValuesEnum)))
+            {
+                GameObject newCardObject = Instantiate(CardPrefab);
+                Card newCard = newCardObject.GetComponent<Card>();
+                newCard.Initialize(((CardsColorsEnum)Enum.Parse(typeof(CardsColorsEnum), CardColor)), ((CardsValuesEnum)Enum.Parse(typeof(CardsValuesEnum), CardValue)));
+                NetworkServer.Spawn(newCardObject);
+            }
+        }
+    }
+    #endregion
 }

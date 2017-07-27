@@ -23,13 +23,30 @@ public class PawnSpawner : NetworkBehaviour
     public Text text;
 
     private GameMaster gMaster;
-     
+
+    public GameMaster GMaster
+    {
+        get
+        {
+            if (gMaster==null)
+            {
+                gMaster = GameObject.Find("NetworkGameMaster").GetComponent<GameMaster>();
+            }
+            return gMaster;
+        }
+
+        set
+        {
+            gMaster = value;
+        }
+    }
+
+
 
 
     // Use this for initialization
     void Start()
     {
-        gMaster = GameObject.Find("NetworkGameMaster").GetComponent<GameMaster>();
 
 
     }
@@ -99,16 +116,21 @@ void Update()
 
     public void TestEnter(string player)
     {
-        gMaster.EnterPawn(player,1);
+        GMaster.EnterPawn(player,1);
     }
 
     public void TestMove(string player)
     {
-        gMaster.MovePawn(player, 1, 3);
+        GMaster.MovePawn(player, 1, 3);
     }
 
-public void TestProjection()
+    public void TestProjection()
     {
-        gMaster.localPlayer.Projection(3);
+        GMaster.localPlayer.Projection(3);
+    }
+
+    public void TestBuildDeck()
+    {
+        GMaster.BuildDeck();
     }
 }

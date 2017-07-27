@@ -17,6 +17,9 @@ public class TockPlayer : NetworkBehaviour
     //List of the pawns owned by the player
     public List<Pawn> Pawns;
 
+    
+    public List<Card> Hand;
+
     //Color of the player
     [SyncVar]
     public PlayerColorEnum PlayerColor;

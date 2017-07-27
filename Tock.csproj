@@ -90,6 +90,10 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Script\Card.cs" />
+    <Compile Include="Assets\Script\CardsColorsEnum.cs" />
+    <Compile Include="Assets\Script\CardsValuesEnum.cs" />
+    <Compile Include="Assets\Script\Deck.cs" />
     <Compile Include="Assets\Script\GameMaster.cs" />
     <Compile Include="Assets\Script\GhostPawn.cs" />
     <Compile Include="Assets\Script\Pawn.cs" />
