@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections;
+
 using System.Collections.Generic;
 using Assets.Script;
 using UnityEngine;
@@ -16,9 +16,9 @@ public class TockPlayer : NetworkBehaviour
     public String PlayerName = "Player";
     //List of the pawns owned by the player
     public List<Pawn> Pawns;
-
     
-    public List<Card> Hand;
+ 
+    public PlayerHand PlayerHand;
 
     //Color of the player
     [SyncVar]
@@ -29,6 +29,8 @@ public class TockPlayer : NetworkBehaviour
     //references to the the component used by the script
     private GameMaster gMaster;
     private TockBoard board;
+
+    public Image[] DisplayedHand;
 
     //for debugging
     public Text text;
@@ -67,6 +69,7 @@ public class TockPlayer : NetworkBehaviour
         {
             board = GameObject.Find("toc").GetComponent<TockBoard>();
         }
+
     }
 
     // Update is called once per frame
@@ -78,14 +81,21 @@ public class TockPlayer : NetworkBehaviour
     public override void OnStartLocalPlayer()
     {
         base.OnStartLocalPlayer();
+
         FindReferences();
         if (isLocalPlayer)
         {
             gMaster.localPlayer = this;
+            DisplayedHand = GameObject.Find("Cards").GetComponentsInChildren<Image>();
+            PlayerHand.OnAdd += DisplayCard;
         }
+        
     }
 
-
+    private void DisplayCard(object sender, EventArgs e)
+    {
+        throw new NotImplementedException();
+    }
 
     public override void OnStartServer()
     {
@@ -198,5 +208,16 @@ public class TockPlayer : NetworkBehaviour
             item.Status = PawnTestedEnum.UNTESTED;
         }
         yield return PlayablePawns;
+    }
+
+    [Command]
+    public void CmdPickACard()
+    {
+        if (PlayerHand.Count<5)
+        {
+            Deck deck = GameObject.FindObjectOfType<Deck>();
+            PlayerHand.Add(deck.DrawACard());
+        }
+        
     }
 }

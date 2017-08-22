@@ -96,6 +96,7 @@
     <Compile Include="Assets\Script\Deck.cs" />
     <Compile Include="Assets\Script\GameMaster.cs" />
     <Compile Include="Assets\Script\GhostPawn.cs" />
+    <Compile Include="Assets\Script\Hand.cs" />
     <Compile Include="Assets\Script\Pawn.cs" />
     <Compile Include="Assets\Script\PawnSpawner.cs" />
     <Compile Include="Assets\Script\PawnTestedEnum.cs" />

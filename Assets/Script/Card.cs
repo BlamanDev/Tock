@@ -21,6 +21,7 @@ public class Card : NetworkBehaviour
     {
         Color = color;
         Value = value;
+        this.name = value.ToString() + "_" + color.ToString();
     }
 
     private void OnCollisionEnter(Collision collision)

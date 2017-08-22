@@ -133,4 +133,9 @@ void Update()
     {
         GMaster.BuildDeck();
     }
+
+    public void TestPickACard()
+    {
+        GMaster.localPlayer.CmdPickACard();
+    }
 }
