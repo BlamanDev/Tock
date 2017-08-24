@@ -25,6 +25,11 @@ public class PlayerHand : List<Card> {
         base.Remove(item);
     }
 
+    public int nextFree()
+    {
+     return  this.FindIndex(x => x = null);
+    }
+
 }
 
 public class HandEventArgs:EventArgs

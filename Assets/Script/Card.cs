@@ -12,6 +12,8 @@ public class Card : NetworkBehaviour
     public delegate void CardEffect(Pawn target);
     public CardEffect Effect;
 
+    public Material Illustration;
+
 	// Use this for initialization
 	void Start () {
 		
@@ -28,8 +30,13 @@ public class Card : NetworkBehaviour
         Value = value;
         this.name = value.ToString() + "_" + color.ToString();
         Effect = getCardEffect(value);
-        
-        this.gameObject.GetComponentInChildren<MeshRenderer>().material = Resources.Load<Material>("\\Materials\\"+ this.name);
+        /*
+        MeshRenderer blop = this.gameObject.transform.GetChild(1).GetComponentInChildren<MeshRenderer>();
+        String matpath = "Materials/Cards/" + this.name;
+        Material plouf = Resources.Load<Material>(matpath); 
+        */
+        Illustration = Resources.Load<Material>("Materials/Cards/" + this.name);
+        this.gameObject.transform.GetChild(1).GetComponentInChildren<MeshRenderer>().material = Illustration;
     }
 
     #region Card Effect

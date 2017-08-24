@@ -16,8 +16,8 @@ public class TockPlayer : NetworkBehaviour
     public String PlayerName = "Player";
     //List of the pawns owned by the player
     public List<Pawn> Pawns;
-    
- 
+
+
     public PlayerHand PlayerHand;
 
     //Color of the player
@@ -75,7 +75,7 @@ public class TockPlayer : NetworkBehaviour
     // Update is called once per frame
     void Update()
     {
-         
+
     }
 
     public override void OnStartLocalPlayer()
@@ -85,16 +85,19 @@ public class TockPlayer : NetworkBehaviour
         FindReferences();
         if (isLocalPlayer)
         {
+            PlayerHand = new PlayerHand();
+
             gMaster.localPlayer = this;
             DisplayedHand = GameObject.Find("Cards").GetComponentsInChildren<Image>();
             PlayerHand.OnAdd += DisplayCard;
         }
-        
+
     }
 
     private void DisplayCard(object sender, EventArgs e)
     {
-        throw new NotImplementedException();
+        HandEventArgs HEA = (HandEventArgs)e;
+        DisplayedHand[HEA.CardPosition].material = HEA.Card.Illustration;
     }
 
     public override void OnStartServer()
@@ -170,7 +173,7 @@ public class TockPlayer : NetworkBehaviour
     [Command]
     public void CmdMovePawn(int pawnIndex, int nbMoves)
     {
-            this.Pawns[pawnIndex].Move(nbMoves);
+        this.Pawns[pawnIndex].Move(nbMoves);
     }
 
     /// <summary>
@@ -213,11 +216,11 @@ public class TockPlayer : NetworkBehaviour
     [Command]
     public void CmdPickACard()
     {
-        if (PlayerHand.Count<5)
+        if (PlayerHand.Count < 5)
         {
             Deck deck = GameObject.FindObjectOfType<Deck>();
             PlayerHand.Add(deck.DrawACard());
         }
-        
+
     }
 }
