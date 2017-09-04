@@ -138,4 +138,9 @@ void Update()
     {
         GMaster.localPlayer.CmdPickACard();
     }
+
+    public void PlayCard(int cardSelected)
+    {
+        GMaster.localPlayer.CmdPlayCard(cardSelected, 1);
+    }
 }

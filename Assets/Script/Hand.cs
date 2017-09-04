@@ -5,7 +5,31 @@ using UnityEngine;
 
 public class PlayerHand : List<Card> {
     public EventHandler OnAdd;
-    public EventHandler OnRemove;
+    public EventHandler OnRemoveAt;
+    private Deck deck;
+
+    public Deck Deck
+    {
+        get
+        {
+            if (deck == null)
+            {
+                deck = GameObject.FindObjectOfType<Deck>();
+            }
+
+            return deck;
+        }
+
+        set
+        {
+            deck = value;
+        }
+    }
+
+    public PlayerHand()
+    {
+
+    }
 
     public void Add(Card item)
     {
@@ -16,18 +40,28 @@ public class PlayerHand : List<Card> {
         base.Add(item);
     }
 
-    public void Remove(Card item)
+    public void RemoveAt(int CardIndex)
     {
-        if (null != OnRemove)
+        Card item = this[CardIndex];
+        if (null != OnRemoveAt)
         {
-            OnRemove(this, new HandEventArgs(item,this.IndexOf(item)));
+            OnRemoveAt(this, new HandEventArgs(item, CardIndex));
         }
+        Deck.CardsInDeck.Add(item);
         base.Remove(item);
     }
 
     public int nextFree()
     {
      return  this.FindIndex(x => x = null);
+    }
+
+    public void PickACard()
+    {
+        if (this.Count<5)
+        {
+            this.Add(Deck.DrawACard());
+        }
     }
 
 }

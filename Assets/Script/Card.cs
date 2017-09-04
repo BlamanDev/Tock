@@ -30,11 +30,6 @@ public class Card : NetworkBehaviour
         Value = value;
         this.name = value.ToString() + "_" + color.ToString();
         Effect = getCardEffect(value);
-        /*
-        MeshRenderer blop = this.gameObject.transform.GetChild(1).GetComponentInChildren<MeshRenderer>();
-        String matpath = "Materials/Cards/" + this.name;
-        Material plouf = Resources.Load<Material>(matpath); 
-        */
         Illustration = Resources.Load<Material>("Materials/Cards/" + this.name);
         this.gameObject.transform.GetChild(1).GetComponentInChildren<MeshRenderer>().material = Illustration;
     }
@@ -95,67 +90,54 @@ public class Card : NetworkBehaviour
 
     private void JOKER(Pawn target)
     {
-        throw new NotImplementedException();
     }
 
     private void KING(Pawn target)
     {
-        throw new NotImplementedException();
     }
 
     private void QUEEN(Pawn target)
     {
-        throw new NotImplementedException();
     }
 
     private void JACK(Pawn target)
     {
-        throw new NotImplementedException();
     }
 
     private void TEN(Pawn target)
     {
-        throw new NotImplementedException();
     }
 
     private void NINE(Pawn target)
     {
-        throw new NotImplementedException();
     }
 
     private void EIGHT(Pawn target)
     {
-        throw new NotImplementedException();
     }
 
     private void SEVEN(Pawn target)
     {
-        throw new NotImplementedException();
     }
 
     private void SIX(Pawn target)
     {
-        throw new NotImplementedException();
     }
 
     private void FIVE(Pawn target)
     {
-        throw new NotImplementedException();
     }
 
     private void FOUR(Pawn target)
     {
-        throw new NotImplementedException();
     }
 
     private void THREE(Pawn target)
     {
-        throw new NotImplementedException();
     }
 
     private void TWO(Pawn target)
     {
-        throw new NotImplementedException();
     }
 
     private void ACE(Pawn target)

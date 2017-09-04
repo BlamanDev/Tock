@@ -90,8 +90,15 @@ public class TockPlayer : NetworkBehaviour
             gMaster.localPlayer = this;
             DisplayedHand = GameObject.Find("Cards").GetComponentsInChildren<Image>();
             PlayerHand.OnAdd += DisplayCard;
+            PlayerHand.OnRemoveAt += DiscardCard;
         }
 
+    }
+
+    private void DiscardCard(object sender, EventArgs e)
+    {
+        HandEventArgs HEA = (HandEventArgs)e;
+        DisplayedHand[HEA.CardPosition].material = null;
     }
 
     private void DisplayCard(object sender, EventArgs e)
@@ -216,11 +223,23 @@ public class TockPlayer : NetworkBehaviour
     [Command]
     public void CmdPickACard()
     {
-        if (PlayerHand.Count < 5)
+        PlayerHand.PickACard();
+        /*if (PlayerHand.Count < 5)
         {
             Deck deck = GameObject.FindObjectOfType<Deck>();
             PlayerHand.Add(deck.DrawACard());
-        }
+        }*/
 
+    }
+
+    [Command]
+    public void CmdPlayCard(int cardPlayed, int pawnTarget)
+    {
+        if (cardPlayed<PlayerHand.Count)
+        {
+            PlayerHand[cardPlayed].Move(Pawns[pawnTarget]);
+            PlayerHand.RemoveAt(cardPlayed);
+
+        }
     }
 }

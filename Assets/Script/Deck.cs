@@ -40,10 +40,6 @@ public class Deck : NetworkBehaviour
         }
         CardsInDeck.Add(CreateCard(CardsColorsEnum.CLUB, CardsValuesEnum.JOKER));
         CardsInDeck.Add(CreateCard(CardsColorsEnum.DIAMOND, CardsValuesEnum.JOKER));
-
-
-
-
     }
 
     private Card CreateCard(CardsColorsEnum CardColor, CardsValuesEnum CardValue)
