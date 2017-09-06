@@ -17,8 +17,9 @@ public class TockPlayer : NetworkBehaviour
     //List of the pawns owned by the player
     public List<Pawn> Pawns;
 
-
-    public PlayerHand PlayerHand;
+    
+    private PlayerHand playerHand;
+    public List<Card> liste;
 
     //Color of the player
     [SyncVar]
@@ -35,6 +36,23 @@ public class TockPlayer : NetworkBehaviour
     //for debugging
     public Text text;
 
+    public PlayerHand Hand
+    {
+        get
+        {
+            if (playerHand == null)
+            {
+                playerHand = new PlayerHand();
+            }
+            return playerHand;
+        }
+
+        set
+        {
+            playerHand = value;
+        }
+    }
+
 
     /// <summary>
     /// Find the references, add tag, colorize player
@@ -50,7 +68,6 @@ public class TockPlayer : NetworkBehaviour
         //add tag to the player
         String blop = PlayerColor.ToString();
         this.tag = blop + "_Player";
-
 
     }
 
@@ -85,12 +102,11 @@ public class TockPlayer : NetworkBehaviour
         FindReferences();
         if (isLocalPlayer)
         {
-            PlayerHand = new PlayerHand();
 
             gMaster.localPlayer = this;
             DisplayedHand = GameObject.Find("Cards").GetComponentsInChildren<Image>();
-            PlayerHand.OnAdd += DisplayCard;
-            PlayerHand.OnRemoveAt += DiscardCard;
+            Hand.OnAdd += DisplayCard;
+            Hand.OnRemoveAt += DiscardCard;
         }
 
     }
@@ -223,22 +239,28 @@ public class TockPlayer : NetworkBehaviour
     [Command]
     public void CmdPickACard()
     {
-        PlayerHand.PickACard();
-        /*if (PlayerHand.Count < 5)
+        //Hand.PickACard();
+        if (Hand.Count < 5)
         {
             Deck deck = GameObject.FindObjectOfType<Deck>();
-            PlayerHand.Add(deck.DrawACard());
-        }*/
+            Hand.Add(deck.DrawACard());
+        }
+        else
+        {
+            liste.AddRange(Hand);
+
+        }
+
 
     }
 
     [Command]
     public void CmdPlayCard(int cardPlayed, int pawnTarget)
     {
-        if (cardPlayed<PlayerHand.Count)
+        if (cardPlayed < Hand.Count)
         {
-            PlayerHand[cardPlayed].Move(Pawns[pawnTarget]);
-            PlayerHand.RemoveAt(cardPlayed);
+            Hand[cardPlayed].Move(Pawns[pawnTarget]);
+            Hand.RemoveAt(cardPlayed);
 
         }
     }

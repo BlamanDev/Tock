@@ -6,7 +6,9 @@ using UnityEngine.Networking;
 
 public class Card : NetworkBehaviour
 {
+    [SyncVar]
     public CardsColorsEnum Color;
+    [SyncVar(hook ="OnChangeValue")]
     public CardsValuesEnum Value;
 
     public delegate void CardEffect(Pawn target);
@@ -28,10 +30,17 @@ public class Card : NetworkBehaviour
     {
         Color = color;
         Value = value;
-        this.name = value.ToString() + "_" + color.ToString();
+
+    }
+
+    public void OnChangeValue(CardsValuesEnum value)
+    {
+        Value = value;
+        this.name = value.ToString() + "_" + Color.ToString();
         Effect = getCardEffect(value);
         Illustration = Resources.Load<Material>("Materials/Cards/" + this.name);
         this.gameObject.transform.GetChild(1).GetComponentInChildren<MeshRenderer>().material = Illustration;
+
     }
 
     #region Card Effect

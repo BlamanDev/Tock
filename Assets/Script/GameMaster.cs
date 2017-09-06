@@ -156,5 +156,10 @@ public class GameMaster : NetworkBehaviour
             }
         }
     }
+
+    public void localPickCard()
+    {
+        localPlayer.CmdPickACard();
+    }
     #endregion
 }
