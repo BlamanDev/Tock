@@ -31,6 +31,7 @@ public class GameMaster : NetworkBehaviour
 
     public TockPlayer localPlayer;
 
+
     #endregion
     #region initialisation
     // Use this for initialization
@@ -159,7 +160,7 @@ public class GameMaster : NetworkBehaviour
 
     public void localPickCard()
     {
-        localPlayer.CmdPickACard();
+        localPlayer.PickACard();
     }
     #endregion
 }

@@ -8,9 +8,9 @@ public class Deck : NetworkBehaviour
     public List<Card> CardsInDeck;
     public GameObject CardPrefab;
 
-    public delegate void OnCardDrawed(CardsColorsEnum CardColor, CardsValuesEnum CardValue);
-    [SyncEvent]
-    public static event OnCardDrawed EventOnCardDrawed;
+    //public delegate void OnCardDrawed(CardsColorsEnum CardColor, CardsValuesEnum CardValue);
+    //[SyncEvent]
+    //public static event OnCardDrawed EventOnCardDrawed;
 
 
     // Use this for initialization
@@ -59,10 +59,11 @@ public class Deck : NetworkBehaviour
     {
         System.Random pickACard = new System.Random();
         Card drawedCard = CardsInDeck[pickACard.Next(CardsInDeck.Count)];
-        //EventOnCardDrawed(drawedCard.Color, drawedCard.Value);
         CardsInDeck.Remove(drawedCard);
         GameObject newCardObject = drawedCard.gameObject;
         NetworkServer.Spawn(newCardObject);
+        //EventOnCardDrawed(drawedCard.Color, drawedCard.Value);
+
         return drawedCard;
     }
 

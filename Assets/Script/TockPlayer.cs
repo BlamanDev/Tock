@@ -11,19 +11,22 @@ using UnityEngine.UI;
 /// </summary>
 public class TockPlayer : NetworkBehaviour
 {
+    #region properties
     //Player name
     [SyncVar]
     public String PlayerName = "Player";
     //List of the pawns owned by the player
     public List<Pawn> Pawns;
 
-    
+
     private PlayerHand playerHand;
     public List<Card> liste;
 
     //Color of the player
     [SyncVar]
     public PlayerColorEnum PlayerColor;
+
+    private Deck gameDeck;
 
     //Prefab used for the Pawn
     public GameObject PawnPrefab;
@@ -32,6 +35,11 @@ public class TockPlayer : NetworkBehaviour
     private TockBoard board;
 
     public Image[] DisplayedHand;
+
+    public delegate void OnCardDrawed(CardsColorsEnum CardColor, CardsValuesEnum CardValue);
+    [SyncEvent]
+    public static event OnCardDrawed EventOnCardDrawed;
+
 
     //for debugging
     public Text text;
@@ -53,7 +61,25 @@ public class TockPlayer : NetworkBehaviour
         }
     }
 
+    public Deck GameDeck
+    {
+        get
+        {
+            if (gameDeck == null)
+            {
+                gameDeck = GameObject.FindObjectOfType<Deck>();
 
+            }
+            return gameDeck;
+        }
+
+        set
+        {
+            gameDeck = value;
+        }
+    }
+    #endregion
+    #region initialization
     /// <summary>
     /// Find the references, add tag, colorize player
     /// </summary>
@@ -110,25 +136,8 @@ public class TockPlayer : NetworkBehaviour
         }
 
     }
-
-    private void DiscardCard(object sender, EventArgs e)
-    {
-        HandEventArgs HEA = (HandEventArgs)e;
-        DisplayedHand[HEA.CardPosition].material = null;
-    }
-
-    private void DisplayCard(object sender, EventArgs e)
-    {
-        HandEventArgs HEA = (HandEventArgs)e;
-        DisplayedHand[HEA.CardPosition].material = HEA.Card.Illustration;
-    }
-
-    public override void OnStartServer()
-    {
-        base.OnStartServer();
-    }
-
-
+    #endregion
+    #region Pawns
     private static int ComparePawnsByPawnIndex(Pawn x, Pawn y)
     {
         if (x == null)
@@ -217,6 +226,8 @@ public class TockPlayer : NetworkBehaviour
 
     }
 
+    #endregion
+    #region projection
     public IEnumerator<List<Pawn>> Projection(int nbCells)
     {
         List<Pawn> PlayablePawns = new List<Pawn>();
@@ -235,6 +246,25 @@ public class TockPlayer : NetworkBehaviour
         }
         yield return PlayablePawns;
     }
+    #endregion
+    #region Card
+    private void DiscardCard(object sender, EventArgs e)
+    {
+        HandEventArgs HEA = (HandEventArgs)e;
+        DisplayedHand[HEA.CardPosition].material = null;
+    }
+
+    private void DisplayCard(object sender, EventArgs e)
+    {
+        HandEventArgs HEA = (HandEventArgs)e;
+        DisplayedHand[HEA.CardPosition].material = HEA.Card.Illustration;
+    }
+
+    public void PickACard()
+    {
+        TockPlayer.EventOnCardDrawed += RpcCardDrawed;
+        CmdPickACard();
+    }
 
     [Command]
     public void CmdPickACard()
@@ -242,8 +272,10 @@ public class TockPlayer : NetworkBehaviour
         //Hand.PickACard();
         if (Hand.Count < 5)
         {
-            Deck deck = GameObject.FindObjectOfType<Deck>();
-            Hand.Add(deck.DrawACard());
+            //Deck.EventOnCardDrawed += RpcCardDrawed;
+            Card newCard = GameDeck.DrawACard();
+            //EventOnCardDrawed(newCard.Color, newCard.Value);
+            RpcCardDrawed(newCard.Color, newCard.Value);
         }
         else
         {
@@ -264,4 +296,12 @@ public class TockPlayer : NetworkBehaviour
 
         }
     }
+
+    [ClientRpc]
+    public void RpcCardDrawed(CardsColorsEnum CardColor, CardsValuesEnum CardValue)
+    {
+        Hand.Add(GameObject.Find(CardValue.ToString() + "_" + CardColor.ToString()).GetComponent<Card>());
+        TockPlayer.EventOnCardDrawed -= RpcCardDrawed;
+    }
+    #endregion
 }
