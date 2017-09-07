@@ -46,6 +46,7 @@ public class Pawn : NetworkBehaviour
     private int enterHash = Animator.StringToHash("EnterBoard");
     private int exitHash = Animator.StringToHash("ExitBoard");
     private int StateHash = Animator.StringToHash("ProgressOnBoard");
+    private int speedHash = Animator.StringToHash("Speed");
 
     public GameObject GhostPawnPrefab;
     #endregion
@@ -144,7 +145,7 @@ public class Pawn : NetworkBehaviour
     {
         if (animationProgress == Progress)
         {
-            PawnAnimator.enabled = false;
+            PawnAnimator.SetFloat(speedHash, 0);
         }
     }
     #endregion
@@ -173,7 +174,7 @@ public class Pawn : NetworkBehaviour
 
     public void Move(int nbCell)
     {
-        PawnAnimator.enabled = true;
+        PawnAnimator.SetFloat(speedHash,1);
 
         Progress += nbCell;
         PawnAnimator.Play(StateHash);
