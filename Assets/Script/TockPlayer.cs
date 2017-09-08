@@ -5,6 +5,7 @@ using Assets.Script;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
+using System.Collections;
 
 /// <summary>
 /// Player Script
@@ -300,8 +301,32 @@ public class TockPlayer : NetworkBehaviour
     [ClientRpc]
     public void RpcCardDrawed(CardsColorsEnum CardColor, CardsValuesEnum CardValue)
     {
-        Hand.Add(GameObject.Find(CardValue.ToString() + "_" + CardColor.ToString()).GetComponent<Card>());
+
+        StartCoroutine(waitForCard(CardColor, CardValue));
         TockPlayer.EventOnCardDrawed -= RpcCardDrawed;
+    }
+
+    /*
+    private IEnumerable<Card> waitForCard(CardsColorsEnum CardColor, CardsValuesEnum CardValue)
+    {
+        String CardName = CardValue.ToString() + "_" + CardColor.ToString();
+        //List<Card> listReturned = new List<Card>();
+        Card newCard = GameObject.Find(CardName).GetComponent<Card>();
+        newCard = GameObject.Find(CardName).GetComponent<Card>();
+        yield return new WaitWhile(() => newCard = GameObject.Find(CardName).GetComponent<Card>() );
+
+        yield return newCard;
+    }
+    */
+    IEnumerator waitForCard(CardsColorsEnum CardColor, CardsValuesEnum CardValue)
+    {
+        String CardName = CardValue.ToString() + "_" + CardColor.ToString();
+        {
+            yield return new WaitWhile(() => GameObject.Find(CardName) == null);
+        }
+        Hand.Add(GameObject.Find(CardName).GetComponent<Card>());
+
+        
     }
     #endregion
 }

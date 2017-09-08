@@ -136,7 +136,6 @@ void Update()
 
     public void TestPickACard()
     {
-        //GMaster.localPlayer.CmdPickACard();
         GMaster.localPickCard();
     }
 

@@ -3,7 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerHand : List<Card> {
+public class PlayerHand : List<Card>
+{
     public EventHandler OnAdd;
     public EventHandler OnRemoveAt;
     private Deck deck;
@@ -35,7 +36,7 @@ public class PlayerHand : List<Card> {
     {
         if (null != OnAdd)
         {
-            OnAdd(this, new HandEventArgs(item,this.Count));
+            OnAdd(this, new HandEventArgs(item, this.Count));
         }
         base.Add(item);
     }
@@ -53,12 +54,12 @@ public class PlayerHand : List<Card> {
 
     public int nextFree()
     {
-     return  this.FindIndex(x => x = null);
+        return this.FindIndex(x => x = null);
     }
 
     public void PickACard()
     {
-        if (this.Count<5)
+        if (this.Count < 5)
         {
             this.Add(Deck.DrawACard());
         }
@@ -66,7 +67,7 @@ public class PlayerHand : List<Card> {
 
 }
 
-public class HandEventArgs:EventArgs
+public class HandEventArgs : EventArgs
 {
     private Card card;
     private int cardPosition;

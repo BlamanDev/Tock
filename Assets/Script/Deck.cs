@@ -8,11 +8,6 @@ public class Deck : NetworkBehaviour
     public List<Card> CardsInDeck;
     public GameObject CardPrefab;
 
-    //public delegate void OnCardDrawed(CardsColorsEnum CardColor, CardsValuesEnum CardValue);
-    //[SyncEvent]
-    //public static event OnCardDrawed EventOnCardDrawed;
-
-
     // Use this for initialization
     void Start()
     {

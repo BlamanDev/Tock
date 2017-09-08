@@ -62,8 +62,8 @@ MonoBehaviour:
     y: 0
     width: 732
     height: 593
-  m_MinSize: {x: 202, y: 221}
-  m_MaxSize: {x: 4002, y: 4021}
+  m_MinSize: {x: 200, y: 200}
+  m_MaxSize: {x: 4000, y: 4000}
   m_ActualView: {fileID: 16}
   m_Panes:
   - {fileID: 16}
@@ -92,7 +92,7 @@ MonoBehaviour:
   m_MinSize: {x: 404, y: 221}
   m_MaxSize: {x: 8004, y: 4021}
   vertical: 0
-  controlID: 139
+  controlID: 160
 --- !u!114 &5
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -280,7 +280,7 @@ MonoBehaviour:
   m_MinSize: {x: 404, y: 342}
   m_MaxSize: {x: 8004, y: 8042}
   vertical: 1
-  controlID: 109
+  controlID: 159
 --- !u!114 &13
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -382,7 +382,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 0c250000
     m_LastClickedID: 9484
-    m_ExpandedIDs: 000000007c2600006a270000a02700002028000046280000702800008a2800009a2800003c320000
+    m_ExpandedIDs: 000000007c2600006a2700009e2700002028000046280000702800008a2800009c280000e42f0000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -410,7 +410,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 
     m_LastClickedID: 0
-    m_ExpandedIDs: 000000007c2600006a270000a02700002028000046280000702800008a2800009a2800003c320000
+    m_ExpandedIDs: 000000007c2600006a2700009e2700002028000046280000702800008a2800009c280000e42f0000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -690,7 +690,7 @@ MonoBehaviour:
   m_Rotation:
     m_Target: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
     speed: 2
-    m_Value: {x: -0.70710677, y: 0, z: -0, w: -0.70710677}
+    m_Value: {x: -0.7071068, y: 0, z: -0, w: -0.7071068}
   m_Size:
     m_Target: 0.9531451
     speed: 2
@@ -735,7 +735,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 
     m_LastClickedID: 0
-    m_ExpandedIDs: e40ef6ffc00ff6ff4611f6ff4c11f6ff2a1bf6ff0a25f6ffec25f6ff7227f6ff7827f6ff3839f6ff143af6ff9a3bf6ffa03bf6ff4850f6ff7458f6ff4e59f6ffd45af6ffda5af6ffa669f6ff866af6ff0c6cf6ff126cf6ff248ff6ff0090f6ff8691f6ff8c91f6ffeeacf6ffcaadf6ff50aff6ff56aff6ff4ebdf6ff34bef6ffbabff6ffc0bff6ff52cdf6ff2ed6f6ff10d7f6ff96d8f6ff9cd8f6ff28f7f6ff02f8f6ff88f9f6ff8ef9f6ffa619f7ffa652f7ffd277f7ff1280f7ffee80f7ff7482f7ff7a82f7ff6ca7f7ff46b0f7ff2eb1f7ffb4b2f7ffbab2f7ff40d7f7ff60e2f7ff6ae3f7fff4e4f7fffee4f7fffef9f7ff704cf8ff7a77f9ff907df9ffaaf4f9ffd407fafffe17faff5643fbff2a4bfbffc651fbfff632fdff16ddffffcae4ffff14eaffffa2f2ffff66f3ffff6cf4ffff86f4ffff18fcffff00000000d84d0000
+    m_ExpandedIDs: 46c8ffffd6d1ffffbad2ffff40d4ffff46d4ffffbee0ffffe4e9ffffc0eaffff4aecffff54ecffff18fcffff00000000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
