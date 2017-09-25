@@ -6,7 +6,7 @@ using UnityEngine;
 public class PlayerHand : List<Card>
 {
     public EventHandler OnAdd;
-    public EventHandler OnRemoveAt;
+    public EventHandler OnRemove;
     private Deck deck;
 
     public Deck Deck
@@ -32,29 +32,36 @@ public class PlayerHand : List<Card>
 
     }
 
-    public void Add(Card item)
+    public new void Add(Card item)
     {
         if (null != OnAdd)
         {
             OnAdd(this, new HandEventArgs(item, this.Count));
         }
         base.Add(item);
+
     }
 
-    public void RemoveAt(int CardIndex)
+    public new void Remove(Card item)
     {
-        Card item = this[CardIndex];
-        if (null != OnRemoveAt)
+        if (null != OnRemove)
         {
-            OnRemoveAt(this, new HandEventArgs(item, CardIndex));
+            OnRemove(this, new HandEventArgs(item, IndexOf(item)));
         }
-        Deck.CardsInDeck.Add(item);
+        
         base.Remove(item);
     }
 
-    public int nextFree()
+
+
+    private int nextFree()
     {
-        return this.FindIndex(x => x = null);
+        int nextIndexFree = 0;
+        if (this.Count>0)
+        {
+            nextIndexFree = this.FindIndex(x => x = null);
+        }
+        return nextIndexFree;
     }
 
     public void PickACard()
@@ -62,6 +69,14 @@ public class PlayerHand : List<Card>
         if (this.Count < 5)
         {
             this.Add(Deck.DrawACard());
+        }
+    }
+
+    public void MakeHand()
+    {
+        for (int i = 0; i < 5; i++)
+        {
+            this.PickACard();
         }
     }
 

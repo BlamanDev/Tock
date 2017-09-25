@@ -91,16 +91,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Script\Card.cs" />
-    <Compile Include="Assets\Script\CardsColorsEnum.cs" />
-    <Compile Include="Assets\Script\CardsValuesEnum.cs" />
     <Compile Include="Assets\Script\Deck.cs" />
+    <Compile Include="Assets\Script\Enums\CardsColorsEnum.cs" />
+    <Compile Include="Assets\Script\Enums\CardsValuesEnum.cs" />
+    <Compile Include="Assets\Script\Enums\PawnTestedEnum.cs" />
+    <Compile Include="Assets\Script\Enums\PlayerColorEnum.cs" />
+    <Compile Include="Assets\Script\Enums\SelectionFilterEnum.cs" />
     <Compile Include="Assets\Script\GameMaster.cs" />
     <Compile Include="Assets\Script\GhostPawn.cs" />
     <Compile Include="Assets\Script\Hand.cs" />
     <Compile Include="Assets\Script\Pawn.cs" />
     <Compile Include="Assets\Script\PawnSpawner.cs" />
-    <Compile Include="Assets\Script\PawnTestedEnum.cs" />
-    <Compile Include="Assets\Script\PlayerColorEnum.cs" />
     <Compile Include="Assets\Script\SpawnPositions.cs" />
     <Compile Include="Assets\Script\TockBoard.cs" />
     <Compile Include="Assets\Script\TockPlayer.cs" />

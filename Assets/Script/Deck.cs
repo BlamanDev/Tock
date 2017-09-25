@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -57,15 +58,27 @@ public class Deck : NetworkBehaviour
         CardsInDeck.Remove(drawedCard);
         GameObject newCardObject = drawedCard.gameObject;
         NetworkServer.Spawn(newCardObject);
-        //EventOnCardDrawed(drawedCard.Color, drawedCard.Value);
 
         return drawedCard;
     }
-
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="CardColor"></param>
+    /// <param name="CardValue"></param>
+    /// <returns></returns>
     public Card StrToCard(String CardColor, String CardValue)
     {
-        return (CardsInDeck.FindAll(x => x.Color == (CardsColorsEnum)Enum.Parse(typeof(CardsColorsEnum), CardColor))).Find(x => x.Value == ((CardsValuesEnum)Enum.Parse(typeof(CardsValuesEnum), CardValue)));
+        //return (CardsInDeck.FindAll(x => x.Color == (CardsColorsEnum)Enum.Parse(typeof(CardsColorsEnum), CardColor))).Find(x => x.Value == ((CardsValuesEnum)Enum.Parse(typeof(CardsValuesEnum), CardValue)));
+        StringBuilder sb = new StringBuilder();
+        sb.Append(CardValue).Append('_').Append(CardColor);
+        return StrToCard(sb.ToString());
 
+    }
+
+    public Card StrToCard(String cardName)
+    {
+        return GameObject.Find(cardName).GetComponent<Card>();
     }
 
 

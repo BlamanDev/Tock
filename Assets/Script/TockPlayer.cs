@@ -23,6 +23,9 @@ public class TockPlayer : NetworkBehaviour
     private PlayerHand playerHand;
     public List<Card> liste;
 
+    private Card cardSelected;
+    private Pawn pawnSelected = null;
+    private List<Pawn> pawnSelectables;
     //Color of the player
     [SyncVar]
     public PlayerColorEnum PlayerColor;
@@ -133,7 +136,7 @@ public class TockPlayer : NetworkBehaviour
             gMaster.localPlayer = this;
             DisplayedHand = GameObject.Find("Cards").GetComponentsInChildren<Image>();
             Hand.OnAdd += DisplayCard;
-            Hand.OnRemoveAt += DiscardCard;
+            Hand.OnRemove += DiscardCard;
         }
 
     }
@@ -181,7 +184,7 @@ public class TockPlayer : NetworkBehaviour
     [ClientRpc]
     public void RpcBuildPawnList()
     {
-        Pawns = gMaster.getPawnOfAColor(PlayerColor);
+        Pawns = gMaster.getPawnsOfAColor(PlayerColor);
         Pawns.Sort(ComparePawnsByPawnIndex);
     }
 
@@ -249,10 +252,14 @@ public class TockPlayer : NetworkBehaviour
     }
     #endregion
     #region Card
+    #region Drawing
     private void DiscardCard(object sender, EventArgs e)
     {
         HandEventArgs HEA = (HandEventArgs)e;
-        DisplayedHand[HEA.CardPosition].material = null;
+        for (int i = HEA.CardPosition; i < 4; i++)
+        {
+            DisplayedHand[i].material = DisplayedHand[i + 1].material;
+        }
     }
 
     private void DisplayCard(object sender, EventArgs e)
@@ -263,70 +270,99 @@ public class TockPlayer : NetworkBehaviour
 
     public void PickACard()
     {
-        TockPlayer.EventOnCardDrawed += RpcCardDrawed;
-        CmdPickACard();
+        if (Hand.Count < 5)
+        {
+            TockPlayer.EventOnCardDrawed += RpcCardDrawed;
+            CmdPickACard();
+        }
     }
 
     [Command]
     public void CmdPickACard()
     {
-        //Hand.PickACard();
-        if (Hand.Count < 5)
-        {
-            //Deck.EventOnCardDrawed += RpcCardDrawed;
-            Card newCard = GameDeck.DrawACard();
-            //EventOnCardDrawed(newCard.Color, newCard.Value);
-            RpcCardDrawed(newCard.Color, newCard.Value);
-        }
-        else
-        {
-            liste.AddRange(Hand);
-
-        }
-
-
+        Card newCard = GameDeck.DrawACard();
+        RpcCardDrawed(newCard.Color, newCard.Value);
     }
 
-    [Command]
-    public void CmdPlayCard(int cardPlayed, int pawnTarget)
-    {
-        if (cardPlayed < Hand.Count)
-        {
-            Hand[cardPlayed].Move(Pawns[pawnTarget]);
-            Hand.RemoveAt(cardPlayed);
-
-        }
-    }
 
     [ClientRpc]
     public void RpcCardDrawed(CardsColorsEnum CardColor, CardsValuesEnum CardValue)
     {
-
         StartCoroutine(waitForCard(CardColor, CardValue));
         TockPlayer.EventOnCardDrawed -= RpcCardDrawed;
     }
 
-    /*
-    private IEnumerable<Card> waitForCard(CardsColorsEnum CardColor, CardsValuesEnum CardValue)
-    {
-        String CardName = CardValue.ToString() + "_" + CardColor.ToString();
-        //List<Card> listReturned = new List<Card>();
-        Card newCard = GameObject.Find(CardName).GetComponent<Card>();
-        newCard = GameObject.Find(CardName).GetComponent<Card>();
-        yield return new WaitWhile(() => newCard = GameObject.Find(CardName).GetComponent<Card>() );
-
-        yield return newCard;
-    }
-    */
     IEnumerator waitForCard(CardsColorsEnum CardColor, CardsValuesEnum CardValue)
     {
+
         String CardName = CardValue.ToString() + "_" + CardColor.ToString();
         {
             yield return new WaitWhile(() => GameObject.Find(CardName) == null);
         }
-        Hand.Add(GameObject.Find(CardName).GetComponent<Card>());
-
-        
+        Card newCard = GameObject.Find(CardName).GetComponent<Card>();
+        Hand.Add(newCard);
     }
     #endregion
+    #region Playing
+    public void PlayCard(int cardPlayed)
+    {
+        if (cardPlayed < Hand.Count)
+        {
+            cardSelected = Hand[cardPlayed];
+            text.text = "Card Selected : " + Hand[cardPlayed].name + " : " + (int)Hand[cardPlayed].Value + " cases";   //debug
+            this.SelectPawn();
+        }
+    }
+
+    [Command]
+    public void CmdPlayCard(String cardPlayed, String pawnTarget)
+    {
+        Card card = GameDeck.StrToCard(cardPlayed);
+        card.Move(GameObject.Find(pawnTarget).GetComponent<Pawn>());
+        text.text = "Card Played : " + card.name + " : " + (int)card.Value + " cases";   //debug
+
+        GameDeck.CardsInDeck.Add(card);
+    }
+    #endregion
+    #endregion
+    #region selection & play pawn
+    public void SelectPawn()
+    {
+        pawnSelectables = gMaster.getPawnsFiltered(cardSelected.Filter, this.PlayerColor);
+        foreach (Pawn item in pawnSelectables)
+        {
+            item.EventOnPawnSelected += PawnSelected;
+            item.SwitchHalo(true, PlayerColor);
+        }
+        StartCoroutine(waitForPawn());
+    }
+
+    private void PawnSelected(Pawn Selection)
+    {
+        pawnSelected = Selection;
+        foreach (Pawn item in pawnSelectables)
+        {
+            item.EventOnPawnSelected -= PawnSelected;
+            item.SwitchHalo(false, PlayerColor);
+        }
+
+    }
+
+    IEnumerator waitForPawn()
+    {
+        {
+            yield return new WaitWhile(() => pawnSelected == null);
+        }
+        CmdPlayCard(cardSelected.name, pawnSelected.name);
+        pawnSelected = null;
+        if (isClient)
+        {
+            Destroy(cardSelected.gameObject);
+        }
+        Hand.Remove(cardSelected);
+        cardSelected = null;
+        this.PickACard();
+
+    }
+#endregion
 }

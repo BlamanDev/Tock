@@ -34,6 +34,7 @@ public class Pawn : NetworkBehaviour
 
     public PawnTestedEnum Status = PawnTestedEnum.UNTESTED;
 
+
     //Spawn positions for the pawns
     public SpawnPositions spawnPositions;
     private GameObject outPosition;
@@ -41,6 +42,7 @@ public class Pawn : NetworkBehaviour
     //Components of the pawn
     public Animator PawnAnimator;
     private MeshRenderer PawnMeshRenderer;
+    private Light selectableLight;
 
     //Hash of Animator parameters
     private int enterHash = Animator.StringToHash("EnterBoard");
@@ -49,6 +51,44 @@ public class Pawn : NetworkBehaviour
     private int speedHash = Animator.StringToHash("Speed");
 
     public GameObject GhostPawnPrefab;
+
+    private Color actualHaloColor;
+    private Color initialHaloColor;
+
+    public Color ActualHaloColor
+    {
+        get
+        {
+            return actualHaloColor;
+        }
+
+        set
+        {
+            actualHaloColor = value;
+            SelectableLight.color = value;
+        }
+    }
+
+    public Light SelectableLight
+    {
+        get
+        {
+            if (selectableLight == null)
+            {
+                selectableLight = this.GetComponentInChildren<Light>();
+
+            }
+            return selectableLight;
+        }
+
+        set
+        {
+            selectableLight = value;
+        }
+    }
+
+    public delegate void OnPawnSelected(Pawn pawnSelected);
+    public event OnPawnSelected EventOnPawnSelected;
     #endregion
 
     // Use this for initialization
@@ -83,21 +123,8 @@ public class Pawn : NetworkBehaviour
     public void OnChangeColor(PlayerColorEnum newColor)
     {
         //Change the material color of the pawn
-        switch (newColor)
-        {
-            case PlayerColorEnum.Blue:
-                PawnMeshRenderer.material.color = Color.blue;
-                break;
-            case PlayerColorEnum.Green:
-                PawnMeshRenderer.material.color = Color.green;
-                break;
-            case PlayerColorEnum.Red:
-                PawnMeshRenderer.material.color = Color.red;
-                break;
-            case PlayerColorEnum.Yellow:
-                PawnMeshRenderer.material.color = Color.yellow;
-                break;
-        }
+        PawnMeshRenderer.material.color = PlayerColorEnumToColor(newColor);
+
         //Pawn named after its color and index
         this.name = newColor.ToString() + PawnIndex.ToString();
         PawnName = newColor.ToString() + PawnIndex.ToString();
@@ -105,6 +132,27 @@ public class Pawn : NetworkBehaviour
         outPosition = spawnPositions.getOutPosition(newColor, PawnIndex);
     }
 
+    private Color PlayerColorEnumToColor(PlayerColorEnum newColor)
+    {
+        Color color = Color.black;
+        switch (newColor)
+        {
+            case PlayerColorEnum.Blue:
+                color = Color.blue;
+                break;
+            case PlayerColorEnum.Green:
+                color = Color.green;
+                break;
+            case PlayerColorEnum.Red:
+                color = Color.red;
+                break;
+            case PlayerColorEnum.Yellow:
+                color = Color.yellow;
+                break;
+        }
+        return color;
+
+    }
 
     /// <summary>
     /// Update the position of the pawn regarding if it is entering or exiting the board
@@ -161,6 +209,7 @@ public class Pawn : NetworkBehaviour
         this.PawnIndex = pawnIndex;
         Player = color;
         this.transform.position = outPosition.transform.position;
+
     }
 
     /// <summary>
@@ -174,7 +223,7 @@ public class Pawn : NetworkBehaviour
 
     public void Move(int nbCell)
     {
-        PawnAnimator.SetFloat(speedHash,1);
+        PawnAnimator.SetFloat(speedHash, 1);
 
         Progress += nbCell;
         PawnAnimator.Play(StateHash);
@@ -192,7 +241,7 @@ public class Pawn : NetworkBehaviour
     {
         this.transform.position = outPosition.transform.position;
     }
-
+    #region Projection
     public void MakeProjection(int nbCell)
     {
         if (OnBoard)
@@ -209,7 +258,7 @@ public class Pawn : NetworkBehaviour
     public void testProjection(List<Pawn> pawnEncoutered)
     {
         pawnEncoutered.RemoveAt(0);
-        if (pawnEncoutered.Count>0)
+        if (pawnEncoutered.Count > 0)
         {
             foreach (Pawn item in pawnEncoutered)
             {
@@ -228,6 +277,38 @@ public class Pawn : NetworkBehaviour
             }
         }
     }
+    #endregion
+    #region Selection Halo
+    public void SwitchHalo(bool on, PlayerColorEnum playerColor)
+    {
+        ActualHaloColor = PlayerColorEnumToColor(playerColor);
+        SelectableLight.enabled = on;
+    }
 
+
+    public void OnMouseDown()
+    {
+        if (SelectableLight.enabled)
+        {
+            EventOnPawnSelected(this);
+        }
+    }
+
+    public void OnMouseOver()
+    {
+        if (SelectableLight.enabled)
+        {
+            SelectableLight.color = Color.grey;
+        }
+    }
+
+    public void OnMouseExit()
+    {
+        if (SelectableLight.enabled)
+        {
+            SelectableLight.color = ActualHaloColor;
+        }
+    }
+    #endregion
     #endregion
 }

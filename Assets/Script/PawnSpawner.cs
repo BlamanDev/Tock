@@ -136,11 +136,16 @@ void Update()
 
     public void TestPickACard()
     {
-        GMaster.localPickCard();
+        GMaster.localBuildHand();
     }
 
     public void PlayCard(int cardSelected)
     {
-        GMaster.localPlayer.CmdPlayCard(cardSelected, 1);
+        GMaster.localPlayer.PlayCard(cardSelected);
+    }
+
+    public void TestSelectPawn()
+    {
+        GMaster.localPlayer.SelectPawn();
     }
 }

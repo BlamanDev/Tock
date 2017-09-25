@@ -8,23 +8,35 @@ public class Card : NetworkBehaviour
 {
     [SyncVar]
     public CardsColorsEnum Color;
-    [SyncVar(hook ="OnChangeValue")]
+    [SyncVar(hook = "OnChangeValue")]
     public CardsValuesEnum Value;
+
+    public SelectionFilterEnum Filter;
 
     public delegate void CardEffect(Pawn target);
     public CardEffect Effect;
 
+    public delegate bool CardProjection(Pawn target);
+    public List<CardProjection> Projections;
+
     public Material Illustration;
 
-	// Use this for initialization
-	void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+    public List<Pawn> possibleTargets;
+
+    // Use this for initialization
+    void Start()
+    {
+
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        if (Illustration == null && this.Value != 0)
+        {
+            OnChangeValue(this.Value);
+        }
+    }
 
     public void Initialize(CardsColorsEnum color, CardsValuesEnum value)
     {
@@ -37,64 +49,89 @@ public class Card : NetworkBehaviour
     {
         Value = value;
         this.name = value.ToString() + "_" + Color.ToString();
-        Effect = getCardEffect(value);
+        initCard(value);
         Illustration = Resources.Load<Material>("Materials/Cards/" + this.name);
         this.gameObject.transform.GetChild(1).GetComponentInChildren<MeshRenderer>().material = Illustration;
 
     }
 
     #region Card Effect
-    private CardEffect getCardEffect(CardsValuesEnum value)
+    private void initCard(CardsValuesEnum value)
     {
-        CardEffect methodChosen = null;
         switch (value)
         {
             case CardsValuesEnum.ACE:
-                methodChosen = ACE;
+                Effect = ACE;
+                Filter = SelectionFilterEnum.OWNPAWNS;
                 break;
             case CardsValuesEnum.TWO:
-                methodChosen = TWO;
+                Effect = TWO;
+                Filter = SelectionFilterEnum.OWNPAWNS;
+
                 break;
             case CardsValuesEnum.THREE:
-                methodChosen = THREE;
+                Effect = THREE;
+                Filter = SelectionFilterEnum.OWNPAWNS;
+
                 break;
             case CardsValuesEnum.FOUR:
-                methodChosen = FOUR;
+                Effect = FOUR;
+                Filter = SelectionFilterEnum.OWNPAWNS;
+
                 break;
             case CardsValuesEnum.FIVE:
-                methodChosen = FIVE;
+                Effect = FIVE;
+                Filter = SelectionFilterEnum.OTHERPAWNS;
+
                 break;
             case CardsValuesEnum.SIX:
-                methodChosen = SIX;
+                Effect = SIX;
+                Filter = SelectionFilterEnum.OWNPAWNS;
+
                 break;
             case CardsValuesEnum.SEVEN:
-                methodChosen = SEVEN;
+                Effect = SEVEN;
+                Filter = SelectionFilterEnum.OWNPAWNS;
+
                 break;
             case CardsValuesEnum.EIGHT:
-                methodChosen = EIGHT;
+                Effect = EIGHT;
+                Filter = SelectionFilterEnum.OWNPAWNS;
+
                 break;
             case CardsValuesEnum.NINE:
-                methodChosen = NINE;
+                Effect = NINE;
+                Filter = SelectionFilterEnum.OWNPAWNS;
+
                 break;
             case CardsValuesEnum.TEN:
-                methodChosen = TEN;
+                Effect = TEN;
+                Filter = SelectionFilterEnum.OWNPAWNS;
+
                 break;
             case CardsValuesEnum.JACK:
-                methodChosen = JACK;
+                Effect = JACK;
+                Filter = SelectionFilterEnum.ALLPAWNS;
+
                 break;
             case CardsValuesEnum.QUEEN:
-                methodChosen = QUEEN;
+                Effect = QUEEN;
+                Filter = SelectionFilterEnum.OWNPAWNS;
+
                 break;
             case CardsValuesEnum.KING:
-                methodChosen = KING;
+                Effect = KING;
+                Filter = SelectionFilterEnum.OWNPAWNS;
+
                 break;
             case CardsValuesEnum.JOKER:
-                methodChosen = JOKER;
+                Effect = JOKER;
+                Filter = SelectionFilterEnum.OWNPAWNS;
+
                 break;
             default:
                 break;
         }
-        return methodChosen;
     }
 
     private void JOKER(Pawn target)
@@ -154,8 +191,10 @@ public class Card : NetworkBehaviour
 
     }
     #endregion
+    #region cardFilter
+    #endregion
 
-public void Move(Pawn target)
+    public void Move(Pawn target)
     {
         target.Move((int)Value);
         Effect(target);

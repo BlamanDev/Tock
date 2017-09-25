@@ -96,7 +96,7 @@ public class GameMaster : NetworkBehaviour
     /// </summary>
     /// <param name="color"></param>
     /// <returns></returns>
-    public List<Pawn> getPawnOfAColor(PlayerColorEnum color)
+    public List<Pawn> getPawnsOfAColor(PlayerColorEnum color)
     {
         if (AllPawns.Count==0)
         {
@@ -105,6 +105,36 @@ public class GameMaster : NetworkBehaviour
         return AllPawns[color];
     }
 
+    public List<Pawn> getPawnsFiltered(SelectionFilterEnum filter,PlayerColorEnum color)
+    {
+        List<Pawn> listeRetour = new List<Pawn>();
+        switch (filter)
+        {
+            case SelectionFilterEnum.OWNPAWNS:
+                listeRetour = AllPawns[color];
+                break;
+
+            case SelectionFilterEnum.ALLPAWNS:
+                foreach (PlayerColorEnum item in AllPawns.Keys)
+                {
+                    listeRetour.AddRange(AllPawns[item]);
+                }
+                break;
+            case SelectionFilterEnum.OTHERPAWNS:
+                foreach (PlayerColorEnum item in AllPawns.Keys)
+                {
+                    if (item!= color)
+                    {
+                        listeRetour.AddRange(AllPawns[item]);
+                    }
+                }
+
+                break;
+            default:
+                break;
+        }
+        return listeRetour;
+    }
 
     public void EnterPawn(string player,int PawnIndex)
     {
@@ -158,9 +188,12 @@ public class GameMaster : NetworkBehaviour
         }
     }
 
-    public void localPickCard()
+    public void localBuildHand()
     {
-        localPlayer.PickACard();
+        for (int i = 0; i < 5; i++)
+        {
+            localPlayer.PickACard();
+        } 
     }
     #endregion
 }
