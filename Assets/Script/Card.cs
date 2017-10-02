@@ -11,17 +11,37 @@ public class Card : NetworkBehaviour
     [SyncVar(hook = "OnChangeValue")]
     public CardsValuesEnum Value;
 
-    public SelectionFilterEnum Filter;
+    public SelectionFilterEnum ColorFilter;
 
     public delegate void CardEffect(Pawn target);
     public CardEffect Effect;
 
     public delegate bool CardProjection(Pawn target);
-    public List<CardProjection> Projections;
+    public List<CardProjection> Projections = new List<CardProjection>();
 
     public Material Illustration;
 
     public List<Pawn> possibleTargets;
+
+    private GameMaster gMaster;
+
+    public GameMaster GMaster
+    {
+        get
+        {
+            if (gMaster == null)
+            {
+                GMaster = GameObject.Find("NetworkGameMaster").GetComponent<GameMaster>();
+            }
+            return gMaster;
+        }
+
+        set
+        {
+            gMaster = value;
+        }
+    }
+
 
     // Use this for initialization
     void Start()
@@ -61,72 +81,47 @@ public class Card : NetworkBehaviour
         switch (value)
         {
             case CardsValuesEnum.ACE:
-                Effect = ACE;
-                Filter = SelectionFilterEnum.OWNPAWNS;
+            case CardsValuesEnum.KING:
+                Effect = MoveOrEnter;
+                ColorFilter = SelectionFilterEnum.OWNPAWNS;
+                Projections.Add(ParteuFilter);
                 break;
             case CardsValuesEnum.TWO:
-                Effect = TWO;
-                Filter = SelectionFilterEnum.OWNPAWNS;
-
-                break;
             case CardsValuesEnum.THREE:
-                Effect = THREE;
-                Filter = SelectionFilterEnum.OWNPAWNS;
-
+            case CardsValuesEnum.SIX:
+            case CardsValuesEnum.EIGHT:
+            case CardsValuesEnum.NINE:
+            case CardsValuesEnum.TEN:
+            case CardsValuesEnum.QUEEN:
+                Effect = Move;
+                ColorFilter = SelectionFilterEnum.OWNPAWNS;
+                Projections.Add(MoveFilter);
+                Projections.Add(OnBoardFilter);
                 break;
             case CardsValuesEnum.FOUR:
-                Effect = FOUR;
-                Filter = SelectionFilterEnum.OWNPAWNS;
-
+                Effect = Move;
+                ColorFilter = SelectionFilterEnum.OWNPAWNS;
+                Projections.Add(OnBoardFilter);
                 break;
             case CardsValuesEnum.FIVE:
-                Effect = FIVE;
-                Filter = SelectionFilterEnum.OTHERPAWNS;
-
-                break;
-            case CardsValuesEnum.SIX:
-                Effect = SIX;
-                Filter = SelectionFilterEnum.OWNPAWNS;
-
+                Effect = Move;
+                ColorFilter = SelectionFilterEnum.OTHERPAWNS;
+                Projections.Add(OnBoardFilter);
+                Projections.Add(MoveFilter);
                 break;
             case CardsValuesEnum.SEVEN:
                 Effect = SEVEN;
-                Filter = SelectionFilterEnum.OWNPAWNS;
-
-                break;
-            case CardsValuesEnum.EIGHT:
-                Effect = EIGHT;
-                Filter = SelectionFilterEnum.OWNPAWNS;
-
-                break;
-            case CardsValuesEnum.NINE:
-                Effect = NINE;
-                Filter = SelectionFilterEnum.OWNPAWNS;
-
-                break;
-            case CardsValuesEnum.TEN:
-                Effect = TEN;
-                Filter = SelectionFilterEnum.OWNPAWNS;
-
+                ColorFilter = SelectionFilterEnum.OWNPAWNS;
+                Projections.Add(OnBoardFilter);
                 break;
             case CardsValuesEnum.JACK:
                 Effect = JACK;
-                Filter = SelectionFilterEnum.ALLPAWNS;
-
-                break;
-            case CardsValuesEnum.QUEEN:
-                Effect = QUEEN;
-                Filter = SelectionFilterEnum.OWNPAWNS;
-
-                break;
-            case CardsValuesEnum.KING:
-                Effect = KING;
-                Filter = SelectionFilterEnum.OWNPAWNS;
-
+                ColorFilter = SelectionFilterEnum.ALLPAWNS;
+                Projections.Add(OnBoardFilter);
                 break;
             case CardsValuesEnum.JOKER:
                 Effect = JOKER;
-                Filter = SelectionFilterEnum.OWNPAWNS;
+                ColorFilter = SelectionFilterEnum.OWNPAWNS;
 
                 break;
             default:
@@ -138,65 +133,103 @@ public class Card : NetworkBehaviour
     {
     }
 
-    private void KING(Pawn target)
-    {
-    }
-
-    private void QUEEN(Pawn target)
-    {
-    }
 
     private void JACK(Pawn target)
     {
+
     }
 
-    private void TEN(Pawn target)
-    {
-    }
-
-    private void NINE(Pawn target)
-    {
-    }
-
-    private void EIGHT(Pawn target)
-    {
-    }
 
     private void SEVEN(Pawn target)
     {
     }
 
-    private void SIX(Pawn target)
-    {
-    }
-
-    private void FIVE(Pawn target)
-    {
-    }
 
     private void FOUR(Pawn target)
     {
+        target.Move(-(int)Value);
     }
 
-    private void THREE(Pawn target)
+
+    private void Move(Pawn target)
     {
+        target.Move((int)Value);
     }
 
-    private void TWO(Pawn target)
+    private void MoveOrEnter(Pawn target)
     {
-    }
-
-    private void ACE(Pawn target)
-    {
-
+        if (target.OnBoard)
+        {
+            target.Move((int)Value);
+        }
+        else
+        {
+            target.Enter();
+        }
     }
     #endregion
     #region cardFilter
-    #endregion
-
-    public void Move(Pawn target)
+    public bool MoveFilter(Pawn target)
     {
-        target.Move((int)Value);
+        bool Playable = true;
+        if (target.Progress + (int)Value > 74)
+        {
+            Playable = false;
+        }
+        else
+        {
+            int progressToCheck = target.Progress + (int)Value + 18 * (int)target.PlayerColor;
+            if (GMaster.progressDictionnary.ContainsValue(progressToCheck))
+            {
+                if (GMaster.progressDictionnary.GetPawn(progressToCheck).Progress == 0)
+                {
+                    Playable = false;
+                }
+            }
+
+        }
+        return Playable;
+    }
+
+    public bool OnBoardFilter(Pawn target)
+    {
+        return target.OnBoard;
+    }
+
+    public bool ParteuFilter(Pawn target)
+    {
+        bool Playable = true;
+        if (target.OnBoard)
+        {
+            Playable = MoveFilter(target);
+        }
+        return Playable;
+    }
+    #endregion
+    public void MakeProjections(List<Pawn> listToTest)
+    {
+        bool playable;
+        foreach (Pawn item in listToTest)
+        {
+            playable = true;
+            foreach (CardProjection projection in this.Projections)
+            {
+                if (!projection(item))
+                {
+                    playable = false;
+                    break;
+                }
+            }
+            if (playable)
+            {
+                possibleTargets.Add(item);
+            }
+        }
+    }
+
+
+    public void Play(Pawn target)
+    {
         Effect(target);
     }
 }

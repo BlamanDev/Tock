@@ -19,16 +19,15 @@ public class TockPlayer : NetworkBehaviour
     //List of the pawns owned by the player
     public List<Pawn> Pawns;
 
-
+    private int nbPlayableCards=0;
     private PlayerHand playerHand;
     public List<Card> liste;
 
-    private Card cardSelected;
+    private Card cardSelected=null;
     private Pawn pawnSelected = null;
-    private List<Pawn> pawnSelectables;
     //Color of the player
     [SyncVar]
-    public PlayerColorEnum PlayerColor;
+    public PlayerColorEnum PlayerColor=PlayerColorEnum.Clear;
 
     private Deck gameDeck;
 
@@ -40,13 +39,13 @@ public class TockPlayer : NetworkBehaviour
 
     public Image[] DisplayedHand;
 
+    //Card Event 
     public delegate void OnCardDrawed(CardsColorsEnum CardColor, CardsValuesEnum CardValue);
     [SyncEvent]
     public static event OnCardDrawed EventOnCardDrawed;
 
-
     //for debugging
-    public Text text;
+    private Text text;
 
     public PlayerHand Hand
     {
@@ -82,6 +81,58 @@ public class TockPlayer : NetworkBehaviour
             gameDeck = value;
         }
     }
+
+    public GameMaster GMaster
+    {
+        get
+        {
+            if (gMaster == null)
+            {
+                GMaster = GameObject.Find("NetworkGameMaster").GetComponent<GameMaster>();
+            }
+            return gMaster;
+        }
+
+        set
+        {
+            gMaster = value;
+        }
+    }
+
+    public TockBoard Board
+    {
+        get
+        {
+            if (board == null)
+            {
+                board = GameObject.Find("toc").GetComponent<TockBoard>();
+            }
+
+            return board;
+        }
+
+        set
+        {
+            board = value;
+        }
+    }
+
+    public Text Text
+    {
+        get
+        {
+            if (text == null)
+            {
+                text = GameObject.Find("TextTockPlayer").GetComponent<Text>();
+            }
+            return text;
+        }
+
+        set
+        {
+            text = value;
+        }
+    }
     #endregion
     #region initialization
     /// <summary>
@@ -89,33 +140,13 @@ public class TockPlayer : NetworkBehaviour
     /// </summary>
     void Start()
     {
-        //Find references
-        FindReferences();
 
         //colorize player
-        PlayerColor = gMaster.CmdGiveNewPlayerColor();
+        PlayerColor = GMaster.GiveNewPlayerColor();
 
         //add tag to the player
-        String blop = PlayerColor.ToString();
-        this.tag = blop + "_Player";
-
-    }
-
-    private void FindReferences()
-    {
-        if (text == null)
-        {
-            text = GameObject.Find("TextTockPlayer").GetComponent<Text>();
-        }
-
-        if (gMaster == null)
-        {
-            gMaster = GameObject.Find("NetworkGameMaster").GetComponent<GameMaster>();
-        }
-        if (board == null)
-        {
-            board = GameObject.Find("toc").GetComponent<TockBoard>();
-        }
+        String nameTag = PlayerColor.ToString();
+        this.tag = nameTag + "_Player";
 
     }
 
@@ -129,14 +160,13 @@ public class TockPlayer : NetworkBehaviour
     {
         base.OnStartLocalPlayer();
 
-        FindReferences();
         if (isLocalPlayer)
         {
-
-            gMaster.localPlayer = this;
+            GMaster.localPlayer = this;
             DisplayedHand = GameObject.Find("Cards").GetComponentsInChildren<Image>();
+            
             Hand.OnAdd += DisplayCard;
-            Hand.OnRemove += DiscardCard;
+            Hand.OnRemove += ClearCard;
         }
 
     }
@@ -184,7 +214,7 @@ public class TockPlayer : NetworkBehaviour
     [ClientRpc]
     public void RpcBuildPawnList()
     {
-        Pawns = gMaster.getPawnsOfAColor(PlayerColor);
+        Pawns = GMaster.getPawnsOfAColor(PlayerColor);
         Pawns.Sort(ComparePawnsByPawnIndex);
     }
 
@@ -197,7 +227,7 @@ public class TockPlayer : NetworkBehaviour
         int inHouse = 0;
         foreach (Pawn pawnSelected in Pawns)
         {
-            if (pawnSelected.Progress > board.NB_CASES) inHouse++;
+            if (pawnSelected.Progress > Board.NB_CASES) inHouse++;
         }
         return inHouse == 4;
     }
@@ -219,8 +249,10 @@ public class TockPlayer : NetworkBehaviour
     [Command]
     public void CmdEnterPawn(int pawnIndex)
     {
+        //EventOnPawnEntered(this.Pawns[pawnIndex].name);
         this.Pawns[pawnIndex].Enter();
     }
+
 
     [Command]
     public void CmdMoveOtherColor(String otherPlayer, int PawnIndex, int nbMoves)
@@ -232,28 +264,31 @@ public class TockPlayer : NetworkBehaviour
 
     #endregion
     #region projection
-    public IEnumerator<List<Pawn>> Projection(int nbCells)
+    public void Projection()
     {
-        List<Pawn> PlayablePawns = new List<Pawn>();
-        foreach (Pawn item in Pawns)
+        nbPlayableCards = 0;
+        foreach (Card item in playerHand)
         {
-            item.MakeProjection(nbCells);
-            while (item.Status == PawnTestedEnum.UNTESTED)
+            item.MakeProjections(GMaster.getPawnsFiltered(item.ColorFilter, this.PlayerColor));
+            if (item.possibleTargets.Count == 0)
             {
-                yield return null;
+                DisplayedHand[playerHand.IndexOf(item)].GetComponent<Button>().enabled = false;
             }
-            if (item.Status == PawnTestedEnum.CAN_MOVE)
+            else
             {
-                PlayablePawns.Add(item);
+                nbPlayableCards++;
+                DisplayedHand[playerHand.IndexOf(item)].GetComponent<Button>().enabled = true;
             }
-            item.Status = PawnTestedEnum.UNTESTED;
         }
-        yield return PlayablePawns;
+
+        
+
+
     }
     #endregion
     #region Card
     #region Drawing
-    private void DiscardCard(object sender, EventArgs e)
+    private void ClearCard(object sender, EventArgs e)
     {
         HandEventArgs HEA = (HandEventArgs)e;
         for (int i = HEA.CardPosition; i < 4; i++)
@@ -309,17 +344,38 @@ public class TockPlayer : NetworkBehaviour
         if (cardPlayed < Hand.Count)
         {
             cardSelected = Hand[cardPlayed];
-            text.text = "Card Selected : " + Hand[cardPlayed].name + " : " + (int)Hand[cardPlayed].Value + " cases";   //debug
-            this.SelectPawn();
+
+            if (nbPlayableCards==0)
+            {
+                DiscardSelectedCard();
+            }
+            else
+            {
+                Text.text = "Card Selected : " + Hand[cardPlayed].name + " : " + (int)Hand[cardPlayed].Value + " cases";   //debug
+                this.SelectPawn();
+
+            }
         }
+    }
+
+    private void DiscardSelectedCard()
+    {
+        if (isClient)
+        {
+            Destroy(cardSelected.gameObject);
+        }
+
+        Hand.Remove(cardSelected);
+        cardSelected = null;
+        this.PickACard();
     }
 
     [Command]
     public void CmdPlayCard(String cardPlayed, String pawnTarget)
     {
         Card card = GameDeck.StrToCard(cardPlayed);
-        card.Move(GameObject.Find(pawnTarget).GetComponent<Pawn>());
-        text.text = "Card Played : " + card.name + " : " + (int)card.Value + " cases";   //debug
+        card.Play(GameObject.Find(pawnTarget).GetComponent<Pawn>());
+        Text.text = "Card Played : " + card.name + " : " + (int)card.Value + " cases";   //debug
 
         GameDeck.CardsInDeck.Add(card);
     }
@@ -328,8 +384,7 @@ public class TockPlayer : NetworkBehaviour
     #region selection & play pawn
     public void SelectPawn()
     {
-        pawnSelectables = gMaster.getPawnsFiltered(cardSelected.Filter, this.PlayerColor);
-        foreach (Pawn item in pawnSelectables)
+        foreach (Pawn item in cardSelected.possibleTargets)
         {
             item.EventOnPawnSelected += PawnSelected;
             item.SwitchHalo(true, PlayerColor);
@@ -340,7 +395,7 @@ public class TockPlayer : NetworkBehaviour
     private void PawnSelected(Pawn Selection)
     {
         pawnSelected = Selection;
-        foreach (Pawn item in pawnSelectables)
+        foreach (Pawn item in cardSelected.possibleTargets)
         {
             item.EventOnPawnSelected -= PawnSelected;
             item.SwitchHalo(false, PlayerColor);
@@ -355,14 +410,27 @@ public class TockPlayer : NetworkBehaviour
         }
         CmdPlayCard(cardSelected.name, pawnSelected.name);
         pawnSelected = null;
-        if (isClient)
-        {
-            Destroy(cardSelected.gameObject);
-        }
-        Hand.Remove(cardSelected);
-        cardSelected = null;
-        this.PickACard();
+        DiscardSelectedCard();
 
+    }
+    #endregion
+    #region ProgressDictionnary
+    [ClientRpc]
+    public void RpcAddtoProgressDictionnary(string target)
+    {
+        GMaster.progressDictionnary.Add(target);
+    }
+
+    [ClientRpc]
+    public void RpcMoveinProgressDictionnary(string target, int nbMoves)
+    {
+        GMaster.progressDictionnary.Move(target, nbMoves);
+    }
+
+    [ClientRpc]
+    public void RpcRemovefromProgressDictionnary(string target)
+    {
+        GMaster.progressDictionnary.Remove(target);
     }
 #endregion
 }

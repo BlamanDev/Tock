@@ -16,10 +16,6 @@ public class Pawn : NetworkBehaviour
     [SyncVar]
     public int Progress = 0;
 
-    //Name of the pawn (perhaps useless)
-    [SyncVar]
-    public String PawnName;
-
     //Index of the Pawn
     [SyncVar]
     public int PawnIndex;
@@ -29,20 +25,22 @@ public class Pawn : NetworkBehaviour
     public bool OnBoard = false;
 
     //Owning player of this Pawn
-    [SyncVar(hook = "OnChangeColor")]
-    public PlayerColorEnum Player;
+    [SyncVar(hook = "OnChangePlayerColor")]
+    public PlayerColorEnum PlayerColor;
 
     public PawnTestedEnum Status = PawnTestedEnum.UNTESTED;
 
 
     //Spawn positions for the pawns
-    public SpawnPositions spawnPositions;
+    private SpawnPositions spawnPositions;
     private GameObject outPosition;
 
     //Components of the pawn
-    public Animator PawnAnimator;
-    private MeshRenderer PawnMeshRenderer;
+    private Animator pawnAnimator;
+    private MeshRenderer pawnMeshRenderer;
     private Light selectableLight;
+
+    private GameMaster gMaster;
 
     //Hash of Animator parameters
     private int enterHash = Animator.StringToHash("EnterBoard");
@@ -50,10 +48,11 @@ public class Pawn : NetworkBehaviour
     private int StateHash = Animator.StringToHash("ProgressOnBoard");
     private int speedHash = Animator.StringToHash("Speed");
 
-    public GameObject GhostPawnPrefab;
+
+
+    //public GameObject GhostPawnPrefab;
 
     private Color actualHaloColor;
-    private Color initialHaloColor;
 
     public Color ActualHaloColor
     {
@@ -87,6 +86,76 @@ public class Pawn : NetworkBehaviour
         }
     }
 
+    public GameMaster GMaster
+    {
+        get
+        {
+            if (gMaster == null)
+            {
+                gMaster = FindObjectOfType<GameMaster>();
+            }
+            return gMaster;
+        }
+
+        set
+        {
+            gMaster = value;
+        }
+    }
+
+    public Animator PawnAnimator
+    {
+        get
+        {
+            if (pawnAnimator == null)
+            {
+                pawnAnimator = GetComponent<Animator>();
+            }
+            return pawnAnimator;
+        }
+
+        set
+        {
+            pawnAnimator = value;
+        }
+    }
+
+    public MeshRenderer PawnMeshRenderer
+    {
+        get
+        {
+            if (pawnMeshRenderer == null)
+            {
+                pawnMeshRenderer = this.GetComponentInChildren<MeshRenderer>();
+
+            }
+            return pawnMeshRenderer;
+        }
+
+        set
+        {
+            pawnMeshRenderer = value;
+        }
+    }
+
+    public SpawnPositions SpawnPositions
+    {
+        get
+        {
+            if (spawnPositions == null)
+            {
+                spawnPositions = FindObjectOfType<SpawnPositions>();
+
+            }
+            return spawnPositions;
+        }
+
+        set
+        {
+            spawnPositions = value;
+        }
+    }
+
     public delegate void OnPawnSelected(Pawn pawnSelected);
     public event OnPawnSelected EventOnPawnSelected;
     #endregion
@@ -110,9 +179,6 @@ public class Pawn : NetworkBehaviour
     /// </summary> 
     private void OnEnable()
     {
-        PawnAnimator = GetComponent<Animator>();
-        PawnMeshRenderer = this.GetComponentInChildren<MeshRenderer>();
-        spawnPositions = FindObjectOfType<SpawnPositions>();
     }
 
 
@@ -120,16 +186,16 @@ public class Pawn : NetworkBehaviour
     /// Event called when changing the owning Player
     /// </summary>
     /// <param name="newColor"></param>
-    public void OnChangeColor(PlayerColorEnum newColor)
+    public void OnChangePlayerColor(PlayerColorEnum newColor)
     {
+        PlayerColor = newColor;
         //Change the material color of the pawn
         PawnMeshRenderer.material.color = PlayerColorEnumToColor(newColor);
 
         //Pawn named after its color and index
         this.name = newColor.ToString() + PawnIndex.ToString();
-        PawnName = newColor.ToString() + PawnIndex.ToString();
         //Get the out position for this pawn
-        outPosition = spawnPositions.getOutPosition(newColor, PawnIndex);
+        outPosition = SpawnPositions.getOutPosition(newColor, PawnIndex);
     }
 
     private Color PlayerColorEnumToColor(PlayerColorEnum newColor)
@@ -148,7 +214,9 @@ public class Pawn : NetworkBehaviour
                 break;
             case PlayerColorEnum.Yellow:
                 color = Color.yellow;
+
                 break;
+
         }
         return color;
 
@@ -166,7 +234,7 @@ public class Pawn : NetworkBehaviour
         }
         if (onBoard)
         {
-            Transform startTransform = spawnPositions.getStartPosition(Player).transform;
+            Transform startTransform = SpawnPositions.getStartPosition(PlayerColor).transform;
             this.transform.position = startTransform.position;
             this.transform.rotation = startTransform.rotation;
 
@@ -207,7 +275,7 @@ public class Pawn : NetworkBehaviour
     public void Initialize(PlayerColorEnum color, int pawnIndex)
     {
         this.PawnIndex = pawnIndex;
-        Player = color;
+        PlayerColor = color;
         this.transform.position = outPosition.transform.position;
 
     }
@@ -218,16 +286,20 @@ public class Pawn : NetworkBehaviour
     public void Enter()
     {
         OnBoard = true;
+        GMaster.localPlayer.RpcAddtoProgressDictionnary(this.name);
     }
 
 
     public void Move(int nbCell)
     {
+
         PawnAnimator.SetFloat(speedHash, 1);
 
         Progress += nbCell;
         PawnAnimator.Play(StateHash);
+        GMaster.localPlayer.RpcMoveinProgressDictionnary(this.name, nbCell);
     }
+
     /// <summary>
     /// Get the pawn of the board
     /// </summary>
@@ -235,12 +307,14 @@ public class Pawn : NetworkBehaviour
     {
         OnBoard = false;
         this.Progress = 0;
+        GMaster.localPlayer.RpcRemovefromProgressDictionnary(this.name);
     }
 
     public void PlacePawnOut()
     {
         this.transform.position = outPosition.transform.position;
     }
+    /*
     #region Projection
     public void MakeProjection(int nbCell)
     {
@@ -277,7 +351,7 @@ public class Pawn : NetworkBehaviour
             }
         }
     }
-    #endregion
+    #endregion*/
     #region Selection Halo
     public void SwitchHalo(bool on, PlayerColorEnum playerColor)
     {

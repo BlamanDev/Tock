@@ -21,16 +21,17 @@ public class GameMaster : NetworkBehaviour
     public GameObject PawnPrefab;
     public GameObject CardPrefab;
     //to avoid giving the same color to different players
-    private int nextColor = 0;
+    private int nextColor = -1;
 
     //For debugging
     public Text text;
 
     //Contains the list of Pawns sorted by color
     public Dictionary<PlayerColorEnum, List<Pawn>> AllPawns;
+    public ProgressDictionnary progressDictionnary ;
 
     public TockPlayer localPlayer;
-
+    
 
     #endregion
     #region initialisation
@@ -40,6 +41,7 @@ public class GameMaster : NetworkBehaviour
         //Attach to Event AllPawnCreated
         PawnSpawner.EventAllPawnsCreated += buildPawnList;
         AllPawns = new Dictionary<PlayerColorEnum, List<Pawn>>();
+        progressDictionnary = new ProgressDictionnary();
     }
 
     // Update is called once per frame
@@ -57,6 +59,7 @@ public class GameMaster : NetworkBehaviour
         {
             DontDestroyOnLoad(gameObject);
             GMaster = this;
+            nextColor = -1;
 
         }
         else if (GMaster != this)
@@ -83,11 +86,12 @@ public class GameMaster : NetworkBehaviour
         //FOR EACH pawn, add it to the list corresponding its color
         foreach (Pawn item in listPawn)
         {
-            if (!AllPawns.ContainsKey(item.Player))
+            if (!AllPawns.ContainsKey(item.PlayerColor))
             {
-                AllPawns[item.Player] = new List<Pawn>();
+                AllPawns[item.PlayerColor] = new List<Pawn>();
             }
-            AllPawns[item.Player].Add(item);
+            AllPawns[item.PlayerColor].Add(item);
+            
         }
     }
 
@@ -160,16 +164,17 @@ public class GameMaster : NetworkBehaviour
     /// Cycle between colors and return the next one
     /// </summary>
     /// <returns></returns>
-    public PlayerColorEnum CmdGiveNewPlayerColor()
+    public PlayerColorEnum GiveNewPlayerColor()
     {
         nextColor++;
         //if nextcolor > number of possible color
-        if (nextColor > 4)
+        if (nextColor > 3)
         {
-            nextColor = 1;
+            nextColor = 0;
         }
         text.text += "Giving new color : " + ((PlayerColorEnum)nextColor).ToString() + " ";
-        return (PlayerColorEnum)nextColor;
+        PlayerColorEnum colorReturned = (PlayerColorEnum)nextColor;
+        return colorReturned;
     }
 
     #endregion
@@ -193,7 +198,11 @@ public class GameMaster : NetworkBehaviour
         for (int i = 0; i < 5; i++)
         {
             localPlayer.PickACard();
-        } 
+        }
+        localPlayer.Projection();
+
     }
+
+
     #endregion
 }

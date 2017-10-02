@@ -102,6 +102,7 @@
     <Compile Include="Assets\Script\Hand.cs" />
     <Compile Include="Assets\Script\Pawn.cs" />
     <Compile Include="Assets\Script\PawnSpawner.cs" />
+    <Compile Include="Assets\Script\ProgressDictionnary.cs" />
     <Compile Include="Assets\Script\SpawnPositions.cs" />
     <Compile Include="Assets\Script\TockBoard.cs" />
     <Compile Include="Assets\Script\TockPlayer.cs" />

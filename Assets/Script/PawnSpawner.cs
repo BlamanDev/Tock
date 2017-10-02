@@ -98,7 +98,7 @@ void Update()
             text.text += "Populating " + player.PlayerColor.ToString() + " Pawn : ";
             for (int i = 1; i <= 4; i++)
             {
-                text.text += CreatePawn(player.PlayerColor, i).Player.ToString() + " ";
+                text.text += CreatePawn(player.PlayerColor, i).PlayerColor.ToString() + " ";
             }
 
         }
@@ -126,7 +126,7 @@ void Update()
 
     public void TestProjection()
     {
-        GMaster.localPlayer.Projection(3);
+        GMaster.localPlayer.Projection();
     }
 
     public void TestBuildDeck()
