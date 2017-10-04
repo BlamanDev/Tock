@@ -5,13 +5,17 @@ using UnityEngine;
 public class ProgressDictionnary : Dictionary<Pawn, int> {
     
 
-    public void Add(string pawnTarget)
+    public int Add(string pawnTarget)
     {
         Pawn target = GameObject.Find(pawnTarget).GetComponent<Pawn>();
-        base.Add(target, 18 * (int)target.PlayerColor);
+
+        int newProgress =  18 * (int)target.PlayerColor;
+        base.Add(target, newProgress);
+
+        return newProgress;
     }
 
-    public void Move(string pawnTarget, int nbCell)
+    public int Move(string pawnTarget, int nbCell)
     {
         Pawn target = GameObject.Find(pawnTarget).GetComponent<Pawn>();
 
@@ -19,6 +23,7 @@ public class ProgressDictionnary : Dictionary<Pawn, int> {
         if (key > 70) key -= 70;
         base.Remove(target);
         this[target] = key;
+        return key;
     }
 
     public void Remove(string pawnTarget)

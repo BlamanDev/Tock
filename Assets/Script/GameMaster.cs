@@ -41,7 +41,9 @@ public class GameMaster : NetworkBehaviour
         //Attach to Event AllPawnCreated
         PawnSpawner.EventAllPawnsCreated += buildPawnList;
         AllPawns = new Dictionary<PlayerColorEnum, List<Pawn>>();
+
         progressDictionnary = new ProgressDictionnary();
+
     }
 
     // Update is called once per frame
@@ -68,14 +70,43 @@ public class GameMaster : NetworkBehaviour
         }
     }
 
-    
+    private void OnEnable()
+    {
+        SceneManager.sceneLoaded += OnSceneLoaded;
+
+    }
+
     private void OnLevelWasLoaded(int level)
     {
         if (level==1) text = GameObject.Find("TextGameMaster").GetComponent<Text>();
 
     }
+
+    public void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        if (scene.name == "Game")
+        {
+            GameBegin();
+        }
+    }
+
+
+    public void GameBegin()
+    {
+
+        
+            PawnSpawner spawner = GameObject.FindObjectOfType<PawnSpawner>();
+            if (spawner != null)
+            {
+                spawner.PopulatePawns();
+            }
+            GMaster.localBuildHand();
+
+        
+
+    }
     #endregion
-#region Pawns Methods
+    #region Pawns Methods
     /// <summary>
     /// Build the AllPawns dictionnary
     /// </summary>
@@ -177,6 +208,7 @@ public class GameMaster : NetworkBehaviour
         return colorReturned;
     }
 
+    
     #endregion
     #region Cards Methods
     public void BuildDeck()
@@ -199,7 +231,6 @@ public class GameMaster : NetworkBehaviour
         {
             localPlayer.PickACard();
         }
-        localPlayer.Projection();
 
     }
 

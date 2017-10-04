@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
 using System.Collections;
+using UnityEngine.SceneManagement;
 
 /// <summary>
 /// Player Script
@@ -135,6 +136,7 @@ public class TockPlayer : NetworkBehaviour
     }
     #endregion
     #region initialization
+
     /// <summary>
     /// Find the references, add tag, colorize player
     /// </summary>
@@ -170,6 +172,8 @@ public class TockPlayer : NetworkBehaviour
         }
 
     }
+
+    
     #endregion
     #region Pawns
     private static int ComparePawnsByPawnIndex(Pawn x, Pawn y)
@@ -264,6 +268,9 @@ public class TockPlayer : NetworkBehaviour
 
     #endregion
     #region projection
+    /// <summary>
+    /// Test the if the cards in the Player's Hand can be played
+    /// </summary>
     public void Projection()
     {
         nbPlayableCards = 0;
@@ -356,6 +363,7 @@ public class TockPlayer : NetworkBehaviour
 
             }
         }
+
     }
 
     private void DiscardSelectedCard()
@@ -418,13 +426,16 @@ public class TockPlayer : NetworkBehaviour
     [ClientRpc]
     public void RpcAddtoProgressDictionnary(string target)
     {
-        GMaster.progressDictionnary.Add(target);
+        int newProgress = GMaster.progressDictionnary.Add(target);
+        Text.text = "Added : " + target + "- to ProgressDico at position : " + newProgress;
+
     }
 
     [ClientRpc]
     public void RpcMoveinProgressDictionnary(string target, int nbMoves)
     {
-        GMaster.progressDictionnary.Move(target, nbMoves);
+        int newProgress = GMaster.progressDictionnary.Move(target, nbMoves);
+        Text.text = "Moved : " + target + "- for " + nbMoves + " cells in ProgressDico, new position : " + newProgress;
     }
 
     [ClientRpc]
@@ -433,4 +444,8 @@ public class TockPlayer : NetworkBehaviour
         GMaster.progressDictionnary.Remove(target);
     }
 #endregion
+    public void RpcBeginTurn()
+    {
+        Projection();
+    }
 }

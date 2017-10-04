@@ -124,9 +124,9 @@ void Update()
         GMaster.MovePawn(player, 1, 3);
     }
 
-    public void TestProjection()
+    public void TestNewTurn()
     {
-        GMaster.localPlayer.Projection();
+        GMaster.localPlayer.RpcBeginTurn();
     }
 
     public void TestBuildDeck()
@@ -144,8 +144,8 @@ void Update()
         GMaster.localPlayer.PlayCard(cardSelected);
     }
 
-    public void TestSelectPawn()
+    public void TestGameBegin()
     {
-        GMaster.localPlayer.SelectPawn();
+        GMaster.GameBegin();
     }
 }

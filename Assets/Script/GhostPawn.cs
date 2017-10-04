@@ -1,7 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.Reflection;
-using System.Threading;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public class GhostPawn : MonoBehaviour {
