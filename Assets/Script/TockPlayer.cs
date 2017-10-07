@@ -89,7 +89,8 @@ public class TockPlayer : NetworkBehaviour
         {
             if (gMaster == null)
             {
-                GMaster = GameObject.Find("NetworkGameMaster").GetComponent<GameMaster>();
+                GameObject plop = GameObject.Find("NetworkGameMaster");
+                GMaster = plop.GetComponent<GameMaster>();
             }
             return gMaster;
         }
@@ -143,8 +144,6 @@ public class TockPlayer : NetworkBehaviour
     void Start()
     {
 
-        //colorize player
-        PlayerColor = GMaster.GiveNewPlayerColor();
 
         //add tag to the player
         String nameTag = PlayerColor.ToString();
@@ -158,15 +157,21 @@ public class TockPlayer : NetworkBehaviour
 
     }
 
+    public void Awake()
+    {
+        //colorize player
+        PlayerColor = GameMaster.GiveNewPlayerColor();
+
+        GameMaster.players.Add(this);
+    }
+
     public override void OnStartLocalPlayer()
     {
         base.OnStartLocalPlayer();
 
         if (isLocalPlayer)
         {
-            GMaster.localPlayer = this;
             DisplayedHand = GameObject.Find("Cards").GetComponentsInChildren<Image>();
-            
             Hand.OnAdd += DisplayCard;
             Hand.OnRemove += ClearCard;
         }
@@ -295,6 +300,8 @@ public class TockPlayer : NetworkBehaviour
     #endregion
     #region Card
     #region Drawing
+
+
     private void ClearCard(object sender, EventArgs e)
     {
         HandEventArgs HEA = (HandEventArgs)e;
@@ -308,6 +315,15 @@ public class TockPlayer : NetworkBehaviour
     {
         HandEventArgs HEA = (HandEventArgs)e;
         DisplayedHand[HEA.CardPosition].material = HEA.Card.Illustration;
+    }
+
+    [ClientRpc]
+    public void RpcBuildFirstHand()
+    {
+        for (int i = 0; i < 5; i++)
+        {
+            this.PickACard();
+        }
     }
 
     public void PickACard()

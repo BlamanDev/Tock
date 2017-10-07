@@ -114,7 +114,7 @@ c2275a8bfbb9f9942cad75ecdfded41d UnityEngine.HoloLens.dll:UnityEngine.VR.WSA.Spa
 45f3431f0103c41611e8d4eec3d439df UnityEngine.HoloLens.dll:UnityEngine.VR.WSA.SpatialMappingRenderer
 5b989398c766577d8ec58d35693c63d3 Assembly-CSharp.dll:.TockPlayer
 61378aea5684ff237941ce4895aa8421 Assembly-CSharp.dll:.TockBoard
-bf4d98f4f17a47b2f2335b632421fbe9 Assembly-CSharp.dll:.GameMaster
+0a7e420562e8b42054e8cdaa783572a0 Assembly-CSharp.dll:.GameMaster
 05524b8f659e7bfe5756d1335fec24ba Assembly-CSharp.dll:.SpawnPositions
 2596b6d52a58dd9454fc185c6bb9bf98 Assembly-CSharp.dll:.GhostPawn
 32e8fe00b63ed946490b898f6024a2f2 Facebook.Unity.Settings.dll:Facebook.Unity.Settings.FacebookSettings
@@ -132,7 +132,7 @@ e9bdabf9265d758d56f01bb188916fa8 UnityEngine.Networking.dll:UnityEngine.Networki
 3f32f08a64daf40b09ed864d96fe3840 UnityEngine.Networking.dll:UnityEngine.Networking.NetworkTransform
 73843688b51256aed059f049c540bca8 UnityEngine.Networking.dll:UnityEngine.Networking.NetworkTransformChild
 528ea1fd7c01796fc60c4e2f172ea229 UnityEngine.Networking.dll:UnityEngine.Networking.NetworkTransformVisualizer
-d6851696cf5f4cccbfc89eb19f1bba62 Assembly-CSharp.dll:.Pawn
+f7c483a75582d3f3fa2f363cd0c2ae7c Assembly-CSharp.dll:.Pawn
 f77ec405d664b4bc5cba8b5c8bc5d666 Assembly-CSharp.dll:.PawnSpawner
 05524b8f659e7bfe5756d1335fec24ba UnityEngine.TestRunner.dll:UnityEngine.TestTools.TestRunner.Callbacks.PlayModeRunnerCallback
 5f2ad81aa8994e8fbe25d1e57afe6773 UnityEngine.TestRunner.dll:UnityEngine.TestTools.TestRunner.PlaymodeTestsController

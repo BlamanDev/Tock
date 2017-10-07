@@ -14,24 +14,42 @@ using System;
 /// </summary>
 public class GameMaster : NetworkBehaviour
 {
-#region properties
+    #region properties
     //Used for the Singleton
-    public static GameMaster GMaster;
+    static public GameMaster GMaster = null;
     //Prefab used for the Pawn
     public GameObject PawnPrefab;
     public GameObject CardPrefab;
     //to avoid giving the same color to different players
-    private int nextColor = -1;
+    static private int nextColor = -1;
 
     //For debugging
     public Text text;
 
     //Contains the list of Pawns sorted by color
     public Dictionary<PlayerColorEnum, List<Pawn>> AllPawns;
-    public ProgressDictionnary progressDictionnary ;
+    public ProgressDictionnary progressDictionnary;
 
-    public TockPlayer localPlayer;
-    
+    static public List<TockPlayer> players = new List<TockPlayer>();
+    private TockPlayer localPlayer;
+
+    public TockPlayer LocalPlayer
+    {
+        get
+        {
+            if (localPlayer == null)
+            {
+                localPlayer = findLocalPlayer();
+            }
+            return localPlayer;
+        }
+
+        set
+        {
+            localPlayer = value;
+        }
+    }
+
 
     #endregion
     #region initialisation
@@ -41,9 +59,8 @@ public class GameMaster : NetworkBehaviour
         //Attach to Event AllPawnCreated
         PawnSpawner.EventAllPawnsCreated += buildPawnList;
         AllPawns = new Dictionary<PlayerColorEnum, List<Pawn>>();
-
         progressDictionnary = new ProgressDictionnary();
-
+        GameBegin();
     }
 
     // Update is called once per frame
@@ -61,8 +78,6 @@ public class GameMaster : NetworkBehaviour
         {
             DontDestroyOnLoad(gameObject);
             GMaster = this;
-            nextColor = -1;
-
         }
         else if (GMaster != this)
         {
@@ -73,37 +88,23 @@ public class GameMaster : NetworkBehaviour
     private void OnEnable()
     {
         SceneManager.sceneLoaded += OnSceneLoaded;
-
     }
 
     private void OnLevelWasLoaded(int level)
     {
-        if (level==1) text = GameObject.Find("TextGameMaster").GetComponent<Text>();
 
     }
 
     public void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        if (scene.name == "Game")
-        {
-            GameBegin();
-        }
+        if (scene.name == "Game") text = GameObject.Find("TextGameMaster").GetComponent<Text>();
+
     }
 
 
     public void GameBegin()
     {
-
-        
-            PawnSpawner spawner = GameObject.FindObjectOfType<PawnSpawner>();
-            if (spawner != null)
-            {
-                spawner.PopulatePawns();
-            }
-            GMaster.localBuildHand();
-
-        
-
+        StartCoroutine(waitForAllPlayers());
     }
     #endregion
     #region Pawns Methods
@@ -122,7 +123,7 @@ public class GameMaster : NetworkBehaviour
                 AllPawns[item.PlayerColor] = new List<Pawn>();
             }
             AllPawns[item.PlayerColor].Add(item);
-            
+
         }
     }
 
@@ -133,14 +134,14 @@ public class GameMaster : NetworkBehaviour
     /// <returns></returns>
     public List<Pawn> getPawnsOfAColor(PlayerColorEnum color)
     {
-        if (AllPawns.Count==0)
+        if (AllPawns.Count == 0)
         {
             buildPawnList();
         }
         return AllPawns[color];
     }
 
-    public List<Pawn> getPawnsFiltered(SelectionFilterEnum filter,PlayerColorEnum color)
+    public List<Pawn> getPawnsFiltered(SelectionFilterEnum filter, PlayerColorEnum color)
     {
         List<Pawn> listeRetour = new List<Pawn>();
         switch (filter)
@@ -158,7 +159,7 @@ public class GameMaster : NetworkBehaviour
             case SelectionFilterEnum.OTHERPAWNS:
                 foreach (PlayerColorEnum item in AllPawns.Keys)
                 {
-                    if (item!= color)
+                    if (item != color)
                     {
                         listeRetour.AddRange(AllPawns[item]);
                     }
@@ -171,7 +172,7 @@ public class GameMaster : NetworkBehaviour
         return listeRetour;
     }
 
-    public void EnterPawn(string player,int PawnIndex)
+    public void EnterPawn(string player, int PawnIndex)
     {
         TockPlayer tockPlayer = GameObject.FindGameObjectWithTag(player + "_Player").GetComponent<TockPlayer>();
         tockPlayer.CmdEnterPawn(PawnIndex);
@@ -179,13 +180,13 @@ public class GameMaster : NetworkBehaviour
 
     public void MovePawn(string player, int pawnIndex, int nbMoves)
     {
-        if (player!=localPlayer.PlayerColor.ToString())
+        if (player != LocalPlayer.PlayerColor.ToString())
         {
-            localPlayer.CmdMoveOtherColor(player, pawnIndex, nbMoves);
+            LocalPlayer.CmdMoveOtherColor(player, pawnIndex, nbMoves);
         }
         else
         {
-            localPlayer.CmdMovePawn(pawnIndex, nbMoves);
+            LocalPlayer.CmdMovePawn(pawnIndex, nbMoves);
         }
 
     }
@@ -195,7 +196,7 @@ public class GameMaster : NetworkBehaviour
     /// Cycle between colors and return the next one
     /// </summary>
     /// <returns></returns>
-    public PlayerColorEnum GiveNewPlayerColor()
+    static public PlayerColorEnum GiveNewPlayerColor()
     {
         nextColor++;
         //if nextcolor > number of possible color
@@ -203,12 +204,31 @@ public class GameMaster : NetworkBehaviour
         {
             nextColor = 0;
         }
-        text.text += "Giving new color : " + ((PlayerColorEnum)nextColor).ToString() + " ";
+
         PlayerColorEnum colorReturned = (PlayerColorEnum)nextColor;
         return colorReturned;
     }
 
-    
+    private TockPlayer findLocalPlayer()
+    {
+        return players.Find(x => x.isLocalPlayer);
+    }
+
+    IEnumerator waitForAllPlayers()
+    {
+        NetworkLobbyManager lobbyby = GameObject.FindObjectOfType<NetworkLobbyManager>();
+        yield  return new WaitUntil(() => players.Count == lobbyby.numPlayers);
+        PawnSpawner spawner = GameObject.FindObjectOfType<PawnSpawner>();
+        if (spawner != null)
+        {
+            spawner.PopulatePawns();
+        }
+        foreach (TockPlayer item in players)
+        {
+            item.RpcBuildFirstHand();
+        }
+
+    }
     #endregion
     #region Cards Methods
     public void BuildDeck()
@@ -227,11 +247,6 @@ public class GameMaster : NetworkBehaviour
 
     public void localBuildHand()
     {
-        for (int i = 0; i < 5; i++)
-        {
-            localPlayer.PickACard();
-        }
-
     }
 
 

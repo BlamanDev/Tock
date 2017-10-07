@@ -28,9 +28,6 @@ public class Pawn : NetworkBehaviour
     [SyncVar(hook = "OnChangePlayerColor")]
     public PlayerColorEnum PlayerColor;
 
-    public PawnTestedEnum Status = PawnTestedEnum.UNTESTED;
-
-
     //Spawn positions for the pawns
     private SpawnPositions spawnPositions;
     private GameObject outPosition;
@@ -163,6 +160,11 @@ public class Pawn : NetworkBehaviour
     // Use this for initialization
     void Start()
     {
+        bool plop = false;
+        if (plop)
+        {
+
+        }
     }
 
     // Update is called once per frame
@@ -198,9 +200,14 @@ public class Pawn : NetworkBehaviour
         outPosition = SpawnPositions.getOutPosition(newColor, PawnIndex);
     }
 
+    public override void OnStartClient()
+    {
+        OnChangePlayerColor(PlayerColor);
+    }
+
     private Color PlayerColorEnumToColor(PlayerColorEnum newColor)
     {
-        Color color = Color.black;
+        Color color = Color.clear;
         switch (newColor)
         {
             case PlayerColorEnum.Blue:
@@ -286,7 +293,7 @@ public class Pawn : NetworkBehaviour
     public void Enter()
     {
         OnBoard = true;
-        GMaster.localPlayer.RpcAddtoProgressDictionnary(this.name);
+        GMaster.LocalPlayer.RpcAddtoProgressDictionnary(this.name);
     }
 
 
@@ -297,7 +304,7 @@ public class Pawn : NetworkBehaviour
 
         Progress += nbCell;
         PawnAnimator.Play(StateHash);
-        GMaster.localPlayer.RpcMoveinProgressDictionnary(this.name, nbCell);
+        GMaster.LocalPlayer.RpcMoveinProgressDictionnary(this.name, nbCell);
     }
 
     /// <summary>
@@ -307,7 +314,7 @@ public class Pawn : NetworkBehaviour
     {
         OnBoard = false;
         this.Progress = 0;
-        GMaster.localPlayer.RpcRemovefromProgressDictionnary(this.name);
+        GMaster.LocalPlayer.RpcRemovefromProgressDictionnary(this.name);
     }
 
     public void PlacePawnOut()

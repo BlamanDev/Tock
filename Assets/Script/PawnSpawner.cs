@@ -1,4 +1,5 @@
 ﻿using Assets.Script;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -93,12 +94,17 @@ void Update()
         }
 
         //FOR EACH player, create 4 pawns
-        foreach (TockPlayer player in playerList)
+        foreach (String color in Enum.GetNames(typeof(PlayerColorEnum)))
         {
-            text.text += "Populating " + player.PlayerColor.ToString() + " Pawn : ";
-            for (int i = 1; i <= 4; i++)
+
+            text.text += "Populating " + color + " Pawn : ";
+            if (!color.Equals(PlayerColorEnum.Clear.ToString()))
             {
-                text.text += CreatePawn(player.PlayerColor, i).PlayerColor.ToString() + " ";
+                for (int i = 1; i <= 4; i++)
+                {
+                    text.text += CreatePawn(((PlayerColorEnum)Enum.Parse(typeof(PlayerColorEnum), color)), i) + " ";
+                }
+
             }
 
         }
@@ -126,7 +132,7 @@ void Update()
 
     public void TestNewTurn()
     {
-        GMaster.localPlayer.RpcBeginTurn();
+        GMaster.LocalPlayer.RpcBeginTurn();
     }
 
     public void TestBuildDeck()
@@ -141,7 +147,7 @@ void Update()
 
     public void PlayCard(int cardSelected)
     {
-        GMaster.localPlayer.PlayCard(cardSelected);
+        GMaster.LocalPlayer.PlayCard(cardSelected);
     }
 
     public void TestGameBegin()

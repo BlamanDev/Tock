@@ -69,7 +69,6 @@ public class Deck : NetworkBehaviour
     /// <returns></returns>
     public Card StrToCard(String CardColor, String CardValue)
     {
-        //return (CardsInDeck.FindAll(x => x.Color == (CardsColorsEnum)Enum.Parse(typeof(CardsColorsEnum), CardColor))).Find(x => x.Value == ((CardsValuesEnum)Enum.Parse(typeof(CardsValuesEnum), CardValue)));
         StringBuilder sb = new StringBuilder();
         sb.Append(CardValue).Append('_').Append(CardColor);
         return StrToCard(sb.ToString());
