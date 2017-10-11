@@ -24,9 +24,13 @@ public class Pawn : NetworkBehaviour
     [SyncVar(hook = "OnChangeOnBoard")]
     public bool OnBoard = false;
 
+    private bool wipeAllPawns = false;
+
     //Owning player of this Pawn
     [SyncVar(hook = "OnChangePlayerColor")]
     public PlayerColorEnum PlayerColor;
+
+    private PawnStatusEnum status;
 
     //Spawn positions for the pawns
     private SpawnPositions spawnPositions;
@@ -153,6 +157,26 @@ public class Pawn : NetworkBehaviour
         }
     }
 
+    public PawnStatusEnum Status
+    {
+        get
+        {
+            return status;
+        }
+
+        set
+        {
+            if (value == PawnStatusEnum.IDLE && this.Progress > 70)
+            {
+                status = PawnStatusEnum.IN_HOUSE;
+            }
+            else
+            {
+                status = value;
+            }
+        }
+    }
+
     public delegate void OnPawnSelected(Pawn pawnSelected);
     public event OnPawnSelected EventOnPawnSelected;
     #endregion
@@ -160,11 +184,6 @@ public class Pawn : NetworkBehaviour
     // Use this for initialization
     void Start()
     {
-        bool plop = false;
-        if (plop)
-        {
-
-        }
     }
 
     // Update is called once per frame
@@ -246,6 +265,7 @@ public class Pawn : NetworkBehaviour
             this.transform.rotation = startTransform.rotation;
 
             PawnAnimator.SetTrigger(enterHash);
+            Status = PawnStatusEnum.ENTRY;
         }
         else
         {
@@ -257,9 +277,13 @@ public class Pawn : NetworkBehaviour
     {
         if (other.name == "PawnModel")
         {
-            if (PawnAnimator.enabled && !other.GetComponentInParent<Pawn>().PawnAnimator.enabled)
+            Pawn pawnCollided = other.GetComponentInParent<Pawn>();
+            if (this.Status == PawnStatusEnum.MOVING && pawnCollided.Status == PawnStatusEnum.IDLE)
             {
-                (other.GetComponentInParent<Pawn>()).Exit();
+                if (wipeAllPawns || (GMaster.progressDictionnary[pawnCollided] == GMaster.progressDictionnary[this]))
+                {
+                    other.GetComponentInParent<Pawn>().Exit();
+                }
             }
         }
     }
@@ -269,6 +293,8 @@ public class Pawn : NetworkBehaviour
         if (animationProgress == Progress)
         {
             PawnAnimator.SetFloat(speedHash, 0);
+            Status = PawnStatusEnum.IDLE;
+            wipeAllPawns = false;
         }
     }
     #endregion
@@ -296,15 +322,28 @@ public class Pawn : NetworkBehaviour
         GMaster.LocalPlayer.RpcAddtoProgressDictionnary(this.name);
     }
 
-
-    public void Move(int nbCell)
+    /// <summary>
+    /// Move the Pawn
+    /// </summary>
+    /// <param name="nbCell">int : unsigned number of cell</param>
+    /// <param name="negative">bool (default : false) : false if movement is forward, true if movement is backward</param>
+    /// <param name="wipeAllPawns">bool (default : false) : if true, all pawns encoutered will be wiped off the board</param>
+    public void Move(int nbCell, bool wipeAllPawns = false, int speed=1)
     {
-
-        PawnAnimator.SetFloat(speedHash, 1);
-
+        PawnAnimator.SetFloat(speedHash, (nbCell>0 ? speed : -speed));
         Progress += nbCell;
-        PawnAnimator.Play(StateHash);
+        Status = PawnStatusEnum.MOVING;
+        this.wipeAllPawns = wipeAllPawns;
         GMaster.LocalPlayer.RpcMoveinProgressDictionnary(this.name, nbCell);
+
+        PawnAnimator.Play(StateHash);
+    }
+
+    public void Exchange(Pawn otherPawn)
+    {
+        int[] cellBetween = GMaster.progressDictionnary.ExchangeCompute(this, otherPawn);
+        this.Move(cellBetween[0]);
+        otherPawn.Move(cellBetween[1]);
     }
 
     /// <summary>

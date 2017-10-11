@@ -57,6 +57,7 @@ public class Deck : NetworkBehaviour
         Card drawedCard = CardsInDeck[pickACard.Next(CardsInDeck.Count)];
         CardsInDeck.Remove(drawedCard);
         GameObject newCardObject = drawedCard.gameObject;
+        
         NetworkServer.Spawn(newCardObject);
 
         return drawedCard;

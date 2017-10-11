@@ -9,21 +9,20 @@ public class ProgressDictionnary : Dictionary<Pawn, int> {
     {
         Pawn target = GameObject.Find(pawnTarget).GetComponent<Pawn>();
 
-        int newProgress =  18 * (int)target.PlayerColor;
-        base.Add(target, newProgress);
+        int position =  18 * (int)target.PlayerColor;
+        base.Add(target, position);
 
-        return newProgress;
+        return position;
     }
 
     public int Move(string pawnTarget, int nbCell)
     {
         Pawn target = GameObject.Find(pawnTarget).GetComponent<Pawn>();
 
-        int key = this[target]+nbCell;
-        if (key > 70) key -= 70;
+        int newPosition = this.TestPosition(this[target]+nbCell);
         base.Remove(target);
-        this[target] = key;
-        return key;
+        this[target] = newPosition;
+        return newPosition;
     }
 
     public void Remove(string pawnTarget)
@@ -32,20 +31,53 @@ public class ProgressDictionnary : Dictionary<Pawn, int> {
         base.Remove(target);
     }
 
-    public Pawn GetPawn(int progress)
+    public Pawn GetPawn(int position)
     {
         Pawn pawnReturned = null;
-        if (this.ContainsValue(progress))
+        if (this.ContainsValue(position))
         {
             foreach (Pawn item in this.Keys)
             {
-                if (this[item] == progress)
+                if (this[item] == position)
                 {
                     pawnReturned = item;
                 }
             }
         }
         return pawnReturned;
+    }
+
+    public List<Pawn> GetPawnsInRange(int startIndex, int lastIndex)
+    {
+        List<Pawn> returnList = new List<Pawn>();
+        foreach (Pawn item in this.Keys)
+        {
+            if (this[item] > startIndex && this[item] <= lastIndex)
+            {
+                returnList.Add(item);
+            }
+        }
+        return returnList;
+    }
+
+    public int TestPosition(int position)
+    {
+        int rPosition = position;
+
+        if (position > 72) rPosition -= 72;
+        if (position < 0) rPosition += 72;
+
+        return rPosition;
+    }
+
+    public int[] ExchangeCompute(Pawn target1, Pawn target2)
+    {
+        int[] nbMoves = new int[2];
+
+        nbMoves[0] = (TestPosition(this[target2] - (int)target1.PlayerColor * 18)) - target1.Progress;
+        nbMoves[1] = (TestPosition(this[target1] - (int)target2.PlayerColor * 18)) - target2.Progress;
+
+        return nbMoves;
     }
 }
  

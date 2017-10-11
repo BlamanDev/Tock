@@ -94,6 +94,7 @@
     <Compile Include="Assets\Script\Deck.cs" />
     <Compile Include="Assets\Script\Enums\CardsColorsEnum.cs" />
     <Compile Include="Assets\Script\Enums\CardsValuesEnum.cs" />
+    <Compile Include="Assets\Script\Enums\PawnStatusEnum.cs" />
     <Compile Include="Assets\Script\Enums\PawnTestedEnum.cs" />
     <Compile Include="Assets\Script\Enums\PlayerColorEnum.cs" />
     <Compile Include="Assets\Script\Enums\SelectionFilterEnum.cs" />

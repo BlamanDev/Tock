@@ -13,7 +13,7 @@ public class Card : NetworkBehaviour
 
     public SelectionFilterEnum ColorFilter;
 
-    public delegate void CardEffect(Pawn target);
+    public delegate void CardEffect(Pawn target, Pawn otherTarget = null);
     public CardEffect Effect;
 
     public delegate bool CardProjection(Pawn target);
@@ -99,7 +99,7 @@ public class Card : NetworkBehaviour
                 Projections.Add(OnBoardFilter);
                 break;
             case CardsValuesEnum.FOUR:
-                Effect = Move;
+                Effect = FOUR;
                 ColorFilter = SelectionFilterEnum.OWNPAWNS;
                 Projections.Add(OnBoardFilter);
                 break;
@@ -116,47 +116,56 @@ public class Card : NetworkBehaviour
                 break;
             case CardsValuesEnum.JACK:
                 Effect = JACK;
-                ColorFilter = SelectionFilterEnum.ALLPAWNS;
+                ColorFilter = SelectionFilterEnum.OWNPAWNS;
                 Projections.Add(OnBoardFilter);
                 break;
             case CardsValuesEnum.JOKER:
                 Effect = JOKER;
                 ColorFilter = SelectionFilterEnum.OWNPAWNS;
-
+                Projections.Add(ParteuFilter);
                 break;
             default:
                 break;
         }
     }
 
-    private void JOKER(Pawn target)
+    private void JOKER(Pawn target, Pawn otherTarget = null)
     {
+        if (target.OnBoard)
+        {
+            target.Move((int)Value, true);
+        }
+        else
+        {
+            target.Enter();
+        }
     }
 
 
-    private void JACK(Pawn target)
+    private void JACK(Pawn target, Pawn otherTarget)
+    {
+        target.Exchange(otherTarget);
+    }
+
+
+    private void SEVEN(Pawn target, Pawn otherTarget = null)
     {
 
     }
 
 
-    private void SEVEN(Pawn target)
-    {
-    }
-
-
-    private void FOUR(Pawn target)
+    private void FOUR(Pawn target, Pawn otherTarget = null)
     {
         target.Move(-(int)Value);
     }
 
 
-    private void Move(Pawn target)
+    private void Move(Pawn target, Pawn otherTarget = null)
     {
         target.Move((int)Value);
     }
 
-    private void MoveOrEnter(Pawn target)
+    private void MoveOrEnter(Pawn target, Pawn otherTarget = null)
     {
         if (target.OnBoard)
         {
@@ -167,26 +176,42 @@ public class Card : NetworkBehaviour
             target.Enter();
         }
     }
+
     #endregion
     #region cardFilter
     public bool MoveFilter(Pawn target)
     {
+        return MoveFiltering(target, this.Value == CardsValuesEnum.FOUR);
+    }
+
+    private bool MoveFiltering(Pawn target, bool negative = false)
+    {
         bool Playable = true;
-        if (target.Progress + (int)Value > 74)
+        if (target.Progress + ((int)Value * (negative ? -1 : 1)) > 74)
         {
             Playable = false;
         }
         else
         {
-            int progressToCheck = target.Progress + (int)Value + 18 * (int)target.PlayerColor;
+            int progressToCheck = target.Progress + (int)Value * (negative ? -1 : 1) + 18 * (int)target.PlayerColor;
+            List<Pawn> pawnEncoutered = GMaster.progressDictionnary.GetPawnsInRange(target.Progress + 18 * (int)target.PlayerColor, progressToCheck);
+            if (pawnEncoutered.Count > 0)
+            {
+                foreach (Pawn item in pawnEncoutered)
+                {
+                    if (item.Status == PawnStatusEnum.ENTRY)
+                    {
+                        Playable = false;
+                    }
+                }
+            }
             if (GMaster.progressDictionnary.ContainsValue(progressToCheck))
             {
-                if (GMaster.progressDictionnary.GetPawn(progressToCheck).Progress == 0)
+                if (GMaster.progressDictionnary.GetPawn(progressToCheck).Status == PawnStatusEnum.IN_HOUSE)
                 {
                     Playable = false;
                 }
             }
-
         }
         return Playable;
     }
@@ -205,31 +230,80 @@ public class Card : NetworkBehaviour
         }
         return Playable;
     }
-    #endregion
-    public void MakeProjections(List<Pawn> listToTest)
+
+    public bool SevenFilter(Pawn target)
     {
-        bool playable;
-        foreach (Pawn item in listToTest)
+        bool Playable = true;
+
+
+
+        return Playable;
+    }
+    #endregion
+    public bool MakeProjections(List<Pawn> listToTest)
+    {
+        bool playable = true;
+        possibleTargets.Clear();
+        if (this.Value == CardsValuesEnum.SEVEN)
         {
-            playable = true;
-            foreach (CardProjection projection in this.Projections)
+            playable = ProjectionSeven(listToTest);
+        }
+        else
+        {
+            foreach (Pawn item in listToTest)
             {
-                if (!projection(item))
+                playable = true;
+                foreach (CardProjection projection in this.Projections)
                 {
-                    playable = false;
-                    break;
+                    if (!projection(item))
+                    {
+                        playable = false;
+                        break;
+                    }
+                }
+                if (playable)
+                {
+                    possibleTargets.Add(item);
                 }
             }
-            if (playable)
-            {
-                possibleTargets.Add(item);
-            }
         }
+        return playable;
     }
 
-
-    public void Play(Pawn target)
+    private bool ProjectionSeven(List<Pawn> listToTest)
     {
-        Effect(target);
+        bool playable = true;
+        int indexPawn = 0;
+        int movementAdded = 1;
+        int movemenTotal = 0;
+
+        while (indexPawn < listToTest.Count)
+        {
+            Pawn pawnTested = listToTest[indexPawn];
+            if (pawnTested.OnBoard)
+            {
+                movementAdded = 1;
+                while (!GMaster.progressDictionnary.ContainsValue(GMaster.progressDictionnary[pawnTested] + movementAdded) && (movementAdded < 8))
+                {
+                    movementAdded++;
+                    movemenTotal++;
+                }
+                if (movementAdded > 1)
+                {
+                    possibleTargets.Add(pawnTested);
+                }
+            }
+            indexPawn++;
+        }
+        if (movemenTotal < 7)
+        {
+            playable = false;
+        }
+        return playable;
+    }
+
+    public void Play(Pawn target, Pawn otherTarget = null)
+    {
+        Effect(target, otherTarget);
     }
 }

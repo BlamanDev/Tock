@@ -25,6 +25,7 @@ public class TockPlayer : NetworkBehaviour
     public List<Card> liste;
 
     private Card cardSelected=null;
+    private Pawn firstPawnSelected = null;
     private Pawn pawnSelected = null;
     //Color of the player
     [SyncVar]
@@ -58,7 +59,6 @@ public class TockPlayer : NetworkBehaviour
             }
             return playerHand;
         }
-
         set
         {
             playerHand = value;
@@ -72,11 +72,9 @@ public class TockPlayer : NetworkBehaviour
             if (gameDeck == null)
             {
                 gameDeck = GameObject.FindObjectOfType<Deck>();
-
             }
             return gameDeck;
         }
-
         set
         {
             gameDeck = value;
@@ -94,7 +92,6 @@ public class TockPlayer : NetworkBehaviour
             }
             return gMaster;
         }
-
         set
         {
             gMaster = value;
@@ -112,7 +109,6 @@ public class TockPlayer : NetworkBehaviour
 
             return board;
         }
-
         set
         {
             board = value;
@@ -129,7 +125,6 @@ public class TockPlayer : NetworkBehaviour
             }
             return text;
         }
-
         set
         {
             text = value;
@@ -143,12 +138,9 @@ public class TockPlayer : NetworkBehaviour
     /// </summary>
     void Start()
     {
-
-
         //add tag to the player
         String nameTag = PlayerColor.ToString();
         this.tag = nameTag + "_Player";
-
     }
 
     // Update is called once per frame
@@ -268,7 +260,6 @@ public class TockPlayer : NetworkBehaviour
     {
         TockPlayer otherTockPlayer = GameObject.FindGameObjectWithTag(otherPlayer + "_Player").GetComponent<TockPlayer>();
         otherTockPlayer.CmdMovePawn(PawnIndex, nbMoves);
-
     }
 
     #endregion
@@ -281,8 +272,7 @@ public class TockPlayer : NetworkBehaviour
         nbPlayableCards = 0;
         foreach (Card item in playerHand)
         {
-            item.MakeProjections(GMaster.getPawnsFiltered(item.ColorFilter, this.PlayerColor));
-            if (item.possibleTargets.Count == 0)
+            if (!item.MakeProjections(GMaster.getPawnsFiltered(item.ColorFilter, this.PlayerColor)))
             {
                 DisplayedHand[playerHand.IndexOf(item)].GetComponent<Button>().enabled = false;
             }
@@ -292,16 +282,17 @@ public class TockPlayer : NetworkBehaviour
                 DisplayedHand[playerHand.IndexOf(item)].GetComponent<Button>().enabled = true;
             }
         }
-
-        
-
-
+        if (nbPlayableCards==0)
+        {
+            foreach (Card item in playerHand)
+            {
+                DisplayedHand[playerHand.IndexOf(item)].GetComponent<Button>().enabled = true;
+            }
+        }
     }
     #endregion
     #region Card
     #region Drawing
-
-
     private void ClearCard(object sender, EventArgs e)
     {
         HandEventArgs HEA = (HandEventArgs)e;
@@ -376,7 +367,6 @@ public class TockPlayer : NetworkBehaviour
             {
                 Text.text = "Card Selected : " + Hand[cardPlayed].name + " : " + (int)Hand[cardPlayed].Value + " cases";   //debug
                 this.SelectPawn();
-
             }
         }
 
@@ -386,7 +376,7 @@ public class TockPlayer : NetworkBehaviour
     {
         if (isClient)
         {
-            Destroy(cardSelected.gameObject);
+            NetworkServer.UnSpawn(cardSelected.gameObject);
         }
 
         Hand.Remove(cardSelected);
@@ -395,33 +385,47 @@ public class TockPlayer : NetworkBehaviour
     }
 
     [Command]
-    public void CmdPlayCard(String cardPlayed, String pawnTarget)
+    public void CmdPlayCard(String cardPlayed, String pawnTarget,String otherPawnTarget)
     {
         Card card = GameDeck.StrToCard(cardPlayed);
-        card.Play(GameObject.Find(pawnTarget).GetComponent<Pawn>());
+        Pawn otherTarget = null;
+        if (!string.IsNullOrEmpty(otherPawnTarget))
+        {
+            otherTarget = GameObject.Find(otherPawnTarget).GetComponent<Pawn>();
+        }
+        card.Play(GameObject.Find(pawnTarget).GetComponent<Pawn>(),otherTarget);
         Text.text = "Card Played : " + card.name + " : " + (int)card.Value + " cases";   //debug
 
         GameDeck.CardsInDeck.Add(card);
     }
+
+
     #endregion
     #endregion
     #region selection & play pawn
-    public void SelectPawn()
+    public void SelectPawn(bool secondTarget=false)
     {
         foreach (Pawn item in cardSelected.possibleTargets)
         {
-            item.EventOnPawnSelected += PawnSelected;
+            item.EventOnPawnSelected += PawnSelection;
             item.SwitchHalo(true, PlayerColor);
         }
-        StartCoroutine(waitForPawn());
+        if (!secondTarget)
+        {
+            StartCoroutine(waitForPawn());
+        }
+        else
+        {
+            StartCoroutine(waitForSecondPawn());
+        }
     }
 
-    private void PawnSelected(Pawn Selection)
+    private void PawnSelection(Pawn Selection)
     {
         pawnSelected = Selection;
         foreach (Pawn item in cardSelected.possibleTargets)
         {
-            item.EventOnPawnSelected -= PawnSelected;
+            item.EventOnPawnSelected -= PawnSelection;
             item.SwitchHalo(false, PlayerColor);
         }
 
@@ -432,11 +436,44 @@ public class TockPlayer : NetworkBehaviour
         {
             yield return new WaitWhile(() => pawnSelected == null);
         }
-        CmdPlayCard(cardSelected.name, pawnSelected.name);
+        if (cardSelected.Value == CardsValuesEnum.JACK)
+        {
+            PlayJackCard();
+        }
+        else
+        {
+            CmdPlayCard(cardSelected.name, pawnSelected.name,"");
+            pawnSelected = null;
+            DiscardSelectedCard();
+        }
+
+    }
+
+    private void PlayJackCard()
+    {
+        firstPawnSelected = pawnSelected;
+
+        cardSelected.MakeProjections(GMaster.getPawnsFiltered(SelectionFilterEnum.ALLPAWNS, firstPawnSelected.PlayerColor));
+        cardSelected.possibleTargets.Remove(firstPawnSelected);
         pawnSelected = null;
+
+        SelectPawn(true);
+    }
+
+    IEnumerator waitForSecondPawn()
+    {
+        {
+            yield return new WaitWhile(() => pawnSelected == null);
+        }
+
+        CmdPlayCard(cardSelected.name, firstPawnSelected.name,pawnSelected.name);
+        pawnSelected = null;
+        firstPawnSelected = null;
         DiscardSelectedCard();
 
     }
+
+
     #endregion
     #region ProgressDictionnary
     [ClientRpc]
