@@ -177,6 +177,7 @@ public class Pawn : NetworkBehaviour
         }
     }
 
+
     public delegate void OnPawnSelected(Pawn pawnSelected);
     public event OnPawnSelected EventOnPawnSelected;
     #endregion

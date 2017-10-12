@@ -30,7 +30,13 @@ public class GameMaster : NetworkBehaviour
     public Dictionary<PlayerColorEnum, List<Pawn>> AllPawns;
     public ProgressDictionnary progressDictionnary;
 
+    public delegate void OnTurnFinished();
+    [SyncEvent]
+    public static event OnTurnFinished EventOnTurnFinished;
+
+
     static public List<TockPlayer> players = new List<TockPlayer>();
+    private int activePlayerIndex = -1;
     private TockPlayer localPlayer;
 
     public TockPlayer LocalPlayer
@@ -60,7 +66,7 @@ public class GameMaster : NetworkBehaviour
         PawnSpawner.EventAllPawnsCreated += buildPawnList;
         AllPawns = new Dictionary<PlayerColorEnum, List<Pawn>>();
         progressDictionnary = new ProgressDictionnary();
-        GameBegin();
+        //GameBegin();
     }
 
     // Update is called once per frame
@@ -105,6 +111,7 @@ public class GameMaster : NetworkBehaviour
     public void GameBegin()
     {
         StartCoroutine(waitForAllPlayers());
+
     }
     #endregion
     #region Pawns Methods
@@ -172,24 +179,6 @@ public class GameMaster : NetworkBehaviour
         return listeRetour;
     }
 
-    public void EnterPawn(string player, int PawnIndex)
-    {
-        TockPlayer tockPlayer = GameObject.FindGameObjectWithTag(player + "_Player").GetComponent<TockPlayer>();
-        tockPlayer.CmdEnterPawn(PawnIndex);
-    }
-
-    public void MovePawn(string player, int pawnIndex, int nbMoves)
-    {
-        if (player != LocalPlayer.PlayerColor.ToString())
-        {
-            LocalPlayer.CmdMoveOtherColor(player, pawnIndex, nbMoves);
-        }
-        else
-        {
-            LocalPlayer.CmdMovePawn(pawnIndex, nbMoves);
-        }
-
-    }
     #endregion
     #region Players Methods
     /// <summary>
@@ -225,9 +214,8 @@ public class GameMaster : NetworkBehaviour
         }
         foreach (TockPlayer item in players)
         {
-            item.RpcBuildFirstHand();
+            item.TargetBuildFirstHand(NetworkServer.objects[item.netId].connectionToClient);
         }
-
     }
     #endregion
     #region Cards Methods
@@ -244,11 +232,18 @@ public class GameMaster : NetworkBehaviour
             }
         }
     }
+    #endregion
 
-    public void localBuildHand()
+    public void NextPlayer()
     {
+        activePlayerIndex++;
+        if (activePlayerIndex==players.Count)
+        {
+            activePlayerIndex = 0;
+        }
+        text.text = "Beginning turn of player : " + players[activePlayerIndex].name;
+        players[activePlayerIndex].TargetBeginTurn(NetworkServer.objects[players[activePlayerIndex].netId].connectionToClient);
     }
 
 
-    #endregion
 }

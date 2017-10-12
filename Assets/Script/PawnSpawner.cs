@@ -122,12 +122,10 @@ void Update()
 
     public void TestEnter(string player)
     {
-        GMaster.EnterPawn(player,1);
     }
 
     public void TestMove(string player)
     {
-        GMaster.MovePawn(player, 1, 3);
     }
 
     public void TestNewTurn()
@@ -142,7 +140,6 @@ void Update()
 
     public void TestPickACard()
     {
-        GMaster.localBuildHand();
     }
 
     public void PlayCard(int cardSelected)

@@ -21,6 +21,7 @@ public class TockPlayer : NetworkBehaviour
     public List<Pawn> Pawns;
 
     private int nbPlayableCards=0;
+    private int movementLeft = 7;
     private PlayerHand playerHand;
     public List<Card> liste;
 
@@ -40,6 +41,8 @@ public class TockPlayer : NetworkBehaviour
     private TockBoard board;
 
     public Image[] DisplayedHand;
+
+    private GameObject displayMovementLeft;
 
     //Card Event 
     public delegate void OnCardDrawed(CardsColorsEnum CardColor, CardsValuesEnum CardValue);
@@ -87,8 +90,7 @@ public class TockPlayer : NetworkBehaviour
         {
             if (gMaster == null)
             {
-                GameObject plop = GameObject.Find("NetworkGameMaster");
-                GMaster = plop.GetComponent<GameMaster>();
+                gMaster = GameObject.Find("NetworkGameMaster").GetComponent<GameMaster>();
             }
             return gMaster;
         }
@@ -114,6 +116,21 @@ public class TockPlayer : NetworkBehaviour
             board = value;
         }
     }
+
+    public int MovementLeft
+    {
+        get
+        {
+            return movementLeft;
+        }
+
+        set
+        {
+            movementLeft = value;
+            DisplayMovementLeft.GetComponentsInChildren<Text>()[1].text = value.ToString();
+        }
+    }
+
 
     public Text Text
     {
@@ -170,7 +187,25 @@ public class TockPlayer : NetworkBehaviour
 
     }
 
-    
+    public GameObject DisplayMovementLeft
+    {
+        get
+        {
+            if (displayMovementLeft == null)
+            {
+                displayMovementLeft = GameObject.Find("MovementLeft");
+            }
+            return displayMovementLeft;
+        }
+
+        set
+        {
+            displayMovementLeft = value;
+        }
+    }
+
+
+
     #endregion
     #region Pawns
     private static int ComparePawnsByPawnIndex(Pawn x, Pawn y)
@@ -233,35 +268,6 @@ public class TockPlayer : NetworkBehaviour
         return inHouse == 4;
     }
 
-    /// <summary>
-    /// Command to move a Pawn
-    /// </summary>
-    /// <param name="pawnIndex"></param>
-    [Command]
-    public void CmdMovePawn(int pawnIndex, int nbMoves)
-    {
-        this.Pawns[pawnIndex].Move(nbMoves);
-    }
-
-    /// <summary>
-    /// Command to make a pawn enter the board
-    /// </summary>
-    /// <param name="pawnIndex"></param>
-    [Command]
-    public void CmdEnterPawn(int pawnIndex)
-    {
-        //EventOnPawnEntered(this.Pawns[pawnIndex].name);
-        this.Pawns[pawnIndex].Enter();
-    }
-
-
-    [Command]
-    public void CmdMoveOtherColor(String otherPlayer, int PawnIndex, int nbMoves)
-    {
-        TockPlayer otherTockPlayer = GameObject.FindGameObjectWithTag(otherPlayer + "_Player").GetComponent<TockPlayer>();
-        otherTockPlayer.CmdMovePawn(PawnIndex, nbMoves);
-    }
-
     #endregion
     #region projection
     /// <summary>
@@ -308,6 +314,15 @@ public class TockPlayer : NetworkBehaviour
         DisplayedHand[HEA.CardPosition].material = HEA.Card.Illustration;
     }
 
+    [TargetRpc]
+    public void TargetBuildFirstHand(NetworkConnection target)
+    {
+        for (int i = 0; i < 5; i++)
+        {
+            this.PickACard();
+        }
+    }
+
     [ClientRpc]
     public void RpcBuildFirstHand()
     {
@@ -316,6 +331,7 @@ public class TockPlayer : NetworkBehaviour
             this.PickACard();
         }
     }
+
 
     public void PickACard()
     {
@@ -366,6 +382,11 @@ public class TockPlayer : NetworkBehaviour
             else
             {
                 Text.text = "Card Selected : " + Hand[cardPlayed].name + " : " + (int)Hand[cardPlayed].Value + " cases";   //debug
+                if (Hand[cardPlayed].Value == CardsValuesEnum.SEVEN)
+                {
+                    MovementLeft = 7;
+                    DisplayMovementLeft.SetActive(true);
+                }
                 this.SelectPawn();
             }
         }
@@ -382,6 +403,10 @@ public class TockPlayer : NetworkBehaviour
         Hand.Remove(cardSelected);
         cardSelected = null;
         this.PickACard();
+        Text.text = "Turn Finished for Me";
+
+        CmdEndTurn();
+
     }
 
     [Command]
@@ -425,10 +450,15 @@ public class TockPlayer : NetworkBehaviour
         pawnSelected = Selection;
         foreach (Pawn item in cardSelected.possibleTargets)
         {
-            item.EventOnPawnSelected -= PawnSelection;
-            item.SwitchHalo(false, PlayerColor);
+            unSelect(item);
         }
 
+    }
+
+    private void unSelect(Pawn item)
+    {
+        item.EventOnPawnSelected -= PawnSelection;
+        item.SwitchHalo(false, PlayerColor);
     }
 
     IEnumerator waitForPawn()
@@ -436,17 +466,38 @@ public class TockPlayer : NetworkBehaviour
         {
             yield return new WaitWhile(() => pawnSelected == null);
         }
-        if (cardSelected.Value == CardsValuesEnum.JACK)
-        {
-            PlayJackCard();
-        }
-        else
-        {
-            CmdPlayCard(cardSelected.name, pawnSelected.name,"");
-            pawnSelected = null;
-            DiscardSelectedCard();
-        }
+        switch (cardSelected.Value) { 
+            case CardsValuesEnum.SEVEN:
+                CmdPlayCard("ACE_SPADES", pawnSelected.name, "");
+                if (cardSelected.MoveFiltering(pawnSelected, 1))
+                {
+                    unSelect(pawnSelected);
+                }
+                MovementLeft--;
+                pawnSelected = null;
 
+                if (MovementLeft>0)
+                {
+                    SelectPawn();
+                }
+                else
+                {
+                    DisplayMovementLeft.SetActive(false);
+                    DiscardSelectedCard();
+                }
+                break;
+            case CardsValuesEnum.JACK:
+                PlayJackCard();
+                break;
+            default:
+                CmdPlayCard(cardSelected.name, pawnSelected.name, "");
+                pawnSelected = null;
+                DiscardSelectedCard();
+                break;
+        }
+        Text.text = "Turn Finished for Me";
+
+        CmdEndTurn();
     }
 
     private void PlayJackCard()
@@ -497,8 +548,23 @@ public class TockPlayer : NetworkBehaviour
         GMaster.progressDictionnary.Remove(target);
     }
 #endregion
+    [ClientRpc]
     public void RpcBeginTurn()
     {
         Projection();
+    }
+
+    [TargetRpc]
+    public void TargetBeginTurn(NetworkConnection Target)
+    {
+        Text.text = "It's my turn, i'm the player : " + this.PlayerName + " - Color : " + this.PlayerColor.ToString();
+        Projection();
+    }
+
+    [Command]
+    public void CmdEndTurn()
+    {
+        GMaster.NextPlayer();
+
     }
 }

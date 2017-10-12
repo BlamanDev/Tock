@@ -181,19 +181,23 @@ public class Card : NetworkBehaviour
     #region cardFilter
     public bool MoveFilter(Pawn target)
     {
-        return MoveFiltering(target, this.Value == CardsValuesEnum.FOUR);
+        return MoveFiltering(target);
     }
 
-    private bool MoveFiltering(Pawn target, bool negative = false)
+    public bool MoveFiltering(Pawn target, int nbMoves=-1)
     {
         bool Playable = true;
-        if (target.Progress + ((int)Value * (negative ? -1 : 1)) > 74)
+        if (nbMoves==-1)
+        {
+            nbMoves = (int)Value;
+        }
+        if (target.Progress + (nbMoves * (this.Value == CardsValuesEnum.FOUR ? -1 : 1)) > 74)
         {
             Playable = false;
         }
         else
         {
-            int progressToCheck = target.Progress + (int)Value * (negative ? -1 : 1) + 18 * (int)target.PlayerColor;
+            int progressToCheck = target.Progress + nbMoves * (this.Value == CardsValuesEnum.FOUR ? -1 : 1) + 18 * (int)target.PlayerColor;
             List<Pawn> pawnEncoutered = GMaster.progressDictionnary.GetPawnsInRange(target.Progress + 18 * (int)target.PlayerColor, progressToCheck);
             if (pawnEncoutered.Count > 0)
             {
