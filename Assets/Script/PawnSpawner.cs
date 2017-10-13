@@ -66,7 +66,6 @@ void Update()
     /// <returns></returns>
     private Pawn CreatePawn(PlayerColorEnum player, int pawnIndex)
     {
-
         GameObject newPawn = Instantiate(PawnPrefab);
         Pawn retour = newPawn.GetComponent<Pawn>();
 
@@ -96,7 +95,6 @@ void Update()
         //FOR EACH player, create 4 pawns
         foreach (String color in Enum.GetNames(typeof(PlayerColorEnum)))
         {
-
             text.text += "Populating " + color + " Pawn : ";
             if (!color.Equals(PlayerColorEnum.Clear.ToString()))
             {
@@ -104,9 +102,7 @@ void Update()
                 {
                     text.text += CreatePawn(((PlayerColorEnum)Enum.Parse(typeof(PlayerColorEnum), color)), i) + " ";
                 }
-
             }
-
         }
         //Trigger Event, used to tell the GameMaster to build his dictionnary of Pawns
         EventAllPawnsCreated();
@@ -119,36 +115,4 @@ void Update()
         }
     }
 
-
-    public void TestEnter(string player)
-    {
-    }
-
-    public void TestMove(string player)
-    {
-    }
-
-    public void TestNewTurn()
-    {
-        GMaster.LocalPlayer.RpcBeginTurn();
-    }
-
-    public void TestBuildDeck()
-    {
-        GMaster.BuildDeck();
-    }
-
-    public void TestPickACard()
-    {
-    }
-
-    public void PlayCard(int cardSelected)
-    {
-        GMaster.LocalPlayer.PlayCard(cardSelected);
-    }
-
-    public void TestGameBegin()
-    {
-        GMaster.GameBegin();
-    }
 }

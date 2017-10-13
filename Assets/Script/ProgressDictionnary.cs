@@ -2,9 +2,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Special Dictionnary used to keep track of the pawns
+/// </summary>
 public class ProgressDictionnary : Dictionary<Pawn, int> {
-    
-
+    /// <summary>
+    /// Compute the position of the target according to its color and add it 
+    /// </summary>
+    /// <param name="pawnTarget">string - name of the target</param>
+    /// <returns>the new position</returns>
     public int Add(string pawnTarget)
     {
         Pawn target = GameObject.Find(pawnTarget).GetComponent<Pawn>();
@@ -15,6 +21,12 @@ public class ProgressDictionnary : Dictionary<Pawn, int> {
         return position;
     }
 
+    /// <summary>
+    /// Move the target in the dictionnary
+    /// </summary>
+    /// <param name="pawnTarget">string - name of the target</param>
+    /// <param name="nbCell">int - number of cell</param>
+    /// <returns>the new position</returns>
     public int Move(string pawnTarget, int nbCell)
     {
         Pawn target = GameObject.Find(pawnTarget).GetComponent<Pawn>();
@@ -25,12 +37,21 @@ public class ProgressDictionnary : Dictionary<Pawn, int> {
         return newPosition;
     }
 
+    /// <summary>
+    /// Remove the target in the dictionnary
+    /// </summary>
+    /// <param name="pawnTarget">string - name of the target</param>
     public void Remove(string pawnTarget)
     {
         Pawn target = GameObject.Find(pawnTarget).GetComponent<Pawn>();
         base.Remove(target);
     }
 
+    /// <summary>
+    /// Return the pawn corresponding to a position
+    /// </summary>
+    /// <param name="position"></param>
+    /// <returns></returns>
     public Pawn GetPawn(int position)
     {
         Pawn pawnReturned = null;
@@ -47,6 +68,12 @@ public class ProgressDictionnary : Dictionary<Pawn, int> {
         return pawnReturned;
     }
 
+    /// <summary>
+    /// Return all the pawns between to position
+    /// </summary>
+    /// <param name="startIndex"></param>
+    /// <param name="lastIndex"></param>
+    /// <returns></returns>
     public List<Pawn> GetPawnsInRange(int startIndex, int lastIndex)
     {
         List<Pawn> returnList = new List<Pawn>();
@@ -60,6 +87,11 @@ public class ProgressDictionnary : Dictionary<Pawn, int> {
         return returnList;
     }
 
+    /// <summary>
+    /// Fix the position if it is out of bound
+    /// </summary>
+    /// <param name="position"></param>
+    /// <returns></returns>
     public int TestPosition(int position)
     {
         int rPosition = position;
@@ -70,6 +102,12 @@ public class ProgressDictionnary : Dictionary<Pawn, int> {
         return rPosition;
     }
 
+    /// <summary>
+    /// Compute the number of cell between to pawns
+    /// </summary>
+    /// <param name="target1"></param>
+    /// <param name="target2"></param>
+    /// <returns></returns>
     public int[] ExchangeCompute(Pawn target1, Pawn target2)
     {
         int[] nbMoves = new int[2];

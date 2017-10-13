@@ -4,6 +4,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 
+/// <summary>
+/// Card script
+/// </summary>
 public class Card : NetworkBehaviour
 {
     [SyncVar]
@@ -21,6 +24,7 @@ public class Card : NetworkBehaviour
 
     public Material Illustration;
 
+    //Pawn which can be played by this card after projection
     public List<Pawn> possibleTargets;
 
     private GameMaster gMaster;
@@ -58,6 +62,11 @@ public class Card : NetworkBehaviour
         }
     }
 
+    /// <summary>
+    /// Set the color and value of this card
+    /// </summary>
+    /// <param name="color"></param>
+    /// <param name="value"></param>
     public void Initialize(CardsColorsEnum color, CardsValuesEnum value)
     {
         Color = color;
@@ -65,6 +74,10 @@ public class Card : NetworkBehaviour
 
     }
 
+    /// <summary>
+    /// Update the card attributes according to the new value
+    /// </summary>
+    /// <param name="value"></param>
     public void OnChangeValue(CardsValuesEnum value)
     {
         Value = value;
@@ -76,6 +89,10 @@ public class Card : NetworkBehaviour
     }
 
     #region Card Effect
+    /// <summary>
+    /// Initialise the card according to the new value, Effect and Filter
+    /// </summary>
+    /// <param name="value"></param>
     private void initCard(CardsValuesEnum value)
     {
         switch (value)
@@ -129,6 +146,11 @@ public class Card : NetworkBehaviour
         }
     }
 
+    /// <summary>
+    /// Make the target enter the board or move the target according to the value of the card wiping all pawns in the way
+    /// </summary>
+    /// <param name="target"></param>
+    /// <param name="otherTarget"></param>
     private void JOKER(Pawn target, Pawn otherTarget = null)
     {
         if (target.OnBoard)
@@ -141,30 +163,51 @@ public class Card : NetworkBehaviour
         }
     }
 
-
+    /// <summary>
+    /// Exchange the places of the targets
+    /// </summary>
+    /// <param name="target"></param>
+    /// <param name="otherTarget"></param>
     private void JACK(Pawn target, Pawn otherTarget)
     {
         target.Exchange(otherTarget);
     }
 
-
+    /// <summary>
+    /// Not used, Seven logic is done in the TockPlayer class
+    /// </summary>
+    /// <param name="target"></param>
+    /// <param name="otherTarget"></param>
     private void SEVEN(Pawn target, Pawn otherTarget = null)
     {
 
     }
 
-
+    /// <summary>
+    /// Move the target backward
+    /// </summary>
+    /// <param name="target"></param>
+    /// <param name="otherTarget"></param>
     private void FOUR(Pawn target, Pawn otherTarget = null)
     {
         target.Move(-(int)Value);
     }
 
-
+    /// <summary>
+    /// Move the target forward
+    /// </summary>
+    /// <param name="target"></param>
+    /// <param name="otherTarget"></param>
     private void Move(Pawn target, Pawn otherTarget = null)
     {
         target.Move((int)Value);
     }
 
+    /// <summary>
+    /// Make the target enter the board or move the target according to the value of the card
+    /// </summary>
+    /// <param name="target"></param>
+    /// <param name="otherTarget"></param>
     private void MoveOrEnter(Pawn target, Pawn otherTarget = null)
     {
         if (target.OnBoard)
@@ -179,26 +222,42 @@ public class Card : NetworkBehaviour
 
     #endregion
     #region cardFilter
+    /// <summary>
+    /// Test if the pawn target can move according the value of the card
+    /// </summary>
+    /// <param name="target"></param>
+    /// <returns></returns>
     public bool MoveFilter(Pawn target)
     {
         return MoveFiltering(target);
     }
 
-    public bool MoveFiltering(Pawn target, int nbMoves=-1)
+    /// <summary>
+    /// Test if the pawn target can move according the value of the card or the specified number of cell
+    /// </summary>
+    /// <param name="target"></param>
+    /// <param name="nbMoves">int - if -1, test with value of the card, else test with the specified number</param>
+    /// <returns></returns>
+    public bool MoveFiltering(Pawn target, int nbMoves = -1)
     {
         bool Playable = true;
-        if (nbMoves==-1)
+        //IF nbMoves == -1 THEN test with value of the card
+        if (nbMoves == -1)
         {
             nbMoves = (int)Value;
         }
+        //IF target has finished => not playable
         if (target.Progress + (nbMoves * (this.Value == CardsValuesEnum.FOUR ? -1 : 1)) > 74)
         {
             Playable = false;
         }
         else
         {
+            //Compute the progress according to the color of the pawn and the value of the card
             int progressToCheck = target.Progress + nbMoves * (this.Value == CardsValuesEnum.FOUR ? -1 : 1) + 18 * (int)target.PlayerColor;
+            //Get the list of pawn to be tested
             List<Pawn> pawnEncoutered = GMaster.progressDictionnary.GetPawnsInRange(target.Progress + 18 * (int)target.PlayerColor, progressToCheck);
+            //Test if there is pawn on its starting position
             if (pawnEncoutered.Count > 0)
             {
                 foreach (Pawn item in pawnEncoutered)
@@ -209,6 +268,7 @@ public class Card : NetworkBehaviour
                     }
                 }
             }
+            //Test if there is a pawn on the destination and if it is in house
             if (GMaster.progressDictionnary.ContainsValue(progressToCheck))
             {
                 if (GMaster.progressDictionnary.GetPawn(progressToCheck).Status == PawnStatusEnum.IN_HOUSE)
@@ -220,11 +280,21 @@ public class Card : NetworkBehaviour
         return Playable;
     }
 
+    /// <summary>
+    /// Test if the target is on the board
+    /// </summary>
+    /// <param name="target"></param>
+    /// <returns></returns>
     public bool OnBoardFilter(Pawn target)
     {
         return target.OnBoard;
     }
 
+    /// <summary>
+    /// Test if the target is on the board, and if can make the move
+    /// </summary>
+    /// <param name="target"></param>
+    /// <returns></returns>
     public bool ParteuFilter(Pawn target)
     {
         bool Playable = true;
@@ -235,19 +305,28 @@ public class Card : NetworkBehaviour
         return Playable;
     }
 
+    /// <summary>
+    /// Filter for the seven card...useless
+    /// </summary>
+    /// <param name="target"></param>
+    /// <returns></returns>
     public bool SevenFilter(Pawn target)
     {
         bool Playable = true;
-
-
-
         return Playable;
     }
     #endregion
+    #region Projection
+    /// <summary>
+    /// Test if every pawn in the given list can be played with the card
+    /// </summary>
+    /// <param name="listToTest"></param>
+    /// <returns></returns>
     public bool MakeProjections(List<Pawn> listToTest)
     {
         bool playable = true;
         possibleTargets.Clear();
+        //IF the card is Seven, use the projection function specific to the seven
         if (this.Value == CardsValuesEnum.SEVEN)
         {
             playable = ProjectionSeven(listToTest);
@@ -257,6 +336,7 @@ public class Card : NetworkBehaviour
             foreach (Pawn item in listToTest)
             {
                 playable = true;
+                //test the pawn with each filter of the card
                 foreach (CardProjection projection in this.Projections)
                 {
                     if (!projection(item))
@@ -274,6 +354,11 @@ public class Card : NetworkBehaviour
         return playable;
     }
 
+    /// <summary>
+    /// Test if pawns can be switched
+    /// </summary>
+    /// <param name="listToTest"></param>
+    /// <returns></returns>
     private bool ProjectionSeven(List<Pawn> listToTest)
     {
         bool playable = true;
@@ -281,31 +366,38 @@ public class Card : NetworkBehaviour
         int movementAdded = 1;
         int movemenTotal = 0;
 
-        while (indexPawn < listToTest.Count)
+        for (indexPawn = 0; indexPawn < listToTest.Count; indexPawn++)
         {
             Pawn pawnTested = listToTest[indexPawn];
             if (pawnTested.OnBoard)
             {
                 movementAdded = 1;
+                //Compute movement max for the pawn
                 while (!GMaster.progressDictionnary.ContainsValue(GMaster.progressDictionnary[pawnTested] + movementAdded) && (movementAdded < 8))
                 {
                     movementAdded++;
                     movemenTotal++;
                 }
+                //IF the pawn can move for minimum 1 cell, add it to possibles argets
                 if (movementAdded > 1)
                 {
                     possibleTargets.Add(pawnTested);
                 }
             }
-            indexPawn++;
         }
-        if (movemenTotal < 7)
+        //IF movement total is inferior to the card value
+        if (movemenTotal < (int)Value)
         {
             playable = false;
         }
         return playable;
     }
-
+    #endregion
+    /// <summary>
+    /// Apply the card effect on the targetted pawn
+    /// </summary>
+    /// <param name="target"></param>
+    /// <param name="otherTarget"></param>
     public void Play(Pawn target, Pawn otherTarget = null)
     {
         Effect(target, otherTarget);

@@ -11,7 +11,7 @@ using UnityEngine.Networking;
 /// </summary>
 public class Pawn : NetworkBehaviour
 {
-    #region Properties
+    #region Attributes
     //Progress of the Pawn on its path
     [SyncVar]
     public int Progress = 0;
@@ -36,25 +36,28 @@ public class Pawn : NetworkBehaviour
     private SpawnPositions spawnPositions;
     private GameObject outPosition;
 
+    #region Components
     //Components of the pawn
     private Animator pawnAnimator;
     private MeshRenderer pawnMeshRenderer;
     private Light selectableLight;
-
+    #endregion
     private GameMaster gMaster;
 
+    #region Hash
     //Hash of Animator parameters
     private int enterHash = Animator.StringToHash("EnterBoard");
     private int exitHash = Animator.StringToHash("ExitBoard");
     private int StateHash = Animator.StringToHash("ProgressOnBoard");
     private int speedHash = Animator.StringToHash("Speed");
-
+    #endregion
 
 
     //public GameObject GhostPawnPrefab;
 
     private Color actualHaloColor;
 
+    #region properties
     public Color ActualHaloColor
     {
         get
@@ -176,10 +179,8 @@ public class Pawn : NetworkBehaviour
             }
         }
     }
+    #endregion
 
-
-    public delegate void OnPawnSelected(Pawn pawnSelected);
-    public event OnPawnSelected EventOnPawnSelected;
     #endregion
 
     // Use this for initialization
@@ -195,6 +196,10 @@ public class Pawn : NetworkBehaviour
     }
 
     #region Events
+    //Event fired when a pawn is selected
+    public delegate void OnPawnSelected(Pawn pawnSelected);
+    public event OnPawnSelected EventOnPawnSelected;
+
     /// <summary>
     /// Event called when the pawn is created
     /// Get the component attached to the pawn
@@ -220,11 +225,19 @@ public class Pawn : NetworkBehaviour
         outPosition = SpawnPositions.getOutPosition(newColor, PawnIndex);
     }
 
+    /// <summary>
+    /// Fire the OnChangePlayerColor
+    /// </summary>
     public override void OnStartClient()
     {
         OnChangePlayerColor(PlayerColor);
     }
 
+    /// <summary>
+    /// Convert a PlayerColorEnum into a Color
+    /// </summary>
+    /// <param name="newColor"></param>
+    /// <returns></returns>
     private Color PlayerColorEnumToColor(PlayerColorEnum newColor)
     {
         Color color = Color.clear;
@@ -241,12 +254,9 @@ public class Pawn : NetworkBehaviour
                 break;
             case PlayerColorEnum.Yellow:
                 color = Color.yellow;
-
                 break;
-
         }
         return color;
-
     }
 
     /// <summary>
@@ -255,12 +265,14 @@ public class Pawn : NetworkBehaviour
     /// <param name="onBoard"></param>
     public void OnChangeOnBoard(bool onBoard)
     {
+        OnBoard = onBoard;
         if (!PawnAnimator.enabled)
         {
             PawnAnimator.enabled = true;
         }
         if (onBoard)
         {
+            //Place the pawn in its entry position et fire the Entry animation
             Transform startTransform = SpawnPositions.getStartPosition(PlayerColor).transform;
             this.transform.position = startTransform.position;
             this.transform.rotation = startTransform.rotation;
@@ -274,21 +286,34 @@ public class Pawn : NetworkBehaviour
         }
     }
 
+    /// <summary>
+    /// Collision detection
+    /// </summary>
+    /// <param name="other"></param>
     private void OnTriggerEnter(Collider other)
     {
+        //IF object collided is a Pawn
         if (other.name == "PawnModel")
         {
             Pawn pawnCollided = other.GetComponentInParent<Pawn>();
+            //IF this pawn is moving and the other isn't moving
+            //Useful when pawns are switching positions
             if (this.Status == PawnStatusEnum.MOVING && pawnCollided.Status == PawnStatusEnum.IDLE)
             {
+                //IF wipeAllPawns is true or if the other pawn is at the same postion in the progressDico
                 if (wipeAllPawns || (GMaster.progressDictionnary[pawnCollided] == GMaster.progressDictionnary[this]))
                 {
+                    //THEN remove the other pawn from the board
                     other.GetComponentInParent<Pawn>().Exit();
                 }
             }
         }
     }
 
+    /// <summary>
+    /// Check if the pawn is arrived at destination
+    /// </summary>
+    /// <param name="animationProgress"></param>
     public void CheckProgress(int animationProgress)
     {
         if (animationProgress == Progress)
@@ -327,19 +352,24 @@ public class Pawn : NetworkBehaviour
     /// Move the Pawn
     /// </summary>
     /// <param name="nbCell">int : unsigned number of cell</param>
-    /// <param name="negative">bool (default : false) : false if movement is forward, true if movement is backward</param>
     /// <param name="wipeAllPawns">bool (default : false) : if true, all pawns encoutered will be wiped off the board</param>
-    public void Move(int nbCell, bool wipeAllPawns = false, int speed=1)
+    /// <param name="speed">int : speed of the animation</param>
+    public void Move(int nbCell, bool wipeAllPawns = false, int speed = 1)
     {
-        PawnAnimator.SetFloat(speedHash, (nbCell>0 ? speed : -speed));
+        PawnAnimator.SetFloat(speedHash, (nbCell > 0 ? speed : -speed));
         Progress += nbCell;
         Status = PawnStatusEnum.MOVING;
         this.wipeAllPawns = wipeAllPawns;
+        //Update the position of the pawn in the ProgressDico
         GMaster.LocalPlayer.RpcMoveinProgressDictionnary(this.name, nbCell);
 
         PawnAnimator.Play(StateHash);
     }
 
+    /// <summary>
+    /// Exchange the pawn position with another one
+    /// </summary>
+    /// <param name="otherPawn"></param>
     public void Exchange(Pawn otherPawn)
     {
         int[] cellBetween = GMaster.progressDictionnary.ExchangeCompute(this, otherPawn);
@@ -348,7 +378,7 @@ public class Pawn : NetworkBehaviour
     }
 
     /// <summary>
-    /// Get the pawn of the board
+    /// Get the pawn out of the board
     /// </summary>
     public void Exit()
     {
@@ -357,56 +387,28 @@ public class Pawn : NetworkBehaviour
         GMaster.LocalPlayer.RpcRemovefromProgressDictionnary(this.name);
     }
 
+    /// <summary>
+    /// Place the Pawn at its starting position
+    /// </summary>
     public void PlacePawnOut()
     {
         this.transform.position = outPosition.transform.position;
     }
-    /*
-    #region Projection
-    public void MakeProjection(int nbCell)
-    {
-        if (OnBoard)
-        {
-            List<Pawn> PawnsEncoutered = new List<Pawn>();
-            GameObject ghostObject = Instantiate(GhostPawnPrefab);
-            GhostPawn ghost = ghostObject.GetComponent<GhostPawn>();
-            ghost.Initialize(this);
-            GhostPawn.EventOnProjectionFinished += testProjection;
-            ghost.Projection(nbCell);
-        }
-    }
-
-    public void testProjection(List<Pawn> pawnEncoutered)
-    {
-        pawnEncoutered.RemoveAt(0);
-        if (pawnEncoutered.Count > 0)
-        {
-            foreach (Pawn item in pawnEncoutered)
-            {
-                if (item.Progress == 0)
-                {
-                    this.Status = PawnTestedEnum.CANNOT_MOVE;
-                }
-            }
-            if (pawnEncoutered[pawnEncoutered.Count - 1].Progress > 70)
-            {
-                this.Status = PawnTestedEnum.CANNOT_MOVE;
-            }
-            if (this.Status == PawnTestedEnum.UNTESTED)
-            {
-                this.Status = PawnTestedEnum.CAN_MOVE;
-            }
-        }
-    }
-    #endregion*/
     #region Selection Halo
+    /// <summary>
+    /// Switch on/off the selection halo with the given color
+    /// </summary>
+    /// <param name="on"></param>
+    /// <param name="playerColor"></param>
     public void SwitchHalo(bool on, PlayerColorEnum playerColor)
     {
         ActualHaloColor = PlayerColorEnumToColor(playerColor);
         SelectableLight.enabled = on;
     }
 
-
+    /// <summary>
+    /// OnClick, fire the event PawnSelected
+    /// </summary>
     public void OnMouseDown()
     {
         if (SelectableLight.enabled)
@@ -415,6 +417,9 @@ public class Pawn : NetworkBehaviour
         }
     }
 
+    /// <summary>
+    /// Paint the halo in grey when mouse hover the pawn
+    /// </summary>
     public void OnMouseOver()
     {
         if (SelectableLight.enabled)
@@ -423,6 +428,9 @@ public class Pawn : NetworkBehaviour
         }
     }
 
+    /// <summary>
+    /// repaint the halo in previous color when stop hovering
+    /// </summary>
     public void OnMouseExit()
     {
         if (SelectableLight.enabled)

@@ -3,34 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Special list for handling the player's hand
+/// </summary>
 public class PlayerHand : List<Card>
 {
     public EventHandler OnAdd;
     public EventHandler OnRemove;
-    private Deck deck;
-
-    public Deck Deck
-    {
-        get
-        {
-            if (deck == null)
-            {
-                deck = GameObject.FindObjectOfType<Deck>();
-            }
-
-            return deck;
-        }
-
-        set
-        {
-            deck = value;
-        }
-    }
-
-    public PlayerHand()
-    {
-
-    }
 
     public new void Add(Card item)
     {
@@ -51,37 +30,11 @@ public class PlayerHand : List<Card>
         
         base.Remove(item);
     }
-
-
-
-    private int nextFree()
-    {
-        int nextIndexFree = 0;
-        if (this.Count>0)
-        {
-            nextIndexFree = this.FindIndex(x => x = null);
-        }
-        return nextIndexFree;
-    }
-
-    public void PickACard()
-    {
-        if (this.Count < 5)
-        {
-            this.Add(Deck.DrawACard());
-        }
-    }
-
-    public void MakeHand()
-    {
-        for (int i = 0; i < 5; i++)
-        {
-            this.PickACard();
-        }
-    }
-
 }
 
+/// <summary>
+/// Special EventArgs used with the PlayerHand
+/// </summary>
 public class HandEventArgs : EventArgs
 {
     private Card card;

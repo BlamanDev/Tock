@@ -10,13 +10,16 @@ using System;
 
 /// <summary>
 /// Script for the GameMaster
-/// 
 /// </summary>
 public class GameMaster : NetworkBehaviour
 {
     #region properties
     //Used for the Singleton
     static public GameMaster GMaster = null;
+    //List of players, static to be accessible on players connection
+    static public List<TockPlayer> players = new List<TockPlayer>();
+
+
     //Prefab used for the Pawn
     public GameObject PawnPrefab;
     public GameObject CardPrefab;
@@ -30,13 +33,9 @@ public class GameMaster : NetworkBehaviour
     public Dictionary<PlayerColorEnum, List<Pawn>> AllPawns;
     public ProgressDictionnary progressDictionnary;
 
-    public delegate void OnTurnFinished();
-    [SyncEvent]
-    public static event OnTurnFinished EventOnTurnFinished;
-
-
-    static public List<TockPlayer> players = new List<TockPlayer>();
     private int activePlayerIndex = -1;
+
+
     private TockPlayer localPlayer;
 
     public TockPlayer LocalPlayer
@@ -96,22 +95,18 @@ public class GameMaster : NetworkBehaviour
         SceneManager.sceneLoaded += OnSceneLoaded;
     }
 
-    private void OnLevelWasLoaded(int level)
-    {
-
-    }
-
     public void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         if (scene.name == "Game") text = GameObject.Find("TextGameMaster").GetComponent<Text>();
 
     }
 
-
+    /// <summary>
+    /// Begin the Game !
+    /// </summary>
     public void GameBegin()
     {
         StartCoroutine(waitForAllPlayers());
-
     }
     #endregion
     #region Pawns Methods
@@ -148,6 +143,12 @@ public class GameMaster : NetworkBehaviour
         return AllPawns[color];
     }
 
+    /// <summary>
+    /// Return the list of pawn a color filtered with the card Colorfilter
+    /// </summary>
+    /// <param name="filter"></param>
+    /// <param name="color"></param>
+    /// <returns></returns>
     public List<Pawn> getPawnsFiltered(SelectionFilterEnum filter, PlayerColorEnum color)
     {
         List<Pawn> listeRetour = new List<Pawn>();
@@ -198,42 +199,39 @@ public class GameMaster : NetworkBehaviour
         return colorReturned;
     }
 
+    /// <summary>
+    /// Find the local player
+    /// </summary>
+    /// <returns></returns>
     private TockPlayer findLocalPlayer()
     {
         return players.Find(x => x.isLocalPlayer);
     }
 
+    /// <summary>
+    /// Wait for all players in the lobby to be connected to the scene
+    /// </summary>
+    /// <returns></returns>
     IEnumerator waitForAllPlayers()
     {
         NetworkLobbyManager lobbyby = GameObject.FindObjectOfType<NetworkLobbyManager>();
         yield  return new WaitUntil(() => players.Count == lobbyby.numPlayers);
         PawnSpawner spawner = GameObject.FindObjectOfType<PawnSpawner>();
+        //If there is a PawnSpawner in the scene, create the pawns
         if (spawner != null)
         {
             spawner.PopulatePawns();
         }
+        //Build the first hand for each players
         foreach (TockPlayer item in players)
         {
             item.TargetBuildFirstHand(NetworkServer.objects[item.netId].connectionToClient);
         }
     }
     #endregion
-    #region Cards Methods
-    public void BuildDeck()
-    {
-        foreach (string CardColor in Enum.GetNames(typeof(CardsColorsEnum)))
-        {
-            foreach (string CardValue in Enum.GetNames(typeof(CardsValuesEnum)))
-            {
-                GameObject newCardObject = Instantiate(CardPrefab);
-                Card newCard = newCardObject.GetComponent<Card>();
-                newCard.Initialize(((CardsColorsEnum)Enum.Parse(typeof(CardsColorsEnum), CardColor)), ((CardsValuesEnum)Enum.Parse(typeof(CardsValuesEnum), CardValue)));
-                NetworkServer.Spawn(newCardObject);
-            }
-        }
-    }
-    #endregion
-
+    /// <summary>
+    /// Switch to the next player
+    /// </summary>
     public void NextPlayer()
     {
         activePlayerIndex++;
