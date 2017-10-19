@@ -6,6 +6,7 @@ using UnityEngine;
 /// Special Dictionnary used to keep track of the pawns
 /// </summary>
 public class ProgressDictionnary : Dictionary<Pawn, int> {
+    public Dictionary<Pawn, string> Houses = new Dictionary<Pawn, string>();
     /// <summary>
     /// Compute the position of the target according to its color and add it 
     /// </summary>
@@ -32,8 +33,24 @@ public class ProgressDictionnary : Dictionary<Pawn, int> {
         Pawn target = GameObject.Find(pawnTarget).GetComponent<Pawn>();
 
         int newPosition = this.TestPosition(this[target]+nbCell);
-        base.Remove(target);
-        this[target] = newPosition;
+        if (this.ContainsKey(target))
+        {
+            base.Remove(target);
+        }
+
+        if (target.Progress < 71)
+        {
+            this[target] = newPosition;
+        }
+        else
+        {
+            if (Houses.ContainsKey(target))
+            {
+                Houses.Remove(target);
+            }
+            Houses[target] = target.PlayerColor.ToString()+ target.Progress;
+            newPosition = 75 - target.Progress;
+        }
         return newPosition;
     }
 

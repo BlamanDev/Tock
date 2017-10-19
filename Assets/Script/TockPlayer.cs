@@ -22,6 +22,8 @@ public class TockPlayer : NetworkBehaviour
 
     private PlayerHand playerHand;
 
+    public ColorBlock playCardColors;
+    public ColorBlock discardCardColors;
     #region temp attributes
     //Number of playable card in the player's hand
     private int nbPlayableCards = 0;
@@ -47,7 +49,7 @@ public class TockPlayer : NetworkBehaviour
     #endregion
     #region Seven card
     //Number of movement left for the Seven card
-    private int movementLeft = 7;
+    private int movementLeft = 0;
     //Display the movement left for the Seven card
     private GameObject displayMovementLeft;
     #endregion
@@ -184,6 +186,7 @@ public class TockPlayer : NetworkBehaviour
         String nameTag = PlayerColor.ToString();
         this.tag = nameTag + "_Player";
         this.name = nameTag + "_Player";
+
     }
 
     // Update is called once per frame
@@ -315,7 +318,7 @@ public class TockPlayer : NetworkBehaviour
     }
     #endregion
     #region Card
-    #region Drawing
+    #region Displaying
     /// <summary>
     /// Discard a card from Hand and re-order other cards
     /// </summary>
@@ -340,8 +343,12 @@ public class TockPlayer : NetworkBehaviour
     {
         HandEventArgs HEA = (HandEventArgs)e;
         DisplayedHand[HEA.CardPosition].material = HEA.Card.Illustration;
+        DisplayedHand[HEA.CardPosition].GetComponent<Button>().enabled = false;
     }
 
+
+    #endregion
+    #region Drawing
     /// <summary>
     /// Force the targetted client build his first Hand
     /// </summary>
@@ -421,7 +428,7 @@ public class TockPlayer : NetworkBehaviour
             //IF no cards are playable, discard the selected card
             if (nbPlayableCards == 0)
             {
-                DiscardSelectedCard();
+                EndTurn();
             }
             else
             {
@@ -443,6 +450,7 @@ public class TockPlayer : NetworkBehaviour
     private void DiscardSelectedCard()
     {
         Hand.Remove(cardSelected);
+        CmdReturnCard(cardSelected.name);
         if (isClient)
         {
             NetworkServer.UnSpawn(cardSelected.gameObject);
@@ -450,8 +458,14 @@ public class TockPlayer : NetworkBehaviour
         this.PickACard();
         Text.text = "Turn Finished for Me";
 
-        EndTurn();
 
+
+    }
+
+    [Command]
+    private void CmdReturnCard(string cardname)
+    {
+        GameDeck.CardsInDeck.Add(GameDeck.StrToCard(cardname));
     }
 
     /// <summary>
@@ -475,8 +489,6 @@ public class TockPlayer : NetworkBehaviour
         card.Play(GameObject.Find(pawnTarget).GetComponent<Pawn>(), otherTarget);
         Text.text = "Card Played : " + card.name + " : " + (int)card.Value + " cases";   //debug
 
-        //Return the played card in the Deck
-        GameDeck.CardsInDeck.Add(card);
     }
 
 
@@ -556,7 +568,7 @@ public class TockPlayer : NetworkBehaviour
         }
         Text.text = "Turn Finished for Me";
 
-        EndTurn();
+        StartCoroutine(waitForPawnMoved());
     }
 
     /// <summary>
@@ -565,13 +577,14 @@ public class TockPlayer : NetworkBehaviour
     private void PlaySevenCard()
     {
         //Move the selected pawn for 1 cell
-        CmdPlayCard("ACE_SPADES", pawnSelected.name, "");
+        CmdPlayCard(cardSelected.name, pawnSelected.name, "");
         //Test if this pawn can still move
         if (cardSelected.MoveFiltering(pawnSelected, 1))
         {
             unSelect(pawnSelected);
         }
         MovementLeft--;
+        
         pawnSelected = null;
         //Relaunch the selection process if there is still movement to play
         if (MovementLeft > 0)
@@ -603,10 +616,21 @@ public class TockPlayer : NetworkBehaviour
         {
             yield return new WaitWhile(() => pawnSelected == null);
         }
-
         CmdPlayCard(cardSelected.name, firstPawnSelected.name, pawnSelected.name);
-        EndTurn();
+        StartCoroutine(waitForPawnMoved());
+    }
 
+    IEnumerator waitForPawnMoved()
+    {
+        if (pawnSelected != null)
+        {
+            yield return new WaitWhile(() => pawnSelected.Status == PawnStatusEnum.MOVING);
+        }
+        Debug.Log("Pawn finished moving");
+        if (MovementLeft==0)
+        {
+            this.EndTurn();
+        }
     }
     #endregion
     #region ProgressDictionnary
@@ -618,8 +642,10 @@ public class TockPlayer : NetworkBehaviour
     public void RpcAddtoProgressDictionnary(string target)
     {
         int newProgress = GMaster.progressDictionnary.Add(target);
-        Text.text = "Added : " + target + "- to ProgressDico at position : " + newProgress;
+        GameObject.Find(target).GetComponent<Pawn>().ProgressInDictionnary = newProgress;
 
+        //Text.text = "Added : " + target + "- to ProgressDico at position : " + newProgress;
+        Debug.Log("Added : " + target + "- to ProgressDico at position : " + newProgress);
     }
 
     /// <summary>
@@ -631,7 +657,11 @@ public class TockPlayer : NetworkBehaviour
     public void RpcMoveinProgressDictionnary(string target, int nbMoves)
     {
         int newProgress = GMaster.progressDictionnary.Move(target, nbMoves);
-        Text.text = "Moved : " + target + "- for " + nbMoves + " cells in ProgressDico, new position : " + newProgress;
+        GameObject.Find(target).GetComponent<Pawn>().ProgressInDictionnary = newProgress;
+
+        //Text.text = "Moved : " + target + "- for " + nbMoves + " cells in ProgressDico, new position : " + newProgress;
+        Debug.Log("Moved : " + target + " for " + nbMoves + " cells in ProgressDico, new position : " + newProgress);
+
     }
 
     /// <summary>
@@ -642,6 +672,8 @@ public class TockPlayer : NetworkBehaviour
     public void RpcRemovefromProgressDictionnary(string target)
     {
         GMaster.progressDictionnary.Remove(target);
+        Debug.Log("Removed : " + target + " from ProgressDico");
+
     }
     #endregion
     #region Turn begin/end
@@ -653,6 +685,7 @@ public class TockPlayer : NetworkBehaviour
     public void TargetBeginTurn(NetworkConnection Target)
     {
         Text.text = "It's my turn, i'm the player : " + this.PlayerName + " - Color : " + this.PlayerColor.ToString();
+        Debug.Log("Beginning turn of player : " + this.PlayerColor);
         Projection();
     }
 
@@ -661,6 +694,8 @@ public class TockPlayer : NetworkBehaviour
     /// </summary>
     public void EndTurn()
     {
+        DiscardSelectedCard();
+
         pawnSelected = null;
         firstPawnSelected = null;
         DisplayMovementLeft.SetActive(false);
@@ -670,9 +705,33 @@ public class TockPlayer : NetworkBehaviour
         {
             DisplayedHand[playerHand.IndexOf(item)].GetComponent<Button>().enabled = false;
         }
-
-        DiscardSelectedCard();
+        if (hasWin())
+        {
+            CmdVictory();
+        }
         CmdEndTurn();
+    }
+
+    [Command]
+    private void CmdVictory()
+    {
+        RpcEndGame(this.name);
+    }
+
+    [ClientRpc]
+    private void RpcEndGame(string winnerName)
+    {
+
+        Rect windowRect = new Rect(20, 20, 120, 50);
+        GUI.Window(0, windowRect, DoMyWindow, winnerName == this.name ? "Victoire !!!" : "Defaite...");
+    }
+
+    private void DoMyWindow(int id)
+    {
+        if (GUI.Button(new Rect(10, 20, 100, 20), "Fin de la partie"))
+        {
+            SceneManager.LoadScene("Lobby");
+        }
     }
 
     /// <summary>

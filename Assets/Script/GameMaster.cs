@@ -240,8 +240,12 @@ public class GameMaster : NetworkBehaviour
             activePlayerIndex = 0;
         }
         text.text = "Beginning turn of player : " + players[activePlayerIndex].name;
+        Debug.Log(players[activePlayerIndex].name);
         players[activePlayerIndex].TargetBeginTurn(NetworkServer.objects[players[activePlayerIndex].netId].connectionToClient);
     }
 
-
+    public void PlayCard(int indexCard)
+    {
+        LocalPlayer.PlayCard(indexCard);
+    }
 }

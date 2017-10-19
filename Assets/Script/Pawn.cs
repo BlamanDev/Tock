@@ -16,6 +16,8 @@ public class Pawn : NetworkBehaviour
     [SyncVar]
     public int Progress = 0;
 
+    public int ProgressInDictionnary;
+
     //Index of the Pawn
     [SyncVar]
     public int PawnIndex;
