@@ -31,8 +31,8 @@ public class ProgressDictionnary : Dictionary<Pawn, int> {
     public int Move(string pawnTarget, int nbCell)
     {
         Pawn target = GameObject.Find(pawnTarget).GetComponent<Pawn>();
+        int newPosition = target.ProgressInDictionnary + nbCell;
 
-        int newPosition = this.TestPosition(this[target]+nbCell);
         if (this.ContainsKey(target))
         {
             base.Remove(target);

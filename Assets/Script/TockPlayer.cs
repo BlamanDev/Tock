@@ -53,11 +53,6 @@ public class TockPlayer : NetworkBehaviour
     //Display the movement left for the Seven card
     private GameObject displayMovementLeft;
     #endregion
-    //Card Event 
-    public delegate void OnCardDrawed(CardsColorsEnum CardColor, CardsValuesEnum CardValue);
-    [SyncEvent]
-    public static event OnCardDrawed EventOnCardDrawed;
-
     //for debugging
     private Text text;
 
@@ -215,11 +210,12 @@ public class TockPlayer : NetworkBehaviour
 
         if (isLocalPlayer)
         {
+            DisplayMovementLeft.SetActive(false);
+
             DisplayedHand = GameObject.Find("Cards").GetComponentsInChildren<Image>();
             Hand.OnAdd += DisplayCard;
             Hand.OnRemove += ClearCard;
         }
-
     }
 
     #endregion
@@ -310,10 +306,7 @@ public class TockPlayer : NetworkBehaviour
         //IF no cards are playable, enable all card button
         if (nbPlayableCards == 0)
         {
-            foreach (Card item in playerHand)
-            {
-                DisplayedHand[playerHand.IndexOf(item)].GetComponent<Button>().enabled = true;
-            }
+            this.switchAllCardsClick(true);
         }
     }
     #endregion
@@ -346,7 +339,14 @@ public class TockPlayer : NetworkBehaviour
         DisplayedHand[HEA.CardPosition].GetComponent<Button>().enabled = false;
     }
 
+    private void switchAllCardsClick(bool enable=false)
+    {
+        foreach (Card item in playerHand)
+        {
+            DisplayedHand[playerHand.IndexOf(item)].GetComponent<Button>().enabled = enable;
+        }
 
+    }
     #endregion
     #region Drawing
     /// <summary>
@@ -414,7 +414,6 @@ public class TockPlayer : NetworkBehaviour
         Hand.Add(newCard);
     }
     #endregion
-
     #region Playing
     /// <summary>
     /// Begin the process of playing a card, used by the the onclick on the card
@@ -424,6 +423,7 @@ public class TockPlayer : NetworkBehaviour
     {
         if (cardPlayed < Hand.Count)
         {
+            this.switchAllCardsClick();
             cardSelected = Hand[cardPlayed];
             //IF no cards are playable, discard the selected card
             if (nbPlayableCards == 0)
@@ -462,6 +462,10 @@ public class TockPlayer : NetworkBehaviour
 
     }
 
+    /// <summary>
+    /// Return Card to the Server's Deck
+    /// </summary>
+    /// <param name="cardname"></param>
     [Command]
     private void CmdReturnCard(string cardname)
     {
@@ -490,8 +494,6 @@ public class TockPlayer : NetworkBehaviour
         Text.text = "Card Played : " + card.name + " : " + (int)card.Value + " cases";   //debug
 
     }
-
-
     #endregion
     #endregion
     #region selection & play pawn

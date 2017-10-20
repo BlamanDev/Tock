@@ -32,6 +32,7 @@ public class Pawn : NetworkBehaviour
     [SyncVar(hook = "OnChangePlayerColor")]
     public PlayerColorEnum PlayerColor;
 
+    [SyncVar]
     private PawnStatusEnum status;
 
     //Spawn positions for the pawns

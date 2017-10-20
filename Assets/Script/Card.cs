@@ -230,7 +230,7 @@ public class Card : NetworkBehaviour
     /// <returns></returns>
     public bool MoveFilter(Pawn target)
     {
-        return MoveFiltering(target,(int)this.Value);
+        return MoveFiltering(target, (int)this.Value);
     }
 
     /// <summary>
@@ -253,6 +253,7 @@ public class Card : NetworkBehaviour
         {
             //Compute the progress according to the color of the pawn and the value of the card
             int progressToCheck = target.Progress + nbMoves * (this.Value == CardsValuesEnum.FOUR ? -1 : 1) + 18 * (int)target.PlayerColor;
+
             //Get the list of pawn to be tested
             List<Pawn> pawnEncoutered = GMaster.progressDictionnary.GetPawnsInRange(target.Progress + 18 * (int)target.PlayerColor, progressToCheck);
 
@@ -260,7 +261,7 @@ public class Card : NetworkBehaviour
             if (pawnEncoutered.Count > 0)
             {
                 Debug.Log("Projection : " + target.name + " encoutered " + pawnEncoutered.Count + " Pawns :");
-                
+
                 foreach (Pawn item in pawnEncoutered)
                 {
                     Debug.Log(item.name + " : progressDico = " + item.ProgressInDictionnary + " ; progress = " + item.Progress + " ; Status : " + item.Status.ToString());
@@ -272,10 +273,10 @@ public class Card : NetworkBehaviour
                 }
             }
             //Test if there is a pawn on the destination and if it is in house
-            if (GMaster.progressDictionnary.Houses.ContainsValue(target.PlayerColor.ToString() + (target.Progress + nbMoves * (this.Value == CardsValuesEnum.FOUR ? -1 : 1)).ToString()))
+            if (GMaster.progressDictionnary.Houses.ContainsValue(target.PlayerColor.ToString() + (target.Progress + nbMoves).ToString()))
             {
-                    Debug.Log(target.name + " : " + "A Pawn is in HOUSE => can't move");
-                    Playable = false;
+                Debug.Log(target.name + " : " + "A Pawn is in this HOUSE Cell => can't move");
+                Playable = false;
             }
         }
         //Debug.Log(target.name + " playable : " + Playable.ToString());
@@ -356,7 +357,7 @@ public class Card : NetworkBehaviour
             }
         }
 
-        return possibleTargets.Count>0;
+        return possibleTargets.Count > 0;
     }
 
     /// <summary>
@@ -378,17 +379,16 @@ public class Card : NetworkBehaviour
             {
                 movementAdded = 1;
                 //Compute movement max for the pawn
-                    while (!GMaster.progressDictionnary.ContainsValue(GMaster.progressDictionnary[pawnTested] + movementAdded) && (movementAdded < 8))
-                    {
-                        movementAdded++;
-                        movemenTotal++;
-                    }
-                    //IF the pawn can move for minimum 1 cell, add it to possibles argets
-                    if (movementAdded > 1)
-                    {
-                        possibleTargets.Add(pawnTested);
-                    }
-                
+                while (!GMaster.progressDictionnary.ContainsValue(GMaster.progressDictionnary[pawnTested] + movementAdded) && (movementAdded < 8))
+                {
+                    movementAdded++;
+                    movemenTotal++;
+                }
+                //IF the pawn can move for minimum 1 cell, add it to possibles argets
+                if (movementAdded > 1)
+                {
+                    possibleTargets.Add(pawnTested);
+                }
             }
         }
         //IF movement total is inferior to the card value
