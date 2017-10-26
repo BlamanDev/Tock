@@ -234,14 +234,18 @@ public class GameMaster : NetworkBehaviour
     /// </summary>
     public void NextPlayer()
     {
-        activePlayerIndex++;
-        if (activePlayerIndex==players.Count)
+        if (isServer)
         {
-            activePlayerIndex = 0;
+            activePlayerIndex++;
+            if (activePlayerIndex == players.Count)
+            {
+                activePlayerIndex = 0;
+            }
+            //text.text = "Beginning turn of player : " + players[activePlayerIndex].name;
+            Debug.Log(players[activePlayerIndex].name);
+            players[activePlayerIndex].TargetBeginTurn(NetworkServer.objects[players[activePlayerIndex].netId].connectionToClient);
+
         }
-        text.text = "Beginning turn of player : " + players[activePlayerIndex].name;
-        Debug.Log(players[activePlayerIndex].name);
-        players[activePlayerIndex].TargetBeginTurn(NetworkServer.objects[players[activePlayerIndex].netId].connectionToClient);
     }
 
     public void PlayCard(int indexCard)

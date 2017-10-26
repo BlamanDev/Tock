@@ -359,14 +359,15 @@ public class Pawn : NetworkBehaviour
     /// <param name="speed">int : speed of the animation</param>
     public void Move(int nbCell, bool wipeAllPawns = false, int speed = 1)
     {
+        Status = PawnStatusEnum.MOVING;
+
         PawnAnimator.SetFloat(speedHash, (nbCell > 0 ? speed : -speed));
         Progress += nbCell;
-        Status = PawnStatusEnum.MOVING;
         this.wipeAllPawns = wipeAllPawns;
         //Update the position of the pawn in the ProgressDico
         GMaster.LocalPlayer.RpcMoveinProgressDictionnary(this.name, nbCell);
 
-        PawnAnimator.Play(StateHash);
+        PawnAnimator.PlayInFixedTime(StateHash);
     }
 
     /// <summary>

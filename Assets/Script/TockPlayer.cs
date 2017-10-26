@@ -56,6 +56,9 @@ public class TockPlayer : NetworkBehaviour
     //for debugging
     private Text text;
 
+    private Rect windowRect;
+    private String winnerName = "";
+
     #region properties
     public PlayerHand Hand
     {
@@ -166,6 +169,25 @@ public class TockPlayer : NetworkBehaviour
         set
         {
             text = value;
+        }
+    }
+
+    public Rect WindowRect
+    {
+        get
+        {
+            if (windowRect.height == 0)
+            {
+                windowRect = new Rect(((float)(Screen.width - Screen.width / 5) / 2), (float)((Screen.height - Screen.height / 5) / 2), Screen.width / 5, Screen.height / 5);
+
+            }
+
+            return windowRect;
+        }
+
+        set
+        {
+            windowRect = value;
         }
     }
     #endregion
@@ -339,7 +361,7 @@ public class TockPlayer : NetworkBehaviour
         DisplayedHand[HEA.CardPosition].GetComponent<Button>().enabled = false;
     }
 
-    private void switchAllCardsClick(bool enable=false)
+    private void switchAllCardsClick(bool enable = false)
     {
         foreach (Card item in playerHand)
         {
@@ -563,6 +585,7 @@ public class TockPlayer : NetworkBehaviour
                 break;
             case CardsValuesEnum.JACK:
                 PlayJackCard();
+                MovementLeft++;
                 break;
             default:
                 CmdPlayCard(cardSelected.name, pawnSelected.name, "");
@@ -586,7 +609,7 @@ public class TockPlayer : NetworkBehaviour
             unSelect(pawnSelected);
         }
         MovementLeft--;
-        
+
         pawnSelected = null;
         //Relaunch the selection process if there is still movement to play
         if (MovementLeft > 0)
@@ -619,6 +642,7 @@ public class TockPlayer : NetworkBehaviour
             yield return new WaitWhile(() => pawnSelected == null);
         }
         CmdPlayCard(cardSelected.name, firstPawnSelected.name, pawnSelected.name);
+        MovementLeft = 0;
         StartCoroutine(waitForPawnMoved());
     }
 
@@ -629,7 +653,7 @@ public class TockPlayer : NetworkBehaviour
             yield return new WaitWhile(() => pawnSelected.Status == PawnStatusEnum.MOVING);
         }
         Debug.Log("Pawn finished moving");
-        if (MovementLeft==0)
+        if (MovementLeft == 0)
         {
             this.EndTurn();
         }
@@ -723,17 +747,49 @@ public class TockPlayer : NetworkBehaviour
     [ClientRpc]
     private void RpcEndGame(string winnerName)
     {
+        this.winnerName = winnerName;
 
-        Rect windowRect = new Rect(20, 20, 120, 50);
-        GUI.Window(0, windowRect, DoMyWindow, winnerName == this.name ? "Victoire !!!" : "Defaite...");
+    }
+
+    [Command]
+    private void CmdReturnToLobby()
+    {
+        RpcReturnToLobby();
+        SceneManager.LoadScene("Lobby");
+
+    }
+
+    [ClientRpc]
+    private void RpcReturnToLobby()
+    {
+        SceneManager.LoadScene("Lobby");
+
+    }
+
+    private void OnGUI()
+    {
+
+        if (winnerName != "")
+        {
+            WindowRect = GUI.Window(0, WindowRect, DoMyWindow, winnerName == GMaster.LocalPlayer.name ? "Victory !!!" : "Defeat...");
+        }
     }
 
     private void DoMyWindow(int id)
     {
-        if (GUI.Button(new Rect(10, 20, 100, 20), "Fin de la partie"))
+        Rect buttonRect = new Rect((WindowRect.width - (WindowRect.width / 4)) / 2, (WindowRect.height - (WindowRect.height / 4)) / 2, WindowRect.width / 4, WindowRect.height / 4);
+        if (GUI.Button(buttonRect, "Ok"))
         {
-            SceneManager.LoadScene("Lobby");
+            CmdReturnToLobby();
         }
+    }
+
+    private Rect centerRectangle(Rect someRect)
+    {
+        someRect.x = (Screen.width - someRect.width) / 2;
+        someRect.y = (Screen.height - someRect.height) / 2;
+
+        return someRect;
     }
 
     /// <summary>
