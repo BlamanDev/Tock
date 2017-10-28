@@ -136,6 +136,7 @@ public class Card : NetworkBehaviour
                 Effect = JACK;
                 ColorFilter = SelectionFilterEnum.OWNPAWNS;
                 Projections.Add(OnBoardFilter);
+                Projections.Add(IdleFilter);
                 break;
             case CardsValuesEnum.JOKER:
                 Effect = JOKER;
@@ -291,6 +292,11 @@ public class Card : NetworkBehaviour
     public bool OnBoardFilter(Pawn target)
     {
         return target.OnBoard;
+    }
+
+    public bool IdleFilter(Pawn target)
+    {
+        return target.Status == PawnStatusEnum.IDLE;
     }
 
     /// <summary>

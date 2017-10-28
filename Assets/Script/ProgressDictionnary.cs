@@ -18,6 +18,7 @@ public class ProgressDictionnary : Dictionary<Pawn, int> {
 
         int position =  18 * (int)target.PlayerColor;
         base.Add(target, position);
+        Debug.Log("Added : " + pawnTarget + "- to ProgressDico at position : " + position);
 
         return position;
     }
@@ -41,6 +42,8 @@ public class ProgressDictionnary : Dictionary<Pawn, int> {
         if (target.Progress < 71)
         {
             this[target] = newPosition;
+            Debug.Log("Moved : " + target + " for " + nbCell + " cells in ProgressDico, new position : " + newPosition);
+
         }
         else
         {
@@ -50,6 +53,8 @@ public class ProgressDictionnary : Dictionary<Pawn, int> {
             }
             Houses[target] = target.PlayerColor.ToString()+ target.Progress;
             newPosition = 75 - target.Progress;
+            Debug.Log("Moved : " + target + " for " + nbCell + " cells in ProgressDico, entering House : " + target.PlayerColor.ToString() + target.Progress + " , new Position : " + newPosition);
+
         }
         return newPosition;
     }

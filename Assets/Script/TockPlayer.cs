@@ -55,10 +55,10 @@ public class TockPlayer : NetworkBehaviour
     #endregion
     //for debugging
     private Text text;
-
+    #region EndGame
     private Rect windowRect;
     private String winnerName = "";
-
+    #endregion
     #region properties
     public PlayerHand Hand
     {
@@ -193,7 +193,6 @@ public class TockPlayer : NetworkBehaviour
     #endregion
     #endregion
     #region initialization
-
     /// <summary>
     /// Find the references, add tag, name player
     /// </summary>
@@ -445,11 +444,11 @@ public class TockPlayer : NetworkBehaviour
     {
         if (cardPlayed < Hand.Count)
         {
-            this.switchAllCardsClick();
             cardSelected = Hand[cardPlayed];
             //IF no cards are playable, discard the selected card
             if (nbPlayableCards == 0)
             {
+                this.switchAllCardsClick();
                 EndTurn();
             }
             else
@@ -578,6 +577,8 @@ public class TockPlayer : NetworkBehaviour
         {
             yield return new WaitWhile(() => pawnSelected == null);
         }
+        this.switchAllCardsClick();
+
         switch (cardSelected.Value)
         {
             case CardsValuesEnum.SEVEN:
@@ -589,6 +590,7 @@ public class TockPlayer : NetworkBehaviour
                 break;
             default:
                 CmdPlayCard(cardSelected.name, pawnSelected.name, "");
+                MovementLeft = 0;
                 break;
         }
         Text.text = "Turn Finished for Me";
@@ -646,6 +648,10 @@ public class TockPlayer : NetworkBehaviour
         StartCoroutine(waitForPawnMoved());
     }
 
+    /// <summary>
+    /// Wait for end of pawn move 
+    /// </summary>
+    /// <returns></returns>
     IEnumerator waitForPawnMoved()
     {
         if (pawnSelected != null)
@@ -669,9 +675,6 @@ public class TockPlayer : NetworkBehaviour
     {
         int newProgress = GMaster.progressDictionnary.Add(target);
         GameObject.Find(target).GetComponent<Pawn>().ProgressInDictionnary = newProgress;
-
-        //Text.text = "Added : " + target + "- to ProgressDico at position : " + newProgress;
-        Debug.Log("Added : " + target + "- to ProgressDico at position : " + newProgress);
     }
 
     /// <summary>
@@ -684,10 +687,6 @@ public class TockPlayer : NetworkBehaviour
     {
         int newProgress = GMaster.progressDictionnary.Move(target, nbMoves);
         GameObject.Find(target).GetComponent<Pawn>().ProgressInDictionnary = newProgress;
-
-        //Text.text = "Moved : " + target + "- for " + nbMoves + " cells in ProgressDico, new position : " + newProgress;
-        Debug.Log("Moved : " + target + " for " + nbMoves + " cells in ProgressDico, new position : " + newProgress);
-
     }
 
     /// <summary>
@@ -738,12 +737,29 @@ public class TockPlayer : NetworkBehaviour
         CmdEndTurn();
     }
 
+    /// <summary>
+    /// Tell the server to switch player
+    /// </summary>
+    [Command]
+    public void CmdEndTurn()
+    {
+        GMaster.NextPlayer();
+    }
+    #endregion
+    #region End Game
+    /// <summary>
+    /// Tell the client there is a winner
+    /// </summary>
     [Command]
     private void CmdVictory()
     {
         RpcEndGame(this.name);
     }
 
+    /// <summary>
+    /// Trigger the display of the end game popup by setting a winnerName
+    /// </summary>
+    /// <param name="winnerName"></param>
     [ClientRpc]
     private void RpcEndGame(string winnerName)
     {
@@ -751,6 +767,9 @@ public class TockPlayer : NetworkBehaviour
 
     }
 
+    /// <summary>
+    /// Tell the client to return to the Lobby
+    /// </summary>
     [Command]
     private void CmdReturnToLobby()
     {
@@ -759,6 +778,9 @@ public class TockPlayer : NetworkBehaviour
 
     }
 
+    /// <summary>
+    /// Load the lobby scene
+    /// </summary>
     [ClientRpc]
     private void RpcReturnToLobby()
     {
@@ -766,9 +788,10 @@ public class TockPlayer : NetworkBehaviour
 
     }
 
+    #endregion
+    #region Popup
     private void OnGUI()
     {
-
         if (winnerName != "")
         {
             WindowRect = GUI.Window(0, WindowRect, DoMyWindow, winnerName == GMaster.LocalPlayer.name ? "Victory !!!" : "Defeat...");
@@ -784,21 +807,5 @@ public class TockPlayer : NetworkBehaviour
         }
     }
 
-    private Rect centerRectangle(Rect someRect)
-    {
-        someRect.x = (Screen.width - someRect.width) / 2;
-        someRect.y = (Screen.height - someRect.height) / 2;
-
-        return someRect;
-    }
-
-    /// <summary>
-    /// Tell the server to switch player
-    /// </summary>
-    [Command]
-    public void CmdEndTurn()
-    {
-        GMaster.NextPlayer();
-    }
     #endregion
 }

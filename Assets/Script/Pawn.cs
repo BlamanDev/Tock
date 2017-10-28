@@ -33,7 +33,7 @@ public class Pawn : NetworkBehaviour
     public PlayerColorEnum PlayerColor;
 
     [SyncVar]
-    private PawnStatusEnum status;
+    private PawnStatusEnum status=PawnStatusEnum.OUT;
 
     //Spawn positions for the pawns
     private SpawnPositions spawnPositions;
@@ -86,7 +86,6 @@ public class Pawn : NetworkBehaviour
             }
             return selectableLight;
         }
-
         set
         {
             selectableLight = value;
@@ -103,7 +102,6 @@ public class Pawn : NetworkBehaviour
             }
             return gMaster;
         }
-
         set
         {
             gMaster = value;
@@ -120,7 +118,6 @@ public class Pawn : NetworkBehaviour
             }
             return pawnAnimator;
         }
-
         set
         {
             pawnAnimator = value;
@@ -134,11 +131,9 @@ public class Pawn : NetworkBehaviour
             if (pawnMeshRenderer == null)
             {
                 pawnMeshRenderer = this.GetComponentInChildren<MeshRenderer>();
-
             }
             return pawnMeshRenderer;
         }
-
         set
         {
             pawnMeshRenderer = value;
@@ -156,7 +151,6 @@ public class Pawn : NetworkBehaviour
             }
             return spawnPositions;
         }
-
         set
         {
             spawnPositions = value;
@@ -169,7 +163,6 @@ public class Pawn : NetworkBehaviour
         {
             return status;
         }
-
         set
         {
             if (value == PawnStatusEnum.IDLE && this.Progress > 70)
@@ -286,6 +279,7 @@ public class Pawn : NetworkBehaviour
         else
         {
             PawnAnimator.SetTrigger(exitHash);
+            Status = PawnStatusEnum.OUT;
         }
     }
 
@@ -322,7 +316,15 @@ public class Pawn : NetworkBehaviour
         if (animationProgress == Progress)
         {
             PawnAnimator.SetFloat(speedHash, 0);
-            Status = PawnStatusEnum.IDLE;
+            if (Progress>70)
+            {
+                Status = PawnStatusEnum.IN_HOUSE;
+
+            }
+            else
+            {
+                Status = PawnStatusEnum.IDLE;
+            }
             wipeAllPawns = false;
         }
     }
