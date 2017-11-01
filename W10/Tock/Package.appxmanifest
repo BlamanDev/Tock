@@ -4,11 +4,11 @@
   <mp:PhoneIdentity PhoneProductId="797f383c-4a1d-4229-b2be-efd7fabb33b4" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
     <DisplayName>Tock</DisplayName>
-    <PublisherDisplayName>com.blacompany.com</PublisherDisplayName>
+    <PublisherDisplayName>DefaultCompany</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
   <Dependencies>
-    <TargetDeviceFamily Name="Windows.Universal" MinVersion="10.0.10240.0" MaxVersionTested="10.0.14393.0" />
+    <TargetDeviceFamily Name="Windows.Universal" MinVersion="10.0.10240.0" MaxVersionTested="10.0.16299.0" />
   </Dependencies>
   <Resources>
     <Resource Language="x-generate" />

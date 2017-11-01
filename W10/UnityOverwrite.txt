@@ -5,11 +5,13 @@
 # Write a line equal to 'overwrite-all' (without quotes) to overwrite everything (preserved accross builds)
 # Write a line equal to 'keep-all' (without quotes) to keep files regardless their modification (preserved accross builds)
 # Default behavior is to never overwrite files
-Tock.sln: CAC06C904B66616A49CEBA27495116B1
+Tock.sln: C47D0F988C0550941E70DB93BBFB6A4D
+GeneratedProjects\UWP\Assembly-CSharp\project.json: 4FCF72A4D5EDB37E24C206A7BCFE7AF1
+GeneratedProjects\UWP\Assembly-CSharp-firstpass\project.json: 4FCF72A4D5EDB37E24C206A7BCFE7AF1
 Tock\App.cs: D0A4FF39DC1468877C3AE4BC496EDEFD
-Tock\Package.appxmanifest: E9D246B272429BA43576F2A13A06C56E
+Tock\Package.appxmanifest: 2A8EC531A6EDBFBE0FE12C0242588D44
 Tock\project.json: 1D02BC64BAC0D041019673A1C4C51737
-Tock\Tock.csproj: B09BC91C4D63765E9A2C735939F0AE60
+Tock\Tock.csproj: 8B5510942BFFEDEABB0CE2912B9C7E2E
 Tock\Tock.csproj.user: BEFB8AC4886C4CFDD3C68445D6F19B04
 Tock\Assets\SplashScreen.scale-200.png: 60618416282ED104FD1473935716045D
 Tock\Assets\Square150x150Logo.scale-200.png: E02834B4A5DFB97FF8E212C1CACBB084
@@ -17,5 +19,5 @@ Tock\Assets\Square44x44Logo.scale-200.png: 6C6EF27184ABE9D870A9D564953775DE
 Tock\Assets\Square44x44Logo.targetsize-24_altform-unplated.png: 156637F7B5363E983E7A46D8E533A23D
 Tock\Assets\StoreLogo.png: 90BD194CA4A7CFFF3E8B8222229857FB
 Tock\Assets\Wide310x150Logo.scale-200.png: C96846A80DF667F87355569CD816192D
-Tock\Properties\AssemblyInfo.cs: AEB5CB3FB87CEC599B52DEB573E52462
+Tock\Properties\AssemblyInfo.cs: 56987451EDB93D06045AA1C50F28FDEF
 Tock\Properties\Default.rd.xml: 72EB282657164E79A1C42F6240984826
