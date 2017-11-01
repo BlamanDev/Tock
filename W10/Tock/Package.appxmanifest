@@ -4,7 +4,7 @@
   <mp:PhoneIdentity PhoneProductId="797f383c-4a1d-4229-b2be-efd7fabb33b4" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
     <DisplayName>Tock</DisplayName>
-    <PublisherDisplayName>DefaultCompany</PublisherDisplayName>
+    <PublisherDisplayName>com.blacompany.com</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
   <Dependencies>
@@ -21,8 +21,6 @@
         <uap:InitialRotationPreference>
           <uap:Rotation Preference="landscape" />
           <uap:Rotation Preference="landscapeFlipped" />
-          <uap:Rotation Preference="portrait" />
-          <uap:Rotation Preference="portraitFlipped" />
         </uap:InitialRotationPreference>
       </uap:VisualElements>
     </Application>

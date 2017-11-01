@@ -351,7 +351,7 @@ public class Card : NetworkBehaviour
                     if (!projection(item))
                     {
                         playable = false;
-                        Debug.Assert(!playable, item.name + " not playable : " + projection.Method.ToString());
+                        //Debug.Assert(!playable, item.name + " not playable : " + projection.Method.ToString());
 
                         break;
                     }
