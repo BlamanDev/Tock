@@ -229,3 +229,4 @@ I:\Dev\Projets\Unity\Tock\W10\Tock\obj\ARM\Master\Stripped\nunit.framework.pdb
 I:\Dev\Projets\Unity\Tock\W10\Tock\obj\ARM\Master\Stripped\UnityEngine.UI.pdb
 I:\Dev\Projets\Unity\Tock\W10\Tock\obj\ARM\Master\Stripped\UnityEngine.HoloLens.pdb
 I:\Dev\Projets\Unity\Tock\W10\Tock\obj\ARM\Master\Stripped\UnityEngine.Networking.pdb
+I:\Dev\Projets\Unity\Tock\W10\Tock\obj\ARM\Master\Tock.csproj.CoreCompileInputs.cache

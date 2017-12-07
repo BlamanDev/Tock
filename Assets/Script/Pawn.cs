@@ -29,11 +29,20 @@ public class Pawn : NetworkBehaviour
     private bool wipeAllPawns = false;
 
     //Owning player of this Pawn
-    [SyncVar(hook = "OnChangePlayerColor")]
-    public PlayerColorEnum PlayerColor;
+    [SyncVar(hook = "OnChangePlayerColorE")]
+    public PlayerColorEnum PlayerColorE;
 
-    [SyncVar]
+    //Owning player of this Pawn
+    [SyncVar(hook = "OnChangeOwningPlayerIndex")]
+    public int OwningPlayerIndex;
+
+    [SyncVar(hook = "OnChangePlayerColor")]
+    public Color PlayerColor;
+
+    [SyncVar(hook = "OnChangeStatus")]
     private PawnStatusEnum status=PawnStatusEnum.OUT;
+
+    public PawnMoveEnum MoveType = PawnMoveEnum.NORMAL;
 
     //Spawn positions for the pawns
     private SpawnPositions spawnPositions;
@@ -45,14 +54,14 @@ public class Pawn : NetworkBehaviour
     private MeshRenderer pawnMeshRenderer;
     private Light selectableLight;
     #endregion
-    private GameMaster gMaster;
+    static private GameMaster gMaster;
 
     #region Hash
     //Hash of Animator parameters
-    private int enterHash = Animator.StringToHash("EnterBoard");
-    private int exitHash = Animator.StringToHash("ExitBoard");
-    private int StateHash = Animator.StringToHash("ProgressOnBoard");
-    private int speedHash = Animator.StringToHash("Speed");
+    static private int enterHash = Animator.StringToHash("EnterBoard");
+    static private int exitHash = Animator.StringToHash("ExitBoard");
+    static private int StateHash = Animator.StringToHash("ProgressOnBoard");
+    static private int speedHash = Animator.StringToHash("Speed");
     #endregion
 
 
@@ -209,9 +218,9 @@ public class Pawn : NetworkBehaviour
     /// Event called when changing the owning Player
     /// </summary>
     /// <param name="newColor"></param>
-    public void OnChangePlayerColor(PlayerColorEnum newColor)
+    public void OnChangePlayerColorE(PlayerColorEnum newColor)
     {
-        PlayerColor = newColor;
+        PlayerColorE = newColor;
         //Change the material color of the pawn
         PawnMeshRenderer.material.color = PlayerColorEnumToColor(newColor);
 
@@ -221,12 +230,28 @@ public class Pawn : NetworkBehaviour
         outPosition = SpawnPositions.getOutPosition(newColor, PawnIndex);
     }
 
+    public void OnChangePlayerColor(Color newColor)
+    {
+        PlayerColor = newColor;
+        PawnMeshRenderer.material.color = newColor;
+
+    }
+
+    public void OnChangeOwningPlayerIndex(int newIndex)
+    {
+        OwningPlayerIndex = newIndex;
+        this.name = newIndex.ToString() + "-" + PawnIndex.ToString();
+        outPosition = SpawnPositions.getOutPosition(this.name);
+
+    }
+
     /// <summary>
     /// Fire the OnChangePlayerColor
     /// </summary>
     public override void OnStartClient()
     {
-        OnChangePlayerColor(PlayerColor);
+        //OnChangePlayerColorE(PlayerColorE);
+        OnChangeOwningPlayerIndex(OwningPlayerIndex);
     }
 
     /// <summary>
@@ -269,12 +294,11 @@ public class Pawn : NetworkBehaviour
         if (onBoard)
         {
             //Place the pawn in its entry position et fire the Entry animation
-            Transform startTransform = SpawnPositions.getStartPosition(PlayerColor).transform;
+            Transform startTransform = SpawnPositions.getStartPosition(OwningPlayerIndex).transform;
             this.transform.position = startTransform.position;
             this.transform.rotation = startTransform.rotation;
 
             PawnAnimator.SetTrigger(enterHash);
-            Status = PawnStatusEnum.ENTRY;
         }
         else
         {
@@ -282,7 +306,6 @@ public class Pawn : NetworkBehaviour
             Status = PawnStatusEnum.OUT;
         }
     }
-
     /// <summary>
     /// Collision detection
     /// </summary>
@@ -290,7 +313,7 @@ public class Pawn : NetworkBehaviour
     private void OnTriggerEnter(Collider other)
     {
         //IF object collided is a Pawn
-        if (other.name == "PawnModel")
+        if (isServer && MoveType != PawnMoveEnum.WIPENONE && other.name == "PawnModel")
         {
             Pawn pawnCollided = other.GetComponentInParent<Pawn>();
             //IF this pawn is moving and the other isn't moving
@@ -298,7 +321,7 @@ public class Pawn : NetworkBehaviour
             if (this.Status == PawnStatusEnum.MOVING && pawnCollided.Status == PawnStatusEnum.IDLE)
             {
                 //IF wipeAllPawns is true or if the other pawn is at the same postion in the progressDico
-                if (wipeAllPawns || (GMaster.progressDictionnary[pawnCollided] == GMaster.progressDictionnary[this]))
+                if (MoveType == PawnMoveEnum.WIPEALL || (pawnCollided.ProgressInDictionnary == this.ProgressInDictionnary))
                 {
                     //THEN remove the other pawn from the board
                     other.GetComponentInParent<Pawn>().Exit();
@@ -325,8 +348,14 @@ public class Pawn : NetworkBehaviour
             {
                 Status = PawnStatusEnum.IDLE;
             }
-            wipeAllPawns = false;
+            MoveType = PawnMoveEnum.NORMAL;
         }
+    }
+
+    public void OnChangeStatus(PawnStatusEnum newStatus)
+    {
+        Status = newStatus;
+        Debug.Log(this.name + " - new status : " + newStatus);
     }
     #endregion
 
@@ -339,10 +368,20 @@ public class Pawn : NetworkBehaviour
     public void Initialize(PlayerColorEnum color, int pawnIndex)
     {
         this.PawnIndex = pawnIndex;
-        PlayerColor = color;
+        PlayerColorE = color;
         this.transform.position = outPosition.transform.position;
 
     }
+
+    public void Initialize(TockPlayer player, int pawnIndex)
+    {
+        this.PawnIndex = pawnIndex;
+        this.OwningPlayerIndex = player.PlayerIndex;
+        PlayerColor = player.PlayerColor;
+        this.transform.position = outPosition.transform.position;
+
+    }
+
 
     /// <summary>
     /// Get the pawn on the board
@@ -350,7 +389,8 @@ public class Pawn : NetworkBehaviour
     public void Enter()
     {
         OnBoard = true;
-        GMaster.LocalPlayer.RpcAddtoProgressDictionnary(this.name);
+        this.Progress = 0;
+        GMaster.LocalPlayer.CmdAddtoProgressDictionnary(this.name);
     }
 
     /// <summary>
@@ -362,12 +402,15 @@ public class Pawn : NetworkBehaviour
     public void Move(int nbCell, bool wipeAllPawns = false, int speed = 1)
     {
         Status = PawnStatusEnum.MOVING;
-
+        
         PawnAnimator.SetFloat(speedHash, (nbCell > 0 ? speed : -speed));
         Progress += nbCell;
-        this.wipeAllPawns = wipeAllPawns;
+        if (wipeAllPawns)
+        {
+            MoveType = PawnMoveEnum.WIPEALL;
+        }
         //Update the position of the pawn in the ProgressDico
-        GMaster.LocalPlayer.RpcMoveinProgressDictionnary(this.name, nbCell);
+        GMaster.LocalPlayer.CmdMoveinProgressDictionnary(this.name, nbCell);
 
         PawnAnimator.PlayInFixedTime(StateHash);
     }
@@ -378,8 +421,10 @@ public class Pawn : NetworkBehaviour
     /// <param name="otherPawn"></param>
     public void Exchange(Pawn otherPawn)
     {
-        int[] cellBetween = GMaster.progressDictionnary.ExchangeCompute(this, otherPawn);
+        int[] cellBetween = GMaster.ExchangeCompute(this, otherPawn);
+        MoveType = PawnMoveEnum.WIPENONE;
         this.Move(cellBetween[0]);
+        otherPawn.MoveType = PawnMoveEnum.WIPENONE;
         otherPawn.Move(cellBetween[1]);
     }
 
@@ -390,7 +435,8 @@ public class Pawn : NetworkBehaviour
     {
         OnBoard = false;
         this.Progress = 0;
-        GMaster.LocalPlayer.RpcRemovefromProgressDictionnary(this.name);
+        this.ProgressInDictionnary = 0;
+        GMaster.LocalPlayer.CmdRemovefromProgressDictionnary(this.name);
     }
 
     /// <summary>
@@ -399,6 +445,7 @@ public class Pawn : NetworkBehaviour
     public void PlacePawnOut()
     {
         this.transform.position = outPosition.transform.position;
+        Status = PawnStatusEnum.OUT;
     }
     #region Selection Halo
     /// <summary>
@@ -406,9 +453,9 @@ public class Pawn : NetworkBehaviour
     /// </summary>
     /// <param name="on"></param>
     /// <param name="playerColor"></param>
-    public void SwitchHalo(bool on, PlayerColorEnum playerColor)
+    public void SwitchHalo(bool on, Color playerColor)
     {
-        ActualHaloColor = PlayerColorEnumToColor(playerColor);
+        ActualHaloColor = playerColor;
         SelectableLight.enabled = on;
     }
 
@@ -446,4 +493,8 @@ public class Pawn : NetworkBehaviour
     }
     #endregion
     #endregion
+    public IEnumerator waitForFinishedMoving()
+    {
+        yield return new WaitWhile(() => Status == PawnStatusEnum.MOVING);
+    }
 }

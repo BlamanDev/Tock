@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using System.Xml;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -9,6 +11,18 @@ using UnityEngine.Networking;
 /// </summary>
 public class Card : NetworkBehaviour
 {
+    private const String DESCRIPTIONFILE = "Texts/Descriptions";
+    private const String DESC_MOVE = "Move";
+    private const String DESC_MOVEORENTER = "MoveOrEnter";
+    private const String DESC_MOVEOTHER = "MoveOther";
+    private const String DESC_MOVEBACKWARD = "MoveBackWard";
+    private const String DESC_EXCHANGE = "Exchange";
+    private const String DESC_MOVEWIPEALL = "MoveWipeAll";
+    private const String DESC_MOVEMANY = "MoveMany";
+    private const String VALUEINTEXT = "[VALUE]";
+
+    private static Dictionary<String, String> dicoDescription;
+
     [SyncVar]
     public CardsColorsEnum Color;
     [SyncVar(hook = "OnChangeValue")]
@@ -16,6 +30,7 @@ public class Card : NetworkBehaviour
 
     public SelectionFilterEnum ColorFilter;
 
+    private String description;
     public delegate void CardEffect(Pawn target, Pawn otherTarget = null);
     public CardEffect Effect;
 
@@ -27,7 +42,7 @@ public class Card : NetworkBehaviour
     //Pawn which can be played by this card after projection
     public List<Pawn> possibleTargets;
 
-    private GameMaster gMaster;
+    static private GameMaster gMaster;
 
     public GameMaster GMaster
     {
@@ -43,6 +58,71 @@ public class Card : NetworkBehaviour
         set
         {
             gMaster = value;
+        }
+    }
+
+    public Dictionary<string, string> DicoDescription
+    {
+        get
+        {
+            if (dicoDescription == null)
+            {
+                buildDicoDescription();
+            }
+            return dicoDescription;
+        }
+
+        set
+        {
+            dicoDescription = value;
+        }
+    }
+
+    public string Description
+    {
+        get
+        {
+            return description;
+        }
+
+        set
+        {
+            description = DicoDescription[value];
+            description = description.Replace(VALUEINTEXT, ((int)this.Value).ToString());
+        }
+    }
+
+    private void buildDicoDescription()
+    {
+        dicoDescription = new Dictionary<string, string>();
+        TextAsset allLines = new TextAsset();
+        try
+        {
+            allLines = Resources.Load<TextAsset>(DESCRIPTIONFILE);
+            using (XmlReader reader = XmlReader.Create(new StringReader(allLines.text)))
+            {
+                reader.Read();
+                reader.ReadSubtree();
+                while (reader.Read())
+                {
+                    dicoDescription.Add(reader.GetAttribute("name"), reader.GetAttribute("description"));
+                }
+            }
+
+            /*foreach (string line in allLines.text)
+
+            {
+                string[] linesplitted = line.Split(';');
+                if (linesplitted.Length == 2)
+                {
+                    dicoDescription.Add(linesplitted[0], linesplitted[1]);
+                }
+            }*/
+
+        }
+        catch (Exception e)
+        {
+            Debug.Log("Problem building dicoDescription : " + e.Message);
         }
     }
 
@@ -100,10 +180,11 @@ public class Card : NetworkBehaviour
             case CardsValuesEnum.ACE:
             case CardsValuesEnum.KING:
                 Effect = MoveOrEnter;
+                Description = DESC_MOVEORENTER;
                 ColorFilter = SelectionFilterEnum.OWNPAWNS;
                 Projections.Add(ParteuFilter);
                 break;
-            case CardsValuesEnum.TWO:
+            /*case CardsValuesEnum.TWO:
             case CardsValuesEnum.THREE:
             case CardsValuesEnum.SIX:
             case CardsValuesEnum.EIGHT:
@@ -111,41 +192,55 @@ public class Card : NetworkBehaviour
             case CardsValuesEnum.TEN:
             case CardsValuesEnum.QUEEN:
                 Effect = Move;
+                Description = DESC_MOVE;
                 ColorFilter = SelectionFilterEnum.OWNPAWNS;
                 Projections.Add(OnBoardFilter);
-
                 Projections.Add(MoveFilter);
-                break;
+                break;*/
             case CardsValuesEnum.FOUR:
-                Effect = FOUR;
+                Effect = MoveBackward;
+                Description = DESC_MOVEBACKWARD;
                 ColorFilter = SelectionFilterEnum.OWNPAWNS;
                 Projections.Add(OnBoardFilter);
+                Projections.Add(MoveFilter);
                 break;
             case CardsValuesEnum.FIVE:
                 Effect = Move;
+                Description = DESC_MOVEOTHER;
                 ColorFilter = SelectionFilterEnum.OTHERPAWNS;
                 Projections.Add(OnBoardFilter);
+                Projections.Add(IdleFilter);
                 Projections.Add(MoveFilter);
                 break;
-            case CardsValuesEnum.SEVEN:
-                Effect = SEVEN;
+            /*case CardsValuesEnum.SEVEN:
+                Effect = MoveMany;
+                Description = DESC_MOVEMANY;
                 ColorFilter = SelectionFilterEnum.OWNPAWNS;
                 Projections.Add(OnBoardFilter);
-                break;
+                break;*/
             case CardsValuesEnum.JACK:
-                Effect = JACK;
+                Effect = Exchange;
+                Description = DESC_EXCHANGE;
                 ColorFilter = SelectionFilterEnum.OWNPAWNS;
                 Projections.Add(OnBoardFilter);
                 Projections.Add(IdleFilter);
                 break;
             case CardsValuesEnum.JOKER:
                 Effect = JOKER;
+                Description = DESC_MOVEWIPEALL;
                 ColorFilter = SelectionFilterEnum.OWNPAWNS;
                 Projections.Add(ParteuFilter);
                 break;
             default:
+                Effect = Move;
+                Description = DESC_MOVE;
+                ColorFilter = SelectionFilterEnum.OWNPAWNS;
+                Projections.Add(OnBoardFilter);
+                Projections.Add(MoveFilter);
+
                 break;
         }
+
     }
 
     /// <summary>
@@ -170,7 +265,7 @@ public class Card : NetworkBehaviour
     /// </summary>
     /// <param name="target"></param>
     /// <param name="otherTarget"></param>
-    private void JACK(Pawn target, Pawn otherTarget)
+    public void Exchange(Pawn target, Pawn otherTarget)
     {
         target.Exchange(otherTarget);
     }
@@ -180,7 +275,7 @@ public class Card : NetworkBehaviour
     /// </summary>
     /// <param name="target"></param>
     /// <param name="otherTarget"></param>
-    private void SEVEN(Pawn target, Pawn otherTarget = null)
+    public void MoveMany(Pawn target, Pawn otherTarget = null)
     {
         target.Move(1);
     }
@@ -190,7 +285,7 @@ public class Card : NetworkBehaviour
     /// </summary>
     /// <param name="target"></param>
     /// <param name="otherTarget"></param>
-    private void FOUR(Pawn target, Pawn otherTarget = null)
+    public void MoveBackward(Pawn target, Pawn otherTarget = null)
     {
         target.Move(-(int)Value);
     }
@@ -200,7 +295,7 @@ public class Card : NetworkBehaviour
     /// </summary>
     /// <param name="target"></param>
     /// <param name="otherTarget"></param>
-    private void Move(Pawn target, Pawn otherTarget = null)
+    public void Move(Pawn target, Pawn otherTarget = null)
     {
         target.Move((int)Value);
     }
@@ -210,7 +305,7 @@ public class Card : NetworkBehaviour
     /// </summary>
     /// <param name="target"></param>
     /// <param name="otherTarget"></param>
-    private void MoveOrEnter(Pawn target, Pawn otherTarget = null)
+    public void MoveOrEnter(Pawn target, Pawn otherTarget = null)
     {
         if (target.OnBoard)
         {
@@ -244,37 +339,42 @@ public class Card : NetworkBehaviour
     {
         //Debug.Log("MoveFiltering - target : " + target.name + " nbMoves : " + nbMoves.ToString());
         bool Playable = true;
+        //Debug.Log("Card Value : " + this.Value + " - ProgressToCheck before : " + progressToCheck);
+        int progressToCheck = target.Progress + (nbMoves * (this.Effect == MoveBackward ? -1 : 1));
+
         //IF target has finished => not playable
-        if (target.Progress + (nbMoves * (this.Value == CardsValuesEnum.FOUR ? -1 : 1)) > 74)
+        if (progressToCheck > 74 || progressToCheck < 0  )
         {
-            Debug.Log(target.name + " : Progress > 74 => can't move");
+            //Debug.Log(target.name + " : Progress > 74 OR < 0 => can't move");
             Playable = false;
         }
         else
         {
+
             //Compute the progress according to the color of the pawn and the value of the card
-            int progressToCheck = target.Progress + nbMoves * (this.Value == CardsValuesEnum.FOUR ? -1 : 1) + 18 * (int)target.PlayerColor;
+            //progressToCheck += 18 * target.OwningPlayerIndex;
+            //Debug.Log("Card Value : " + this.Value + " - ProgressToCheck after : " + progressToCheck);
 
             //Get the list of pawn to be tested
-            List<Pawn> pawnEncoutered = GMaster.progressDictionnary.GetPawnsInRange(target.Progress + 18 * (int)target.PlayerColor, progressToCheck);
+            List<Pawn> pawnEncoutered = GMaster.ProgressListGetPawnsInRange(target.Progress + 1 + 18 * target.OwningPlayerIndex, progressToCheck + (18 * target.OwningPlayerIndex));
 
             //Test if there is pawn on its starting position
             if (pawnEncoutered.Count > 0)
             {
-                Debug.Log("Projection : " + target.name + " encoutered " + pawnEncoutered.Count + " Pawns :");
+                //Debug.Log(this.name + " - " + "Projection : " + target.name + " encoutered " + pawnEncoutered.Count + " Pawns :");
 
                 foreach (Pawn item in pawnEncoutered)
                 {
-                    Debug.Log(item.name + " : progressDico = " + item.ProgressInDictionnary + " ; progress = " + item.Progress + " ; Status : " + item.Status.ToString());
-                    if (item.Status == PawnStatusEnum.ENTRY)
+                    //Debug.Log(this.name + " - " + target.name + " - " + item.name + " : progressDico = " + item.ProgressInDictionnary + " ; progress = " + item.Progress + " ; Status : " + item.Status.ToString());
+                    if (item.Progress == 0)
                     {
-                        Debug.Log(target.name + " : " + item.name + " is in ENTRY => can't move");
+                        //Debug.Log(this.name + " - " + target.name + " : " + item.name + " is in ENTRY => can't move");
                         Playable = false;
                     }
                 }
             }
             //Test if there is a pawn on the destination and if it is in house
-            if (GMaster.progressDictionnary.Houses.ContainsValue(target.PlayerColor.ToString() + (target.Progress + nbMoves).ToString()))
+            if ((progressToCheck > 70) && (GMaster.ProgressListTestHouseFree(progressToCheck, target.OwningPlayerIndex)))
             {
                 Debug.Log(target.name + " : " + "A Pawn is in this HOUSE Cell => can't move");
                 Playable = false;
@@ -314,15 +414,9 @@ public class Card : NetworkBehaviour
         return Playable;
     }
 
-    /// <summary>
-    /// Filter for the seven card...useless
-    /// </summary>
-    /// <param name="target"></param>
-    /// <returns></returns>
-    public bool SevenFilter(Pawn target)
+    public bool NotOnEntryFilter(Pawn target)
     {
-        bool Playable = true;
-        return Playable;
+        return target.Progress != 0;
     }
     #endregion
     #region Projection
@@ -336,9 +430,9 @@ public class Card : NetworkBehaviour
         bool playable = true;
         possibleTargets.Clear();
         //IF the card is Seven, use the projection function specific to the seven
-        if (this.Value == CardsValuesEnum.SEVEN)
+        if (this.Effect == MoveMany)
         {
-            playable = ProjectionSeven(listToTest);
+            playable = ProjectionMoveMany(listToTest);
         }
         else
         {
@@ -362,16 +456,20 @@ public class Card : NetworkBehaviour
                 }
             }
         }
+        if (this.Effect == this.Exchange && getNbOfPawnOnBoard() < 2)
+        {
+            possibleTargets.Clear();
+        }
 
         return possibleTargets.Count > 0;
     }
 
     /// <summary>
-    /// Test if pawns can be switched
+    /// Test if Seven Card can be played
     /// </summary>
     /// <param name="listToTest"></param>
     /// <returns></returns>
-    private bool ProjectionSeven(List<Pawn> listToTest)
+    private bool ProjectionMoveMany(List<Pawn> listToTest)
     {
         bool playable = true;
         int indexPawn = 0;
@@ -381,11 +479,11 @@ public class Card : NetworkBehaviour
         for (indexPawn = 0; indexPawn < listToTest.Count; indexPawn++)
         {
             Pawn pawnTested = listToTest[indexPawn];
-            if (pawnTested.OnBoard && GMaster.progressDictionnary.ContainsKey(pawnTested))
+            if (pawnTested.OnBoard && GMaster.ProgressList.Contains(pawnTested.name))
             {
                 movementAdded = 1;
                 //Compute movement max for the pawn
-                while (!GMaster.progressDictionnary.ContainsValue(GMaster.progressDictionnary[pawnTested] + movementAdded) && (movementAdded < 8))
+                while (String.IsNullOrEmpty(GMaster.ProgressList[pawnTested.ProgressInDictionnary + movementAdded]) && (movementAdded < 8))
                 {
                     movementAdded++;
                     movemenTotal++;
@@ -413,5 +511,12 @@ public class Card : NetworkBehaviour
     public void Play(Pawn target, Pawn otherTarget = null)
     {
         Effect(target, otherTarget);
+    }
+
+    private int getNbOfPawnOnBoard()
+    {
+        Pawn[] pawnsOnBoard = GameObject.FindObjectsOfType<Pawn>();
+        pawnsOnBoard = Array.FindAll(pawnsOnBoard, x => x.OnBoard);
+        return pawnsOnBoard.Length;
     }
 }

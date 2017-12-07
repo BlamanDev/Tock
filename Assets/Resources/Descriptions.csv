@@ -1,0 +1,7 @@
+Move;Move forward one of your Pawn for [VALUE] cell
+MoveOrEnter;Take your selected outboard Pawn on the board OR move forward one of your onboard Pawn for [VALUE] cell
+MoveOther;Move forward one of the opponents Pawn for [VALUE] cell
+MoveBackWard;Move backward one of your Pawn for [VALUE] cell
+Exchange;Exchange the position of one of your onboard Pawn with any another inboard Pawn
+MoveWipeAll;Move forward one of your Pawn for [VALUE] cell and wipe every Pawn encoutered
+MoveMany;Distribute [VALUE] movement between your inboard Pawns

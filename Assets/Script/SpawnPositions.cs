@@ -36,6 +36,11 @@ public class SpawnPositions : NetworkBehaviour {
         return Positions[color.ToString()];
     }
 
+    public GameObject getStartPosition(int playerIndex)
+    {
+        return Positions[playerIndex.ToString()];
+    }
+
     /// <summary>
     /// Return a GameObject with the out position corresponding to the given color and pawnIndex
     /// </summary>
@@ -47,4 +52,11 @@ public class SpawnPositions : NetworkBehaviour {
         return Positions[color.ToString()+pawnIndex.ToString()];
 
     }
+
+    public GameObject getOutPosition(string name)
+    {
+        return Positions[name];
+
+    }
+
 }

@@ -6,7 +6,6 @@ using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
 using System.Collections;
-using UnityEngine.SceneManagement;
 
 /// <summary>
 /// Player Script
@@ -14,36 +13,41 @@ using UnityEngine.SceneManagement;
 public class TockPlayer : NetworkBehaviour
 {
     #region attributes
-    //Player name
-    [SyncVar]
-    public String PlayerName = "Player";
     //List of the pawns owned by the player
     public List<Pawn> Pawns;
 
     private PlayerHand playerHand;
 
-    public ColorBlock playCardColors;
-    public ColorBlock discardCardColors;
     #region temp attributes
     //Number of playable card in the player's hand
     private int nbPlayableCards = 0;
 
-    private Card cardSelected = null;
+    public Card CardSelected = null;
     private Pawn firstPawnSelected = null;
     private Pawn pawnSelected = null;
+
+    private Coroutine waitfor = null;
     #endregion
     //Color of the player
     [SyncVar]
-    public PlayerColorEnum PlayerColor = PlayerColorEnum.Clear;
+    public PlayerColorEnum PlayerColorE = PlayerColorEnum.Clear;
+
+    [SyncVar]
+    public Color PlayerColor;
+
+
+    [SyncVar]
+    public int PlayerIndex;
 
     #region References
-    private Deck gameDeck;
+    static private Deck gameDeck;
 
     //Prefab used for the Pawn
-    public GameObject PawnPrefab;
+    static public GameObject PawnPrefab;
     //references to the the component used by the script
-    private GameMaster gMaster;
-    private TockBoard board;
+    static private GameMaster gMaster;
+    static private TockBoard board;
+
 
     public Image[] DisplayedHand;
     #endregion
@@ -51,11 +55,11 @@ public class TockPlayer : NetworkBehaviour
     //Number of movement left for the Seven card
     private int movementLeft = 0;
     //Display the movement left for the Seven card
-    private GameObject displayMovementLeft;
+    static private GameObject displayMovementLeft;
     #endregion
     //for debugging
-    private Text text;
-    #region EndGame
+    private Text debugPlayerText;
+    #region Popup
     private Rect windowRect;
     private String winnerName = "";
     #endregion
@@ -156,19 +160,19 @@ public class TockPlayer : NetworkBehaviour
         }
     }
 
-    public Text Text
+    public Text DebugPlayerText
     {
         get
         {
-            if (text == null)
+            if (debugPlayerText == null)
             {
-                text = GameObject.Find("TextTockPlayer").GetComponent<Text>();
+                debugPlayerText = GameObject.Find("TextTockPlayer").GetComponent<Text>();
             }
-            return text;
+            return debugPlayerText;
         }
         set
         {
-            text = value;
+            debugPlayerText = value;
         }
     }
 
@@ -190,6 +194,9 @@ public class TockPlayer : NetworkBehaviour
             windowRect = value;
         }
     }
+
+
+
     #endregion
     #endregion
     #region initialization
@@ -198,10 +205,6 @@ public class TockPlayer : NetworkBehaviour
     /// </summary>
     void Start()
     {
-        //add tag to the player
-        String nameTag = PlayerColor.ToString();
-        this.tag = nameTag + "_Player";
-        this.name = nameTag + "_Player";
 
     }
 
@@ -217,7 +220,7 @@ public class TockPlayer : NetworkBehaviour
     public void Awake()
     {
         //colorize player
-        PlayerColor = GameMaster.GiveNewPlayerColor();
+        //PlayerColor = GameMaster.GiveNewPlayerColor();
 
         GameMaster.players.Add(this);
     }
@@ -232,10 +235,15 @@ public class TockPlayer : NetworkBehaviour
         if (isLocalPlayer)
         {
             DisplayMovementLeft.SetActive(false);
-
-            DisplayedHand = GameObject.Find("Cards").GetComponentsInChildren<Image>();
+            DisplayedHand = GameObject.Find("CardsInHand").GetComponentsInChildren<Image>();
             Hand.OnAdd += DisplayCard;
             Hand.OnRemove += ClearCard;
+            //Camera.main.enabled = false;
+            //Camera playerCam = GameObject.Find("Camera_" + this.PlayerIndex).GetComponent<Camera>();
+            Camera.main.backgroundColor = this.PlayerColor;
+            KeyValuePair<Vector3, Quaternion> cameraPosition = GameMaster.CameraPositions.GetCameraforPlayer(PlayerIndex);
+            Camera.main.transform.SetPositionAndRotation(cameraPosition.Key, cameraPosition.Value);
+            //playerCam.enabled = true;
         }
     }
 
@@ -281,9 +289,9 @@ public class TockPlayer : NetworkBehaviour
     /// Get the list of pawns owend by the player from the server
     /// </summary>
     [ClientRpc]
-    public void RpcBuildPawnList()
+    public void RpcBuildLists()
     {
-        Pawns = GMaster.getPawnsOfAColor(PlayerColor);
+        Pawns = GMaster.GetPawnsOfAPlayer(PlayerIndex);
         Pawns.Sort(ComparePawnsByPawnIndex);
     }
 
@@ -291,12 +299,18 @@ public class TockPlayer : NetworkBehaviour
     /// Test if all the pawns of the player are in home (finish line)
     /// </summary>
     /// <returns></returns>
-    private bool hasWin()
+    public bool hasWin()
     {
         int inHouse = 0;
+        //Debug.Log("Test HasWin() :");
         foreach (Pawn pawnSelected in Pawns)
         {
-            if (pawnSelected.Progress > Board.NB_CASES) inHouse++;
+            //Debug.Log("Pawn : " + pawnSelected.name + " - status : " + pawnSelected.Status + " - progress : " + pawnSelected.Progress);
+            if (pawnSelected.Status == PawnStatusEnum.IN_HOUSE)
+            {
+                inHouse++;
+                //Debug.Log(pawnSelected.name + " is IN_HOUSE, there is " + inHouse +" Pawns IN_HOUSE");
+            }
         }
         return inHouse == 4;
     }
@@ -313,7 +327,7 @@ public class TockPlayer : NetworkBehaviour
         foreach (Card item in playerHand)
         {
             //IF card is not playable, disable the card button
-            if (!item.MakeProjections(GMaster.getPawnsFiltered(item.ColorFilter, this.PlayerColor)))
+            if (!item.MakeProjections(GMaster.GetPawnsFiltered(item.ColorFilter, PlayerIndex)))
             {
                 DisplayedHand[playerHand.IndexOf(item)].GetComponent<Button>().enabled = false;
             }
@@ -366,8 +380,8 @@ public class TockPlayer : NetworkBehaviour
         {
             DisplayedHand[playerHand.IndexOf(item)].GetComponent<Button>().enabled = enable;
         }
-
     }
+
     #endregion
     #region Drawing
     /// <summary>
@@ -381,6 +395,18 @@ public class TockPlayer : NetworkBehaviour
         {
             this.PickACard();
         }
+        GameObject btnGameBegin = GameObject.Find("BtnGameBegin");
+        if (btnGameBegin != null)
+        {
+            btnGameBegin.SetActive(false);
+        }
+        GameObject txtClientWait = GameObject.Find("TxtClientWait");
+        if (txtClientWait != null)
+        {
+            txtClientWait.SetActive(false);
+        }
+
+
     }
 
     /// <summary>
@@ -390,7 +416,6 @@ public class TockPlayer : NetworkBehaviour
     {
         if (Hand.Count < 5)
         {
-            //TockPlayer.EventOnCardDrawed += RpcCardDrawed;
             CmdPickACard();
         }
     }
@@ -414,7 +439,6 @@ public class TockPlayer : NetworkBehaviour
     public void RpcCardDrawed(CardsColorsEnum CardColor, CardsValuesEnum CardValue)
     {
         StartCoroutine(waitForCard(CardColor, CardValue));
-        //TockPlayer.EventOnCardDrawed -= RpcCardDrawed;
     }
 
     /// <summary>
@@ -444,7 +468,7 @@ public class TockPlayer : NetworkBehaviour
     {
         if (cardPlayed < Hand.Count)
         {
-            cardSelected = Hand[cardPlayed];
+            CardSelected = Hand[cardPlayed];
             //IF no cards are playable, discard the selected card
             if (nbPlayableCards == 0)
             {
@@ -453,16 +477,16 @@ public class TockPlayer : NetworkBehaviour
             }
             else
             {
-                Text.text = "Card Selected : " + Hand[cardPlayed].name + " : " + (int)Hand[cardPlayed].Value + " cases";   //debug
-                if (Hand[cardPlayed].Value == CardsValuesEnum.SEVEN)
+                //DebugPlayerText.text = "Card Selected : " + Hand[cardPlayed].name + " : " + (int)Hand[cardPlayed].Value + " cases";   //debug
+                /*if (Hand[cardPlayed].Value == CardsValuesEnum.SEVEN)
                 {
                     MovementLeft = 7;
                     DisplayMovementLeft.SetActive(true);
-                }
+                }*/
                 this.SelectPawn();
             }
         }
-
+        
     }
 
     /// <summary>
@@ -470,17 +494,15 @@ public class TockPlayer : NetworkBehaviour
     /// </summary>
     private void DiscardSelectedCard()
     {
-        Hand.Remove(cardSelected);
-        CmdReturnCard(cardSelected.name);
+        Hand.Remove(CardSelected);
+        CmdReturnCard(CardSelected.name);
         if (isClient)
         {
-            NetworkServer.UnSpawn(cardSelected.gameObject);
+            NetworkServer.UnSpawn(CardSelected.gameObject);
         }
         this.PickACard();
-        Text.text = "Turn Finished for Me";
-
-
-
+        CardSelected = null;
+        //DebugPlayerText.text = "Turn Finished for Me";
     }
 
     /// <summary>
@@ -512,8 +534,7 @@ public class TockPlayer : NetworkBehaviour
         }
         //Find the targetted pawn and play the Card on it
         card.Play(GameObject.Find(pawnTarget).GetComponent<Pawn>(), otherTarget);
-        Text.text = "Card Played : " + card.name + " : " + (int)card.Value + " cases";   //debug
-
+        //DebugPlayerText.text = "Card Played : " + card.name + " : " + (int)card.Value + " cases";   //debug
     }
     #endregion
     #endregion
@@ -524,22 +545,32 @@ public class TockPlayer : NetworkBehaviour
     /// <param name="secondTarget">boolean - true if it is for choosing a second target (ex : Jack Card)</param>
     public void SelectPawn(bool secondTarget = false)
     {
-        //Subscribe  on the Event OnClick on every pawns then turn on the halo selection
-        foreach (Pawn item in cardSelected.possibleTargets)
+        if (waitfor != null)
         {
-            item.EventOnPawnSelected += PawnSelection;
-            item.SwitchHalo(true, PlayerColor);
+            StopCoroutine(waitfor);
         }
+        DisplayProjection(CardSelected);
         //IF this the first selection
         if (!secondTarget)
         {
-            StartCoroutine(waitForPawn());
+            waitfor = StartCoroutine(waitForPawn());
         }
         //IF this the second selection process
         else
         {
-            StartCoroutine(waitForSecondPawn());
+            waitfor = StartCoroutine(waitForSecondPawn());
         }
+    }
+
+    public void DisplayProjection(Card cardToDisplay)
+    {
+        //Subscribe  on the Event OnClick on every pawns then turn on the halo selection
+        foreach (Pawn item in cardToDisplay.possibleTargets)
+        {
+            item.EventOnPawnSelected += PawnSelection;
+            item.SwitchHalo(true, PlayerColor);
+        }
+
     }
 
     /// <summary>
@@ -549,11 +580,15 @@ public class TockPlayer : NetworkBehaviour
     private void PawnSelection(Pawn Selection)
     {
         pawnSelected = Selection;
-        foreach (Pawn item in cardSelected.possibleTargets)
+        UnSelectAll();
+    }
+
+    public void UnSelectAll()
+    {
+        foreach (Pawn item in GameObject.FindObjectsOfType<Pawn>())
         {
             unSelect(item);
         }
-
     }
 
     /// <summary>
@@ -579,21 +614,21 @@ public class TockPlayer : NetworkBehaviour
         }
         this.switchAllCardsClick();
 
-        switch (cardSelected.Value)
+        switch (CardSelected.Value)
         {
-            case CardsValuesEnum.SEVEN:
-                PlaySevenCard();
-                break;
+            /*case CardsValuesEnum.SEVEN:
+                PlayMoveMany();
+                break;*/
             case CardsValuesEnum.JACK:
-                PlayJackCard();
+                PlayExchange();
                 MovementLeft++;
                 break;
             default:
-                CmdPlayCard(cardSelected.name, pawnSelected.name, "");
+                CmdPlayCard(CardSelected.name, pawnSelected.name, "");
                 MovementLeft = 0;
                 break;
         }
-        Text.text = "Turn Finished for Me";
+        //DebugPlayerText.text = "Turn Finished for Me";
 
         StartCoroutine(waitForPawnMoved());
     }
@@ -601,12 +636,12 @@ public class TockPlayer : NetworkBehaviour
     /// <summary>
     /// Play the Seven Card, divide 7 movement on 1 or more pawns
     /// </summary>
-    private void PlaySevenCard()
+    private void PlayMoveMany()
     {
         //Move the selected pawn for 1 cell
-        CmdPlayCard(cardSelected.name, pawnSelected.name, "");
+        CmdPlayCard(CardSelected.name, pawnSelected.name, "");
         //Test if this pawn can still move
-        if (cardSelected.MoveFiltering(pawnSelected, 1))
+        if (CardSelected.MoveFiltering(pawnSelected, 1))
         {
             unSelect(pawnSelected);
         }
@@ -623,12 +658,13 @@ public class TockPlayer : NetworkBehaviour
     /// <summary>
     /// Play the Jack Card, switch position between two pawns
     /// </summary>
-    private void PlayJackCard()
+    private void PlayExchange()
     {
         firstPawnSelected = pawnSelected;
+        UnSelectAll();
         //Compute the selection of pawns to be switched
-        cardSelected.MakeProjections(GMaster.getPawnsFiltered(SelectionFilterEnum.ALLPAWNS, firstPawnSelected.PlayerColor));
-        cardSelected.possibleTargets.Remove(firstPawnSelected);
+        CardSelected.MakeProjections(GMaster.GetPawnsFiltered(SelectionFilterEnum.ALLPAWNS, firstPawnSelected.OwningPlayerIndex));
+        CardSelected.possibleTargets.Remove(firstPawnSelected);
         pawnSelected = null;
         //Relaunch the selection process 
         SelectPawn(true);
@@ -643,7 +679,7 @@ public class TockPlayer : NetworkBehaviour
         {
             yield return new WaitWhile(() => pawnSelected == null);
         }
-        CmdPlayCard(cardSelected.name, firstPawnSelected.name, pawnSelected.name);
+        CmdPlayCard(CardSelected.name, firstPawnSelected.name, pawnSelected.name);
         MovementLeft = 0;
         StartCoroutine(waitForPawnMoved());
     }
@@ -656,14 +692,37 @@ public class TockPlayer : NetworkBehaviour
     {
         if (pawnSelected != null)
         {
-            yield return new WaitWhile(() => pawnSelected.Status == PawnStatusEnum.MOVING);
+            yield return new WaitWhile(() => (pawnSelected.Status == PawnStatusEnum.MOVING));
         }
-        Debug.Log("Pawn finished moving");
+        //Debug.Log("Pawn finished moving");
         if (MovementLeft == 0)
         {
             this.EndTurn();
         }
     }
+
+    IEnumerator CheckPawnsStillMoving()
+    {
+        foreach (List<Pawn> pawnList in GameMaster.AllPawns.Values)
+        {
+            foreach (Pawn item in pawnList)
+            {
+                if (item.Status == PawnStatusEnum.MOVING)
+                {
+                    //Debug.Log(item.name + " haven't finished moving");
+                    yield return item.waitForFinishedMoving();
+                    //Debug.Log(item.name + " have finished moving");
+
+                    break;
+                }
+            }
+        }
+       // Debug.Log("All pawn have finished moving");
+        GMaster.TestVictory();
+        Projection();
+        //Debug.Assert(!allPawnIdling, "All Pawn are idling");
+    }
+
     #endregion
     #region ProgressDictionnary
     /// <summary>
@@ -700,6 +759,29 @@ public class TockPlayer : NetworkBehaviour
         Debug.Log("Removed : " + target + " from ProgressDico");
 
     }
+
+    [Command]
+    public void CmdAddtoProgressDictionnary(string target)
+    {
+        int newProgress = GMaster.ProgressListAdd(target);
+        GameObject.Find(target).GetComponent<Pawn>().ProgressInDictionnary = newProgress;
+    }
+
+    [Command]
+    public void CmdMoveinProgressDictionnary(string target, int nbMoves)
+    {
+        int newProgress = GMaster.ProgressListMovePawn(target, nbMoves);
+        GameObject.Find(target).GetComponent<Pawn>().ProgressInDictionnary = newProgress;
+    }
+
+    [Command]
+    public void CmdRemovefromProgressDictionnary(string target)
+    {
+        GMaster.ProgressListRemove(target);
+        Debug.Log("Removed : " + target + " from ProgressDico");
+
+    }
+
     #endregion
     #region Turn begin/end
     /// <summary>
@@ -709,9 +791,9 @@ public class TockPlayer : NetworkBehaviour
     [TargetRpc]
     public void TargetBeginTurn(NetworkConnection Target)
     {
-        Text.text = "It's my turn, i'm the player : " + this.PlayerName + " - Color : " + this.PlayerColor.ToString();
-        Debug.Log("Beginning turn of player : " + this.PlayerColor);
-        Projection();
+        //DebugPlayerText.text = "It's my turn, i'm the player : " + this.name + " - Color : " + this.PlayerColor.ToString();
+        //Debug.Log("Beginning turn of player : " + this.PlayerColor);
+        StartCoroutine(CheckPawnsStillMoving());
     }
 
     /// <summary>
@@ -730,10 +812,7 @@ public class TockPlayer : NetworkBehaviour
         {
             DisplayedHand[playerHand.IndexOf(item)].GetComponent<Button>().enabled = false;
         }
-        if (hasWin())
-        {
-            CmdVictory();
-        }
+        CmdTestVictory();
         CmdEndTurn();
     }
 
@@ -751,19 +830,19 @@ public class TockPlayer : NetworkBehaviour
     /// Tell the client there is a winner
     /// </summary>
     [Command]
-    private void CmdVictory()
+    public void CmdTestVictory()
     {
-        RpcEndGame(this.name);
+        GMaster.TestVictory();
     }
 
     /// <summary>
     /// Trigger the display of the end game popup by setting a winnerName
     /// </summary>
-    /// <param name="winnerName"></param>
+    /// <param name="winnerNetId"></param>
     [ClientRpc]
-    private void RpcEndGame(string winnerName)
+    public void RpcEndGame(string winnerNetId)
     {
-        this.winnerName = winnerName;
+        this.winnerName = winnerNetId;
 
     }
 
@@ -771,10 +850,10 @@ public class TockPlayer : NetworkBehaviour
     /// Tell the client to return to the Lobby
     /// </summary>
     [Command]
-    private void CmdReturnToLobby()
+    public void CmdReturnToLobby()
     {
         RpcReturnToLobby();
-        SceneManager.LoadScene("Lobby");
+        GMaster.QuitSession();
 
     }
 
@@ -784,7 +863,7 @@ public class TockPlayer : NetworkBehaviour
     [ClientRpc]
     private void RpcReturnToLobby()
     {
-        SceneManager.LoadScene("Lobby");
+        GMaster.QuitSession();
 
     }
 
@@ -794,11 +873,12 @@ public class TockPlayer : NetworkBehaviour
     {
         if (winnerName != "")
         {
-            WindowRect = GUI.Window(0, WindowRect, DoMyWindow, winnerName == GMaster.LocalPlayer.name ? "Victory !!!" : "Defeat...");
+            WindowRect = GUI.Window(0, WindowRect, DoEndWindow, winnerName == GMaster.LocalPlayer.netId.ToString() ? "Victory !!!" : "Defeat...");
         }
+
     }
 
-    private void DoMyWindow(int id)
+    private void DoEndWindow(int id)
     {
         Rect buttonRect = new Rect((WindowRect.width - (WindowRect.width / 4)) / 2, (WindowRect.height - (WindowRect.height / 4)) / 2, WindowRect.width / 4, WindowRect.height / 4);
         if (GUI.Button(buttonRect, "Ok"))
@@ -806,6 +886,7 @@ public class TockPlayer : NetworkBehaviour
             CmdReturnToLobby();
         }
     }
+
 
     #endregion
 }

@@ -1,0 +1,7 @@
+- A Pawn on his Entry cannot be passed, moved or eaten
+
+- A Pawn on House Cells cannot be eaten
+
+- If your Pawn arrive on another Pawn cell, this one will be eaten
+
+- You have to play an ACE, a KING or a JOKER to make a Pawn enter the Board

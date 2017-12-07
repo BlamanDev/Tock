@@ -1,11 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Networking;
 
 /// <summary>
 /// Special Dictionnary used to keep track of the pawns
 /// </summary>
-public class ProgressDictionnary : Dictionary<Pawn, int> {
+public class ProgressDictionnary : Dictionary<Pawn, int>, IProgressDictionnary
+{
     public Dictionary<Pawn, string> Houses = new Dictionary<Pawn, string>();
     /// <summary>
     /// Compute the position of the target according to its color and add it 
@@ -16,12 +18,13 @@ public class ProgressDictionnary : Dictionary<Pawn, int> {
     {
         Pawn target = GameObject.Find(pawnTarget).GetComponent<Pawn>();
 
-        int position =  18 * (int)target.PlayerColor;
+        int position =  18 * target.OwningPlayerIndex;
         base.Add(target, position);
         Debug.Log("Added : " + pawnTarget + "- to ProgressDico at position : " + position);
 
         return position;
     }
+
 
     /// <summary>
     /// Move the target in the dictionnary
@@ -41,7 +44,7 @@ public class ProgressDictionnary : Dictionary<Pawn, int> {
 
         if (target.Progress < 71)
         {
-            this[target] = newPosition;
+            this[target] = TestPosition(newPosition);
             Debug.Log("Moved : " + target + " for " + nbCell + " cells in ProgressDico, new position : " + newPosition);
 
         }
@@ -51,9 +54,9 @@ public class ProgressDictionnary : Dictionary<Pawn, int> {
             {
                 Houses.Remove(target);
             }
-            Houses[target] = target.PlayerColor.ToString()+ target.Progress;
+            Houses[target] = target.OwningPlayerIndex.ToString()+ "_" + target.Progress;
             newPosition = 75 - target.Progress;
-            Debug.Log("Moved : " + target + " for " + nbCell + " cells in ProgressDico, entering House : " + target.PlayerColor.ToString() + target.Progress + " , new Position : " + newPosition);
+            Debug.Log("Moved : " + target + " for " + nbCell + " cells in ProgressDico, entering House : " + target.PlayerColorE.ToString() + target.Progress + " , new Position : " + newPosition);
 
         }
         return newPosition;
@@ -76,7 +79,7 @@ public class ProgressDictionnary : Dictionary<Pawn, int> {
     /// <returns></returns>
     public Pawn GetPawn(int position)
     {
-        Pawn pawnReturned = null;
+        Pawn pawnReturned = null; 
         if (this.ContainsValue(position))
         {
             foreach (Pawn item in this.Keys)
@@ -118,8 +121,8 @@ public class ProgressDictionnary : Dictionary<Pawn, int> {
     {
         int rPosition = position;
 
-        if (position > 72) rPosition -= 72;
-        if (position < 0) rPosition += 72;
+        if (position > 75) rPosition -= 75;
+        if (position < 0) rPosition += 75;
 
         return rPosition;
     }
@@ -134,10 +137,26 @@ public class ProgressDictionnary : Dictionary<Pawn, int> {
     {
         int[] nbMoves = new int[2];
 
-        nbMoves[0] = (TestPosition(this[target2] - (int)target1.PlayerColor * 18)) - target1.Progress;
-        nbMoves[1] = (TestPosition(this[target1] - (int)target2.PlayerColor * 18)) - target2.Progress;
+        nbMoves[0] = (TestPosition(this[target2] - (int)target1.PlayerColorE * 18)) - target1.Progress;
+        nbMoves[1] = (TestPosition(this[target1] - (int)target2.PlayerColorE * 18)) - target2.Progress;
 
         return nbMoves;
+    }
+
+    public bool TestHouseFree(string name,int nbMoves)
+    {
+        Pawn target = GameObject.Find(name).GetComponent<Pawn>();
+        return Houses.ContainsValue(target.PlayerColorE.ToString() + (target.Progress + nbMoves).ToString());
+    }
+
+    public bool HasPawn(Pawn pawnTested)
+    {
+        return this.ContainsKey(pawnTested);
+    }
+
+    public bool HasValue(int progress)
+    {
+        throw new System.NotImplementedException();
     }
 }
  

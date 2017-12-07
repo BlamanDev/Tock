@@ -29,7 +29,7 @@ public class PawnSpawner : NetworkBehaviour
     {
         get
         {
-            if (gMaster==null)
+            if (gMaster == null)
             {
                 gMaster = GameObject.Find("NetworkGameMaster").GetComponent<GameMaster>();
             }
@@ -52,8 +52,8 @@ public class PawnSpawner : NetworkBehaviour
 
     }
 
-// Update is called once per frame
-void Update()
+    // Update is called once per frame
+    void Update()
     {
 
     }
@@ -64,7 +64,7 @@ void Update()
     /// <param name="player">Owner of the pawn</param>
     /// <param name="pawnIndex"></param>
     /// <returns></returns>
-    private Pawn CreatePawn(PlayerColorEnum player, int pawnIndex)
+    private Pawn CreatePawn(TockPlayer player, int pawnIndex)
     {
         GameObject newPawn = Instantiate(PawnPrefab);
         Pawn retour = newPawn.GetComponent<Pawn>();
@@ -87,32 +87,33 @@ void Update()
             text = GameObject.Find("TextPawnSpawner").GetComponent<Text>();
         }
 
-        if (playerList.Length <= 0)
+        /*if (playerList.Length <= 0)
         {
             playerList = FindObjectsOfType<TockPlayer>();
-        }
+        }*/
 
         //FOR EACH player, create 4 pawns
-        foreach (String color in Enum.GetNames(typeof(PlayerColorEnum)))
+        //foreach (String color in Enum.GetNames(typeof(PlayerColorEnum)))
+        foreach (TockPlayer player in GameMaster.players)
         {
-            text.text += "Populating " + color + " Pawn : ";
-            if (!color.Equals(PlayerColorEnum.Clear.ToString()))
+            //text.text += "Populating " + color + " Pawn : ";
+            /*if (!color.Equals(PlayerColorEnum.Clear.ToString()))
             {
                 for (int i = 1; i <= 4; i++)
                 {
                     text.text += CreatePawn(((PlayerColorEnum)Enum.Parse(typeof(PlayerColorEnum), color)), i) + " ";
                 }
+            }*/
+            for (int i = 1; i <= 4; i++)
+            {
+                CreatePawn(player, i);
             }
-        }
-        //Trigger Event, used to tell the GameMaster to build his dictionnary of Pawns
-        EventAllPawnsCreated();
+            //Trigger Event, used to tell the GameMaster to build his dictionnary of Pawns
+            //EventAllPawnsCreated();
 
-        //Build the pawn list of each player
-        foreach (TockPlayer player in playerList)
-        {
-            player.RpcBuildPawnList();
+            //Build the pawn list of each player
+            //player.RpcBuildPawnList();
 
         }
     }
-
 }

@@ -7,36 +7,51 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using UnityEngine.Events;
 using System;
+using System.IO;
+using System.Text;
 
 /// <summary>
 /// Script for the GameMaster
 /// </summary>
 public class GameMaster : NetworkBehaviour
 {
+    private const String RULESFILE = "Texts/Rules";
+
     #region properties
     //Used for the Singleton
     static public GameMaster GMaster = null;
     //List of players, static to be accessible on players connection
     static public List<TockPlayer> players = new List<TockPlayer>();
 
+    static private CameraPositions cameraPositions;
 
     //Prefab used for the Pawn
-    public GameObject PawnPrefab;
-    public GameObject CardPrefab;
+    static public GameObject PawnPrefab;
+    static public GameObject CardPrefab;
     //to avoid giving the same color to different players
     static private int nextColor = -1;
 
     //For debugging
-    public Text text;
+    static private Text debugText;
+
+    static private Text txtRules;
 
     //Contains the list of Pawns sorted by color
-    public Dictionary<PlayerColorEnum, List<Pawn>> AllPawns;
-    public ProgressDictionnary progressDictionnary;
+    static public Dictionary<int, List<Pawn>> AllPawns;
+    public IProgressDictionnary progressDictionnary;
 
-    private int activePlayerIndex = -1;
+    public SyncListString ProgressList = new SyncListString();
+    public SyncListString HouseList = new SyncListString();
+
+    private Rect fullscreenRect;
+    private bool displayRuleFullscreen= false;
+    private String rulesText = "";
 
 
-    private TockPlayer localPlayer;
+    static private int activePlayerIndex = -1;
+
+
+    static private TockPlayer localPlayer;
 
     public TockPlayer LocalPlayer
     {
@@ -55,6 +70,100 @@ public class GameMaster : NetworkBehaviour
         }
     }
 
+    public static Text TxtRules
+    {
+        get
+        {
+            if (txtRules == null)
+            {
+                txtRules = GameObject.Find("TxtRules").GetComponent<Text>();
+            }
+            return txtRules;
+        }
+
+        set
+        {
+            txtRules = value;
+        }
+    }
+
+    public static Text DebugText
+    {
+        get
+        {
+            if (debugText == null)
+            {
+                debugText = GameObject.Find("TextGameMaster").GetComponent<Text>();
+            }
+            return debugText;
+        }
+
+        set
+        {
+            debugText = value;
+        }
+    }
+
+    public string RulesText
+    {
+        get
+        {
+            if (String.IsNullOrEmpty(rulesText))
+            {
+                try
+                {
+                    rulesText = Resources.Load<TextAsset>(RULESFILE).text;
+                }
+                catch (Exception e)
+                {
+
+                    Debug.Log(e.Message);
+                }
+            }
+            return rulesText;
+        }
+
+        set
+        {
+            rulesText = value;
+        }
+    }
+
+    public Rect FullscreenRect
+    {
+        get
+        {
+            if (fullscreenRect.height == 0)
+            {
+                fullscreenRect = new Rect(5, 5, Screen.width - 10, Screen.height - 10);
+            }
+            return fullscreenRect;
+        }
+
+        set
+        {
+            fullscreenRect = value;
+        }
+    }
+
+    public static CameraPositions CameraPositions
+    {
+        get
+        {
+            if (cameraPositions == null)
+            {
+                cameraPositions = GameObject.FindObjectOfType<CameraPositions>();
+
+            }
+            return cameraPositions;
+        }
+
+        set
+        {
+            cameraPositions = value;
+        }
+    }
+
 
     #endregion
     #region initialisation
@@ -63,8 +172,31 @@ public class GameMaster : NetworkBehaviour
     {
         //Attach to Event AllPawnCreated
         PawnSpawner.EventAllPawnsCreated += buildPawnList;
-        AllPawns = new Dictionary<PlayerColorEnum, List<Pawn>>();
-        progressDictionnary = new ProgressDictionnary();
+        AllPawns = new Dictionary<int, List<Pawn>>();
+        GameObject.Find("LblBaseRules").GetComponent<Text>().text = RulesText;
+
+
+        if (isServer)
+        {
+            GameObject.Find("BtnGameBegin").SetActive(true);
+            GameObject.Find("TxtClientWait").SetActive(false);
+            for (int i = 0; i < 76; i++)
+            {
+                ProgressList.Add("");
+            }
+            for (int i = 0; i < 4 * GameObject.FindObjectOfType<NetworkLobbyManager>().numPlayers; i++)
+            {
+                HouseList.Add("");
+            }
+            Debug.Log("HouseList has " + HouseList.Count + " space");
+        }
+        else
+        {
+            GameObject.Find("BtnGameBegin").SetActive(false);
+            GameObject.Find("TxtClientWait").SetActive(true);
+
+        }
+
         //GameBegin();
     }
 
@@ -81,7 +213,7 @@ public class GameMaster : NetworkBehaviour
     {
         if (GMaster == null)
         {
-            DontDestroyOnLoad(gameObject);
+            //DontDestroyOnLoad(gameObject);
             GMaster = this;
         }
         else if (GMaster != this)
@@ -97,7 +229,6 @@ public class GameMaster : NetworkBehaviour
 
     public void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        if (scene.name == "Game") text = GameObject.Find("TextGameMaster").GetComponent<Text>();
 
     }
 
@@ -120,11 +251,14 @@ public class GameMaster : NetworkBehaviour
         //FOR EACH pawn, add it to the list corresponding its color
         foreach (Pawn item in listPawn)
         {
-            if (!AllPawns.ContainsKey(item.PlayerColor))
+            if (!AllPawns.ContainsKey(item.OwningPlayerIndex))
             {
-                AllPawns[item.PlayerColor] = new List<Pawn>();
+                AllPawns[item.OwningPlayerIndex] = new List<Pawn>();
+                MeshRenderer cellOfPlayer = GameObject.Find("Cell_J" + item.OwningPlayerIndex).GetComponent<MeshRenderer>();
+                cellOfPlayer.material.color = item.PlayerColor;
+
             }
-            AllPawns[item.PlayerColor].Add(item);
+            AllPawns[item.OwningPlayerIndex].Add(item);
 
         }
     }
@@ -134,13 +268,13 @@ public class GameMaster : NetworkBehaviour
     /// </summary>
     /// <param name="color"></param>
     /// <returns></returns>
-    public List<Pawn> getPawnsOfAColor(PlayerColorEnum color)
+    public List<Pawn> GetPawnsOfAPlayer(int playerIndex)
     {
         if (AllPawns.Count == 0)
         {
             buildPawnList();
         }
-        return AllPawns[color];
+        return AllPawns[playerIndex];
     }
 
     /// <summary>
@@ -149,25 +283,25 @@ public class GameMaster : NetworkBehaviour
     /// <param name="filter"></param>
     /// <param name="color"></param>
     /// <returns></returns>
-    public List<Pawn> getPawnsFiltered(SelectionFilterEnum filter, PlayerColorEnum color)
+    public List<Pawn> GetPawnsFiltered(SelectionFilterEnum filter, int playerIndex)
     {
         List<Pawn> listeRetour = new List<Pawn>();
         switch (filter)
         {
             case SelectionFilterEnum.OWNPAWNS:
-                listeRetour = AllPawns[color];
+                listeRetour = AllPawns[playerIndex];
                 break;
 
             case SelectionFilterEnum.ALLPAWNS:
-                foreach (PlayerColorEnum item in AllPawns.Keys)
+                foreach (int item in AllPawns.Keys)
                 {
                     listeRetour.AddRange(AllPawns[item]);
                 }
                 break;
             case SelectionFilterEnum.OTHERPAWNS:
-                foreach (PlayerColorEnum item in AllPawns.Keys)
+                foreach (int item in AllPawns.Keys)
                 {
-                    if (item != color)
+                    if (item != playerIndex)
                     {
                         listeRetour.AddRange(AllPawns[item]);
                     }
@@ -214,19 +348,32 @@ public class GameMaster : NetworkBehaviour
     /// <returns></returns>
     IEnumerator waitForAllPlayers()
     {
+        Debug.Log("Getting Lobby GameObject");
         NetworkLobbyManager lobbyby = GameObject.FindObjectOfType<NetworkLobbyManager>();
-        yield  return new WaitUntil(() => players.Count == lobbyby.numPlayers);
+        Debug.Log("waitUntil all players are connected");
+        yield return new WaitUntil(() => players.Count == lobbyby.numPlayers);
+        Debug.Log("Getting the pawnspawnner");
         PawnSpawner spawner = GameObject.FindObjectOfType<PawnSpawner>();
         //If there is a PawnSpawner in the scene, create the pawns
+        
         if (spawner != null)
         {
+            Debug.Log("There is a spawnner, beginning spawning of pawns");
             spawner.PopulatePawns();
         }
         //Build the first hand for each players
+        Debug.Log("Foreach player, build list of pawns and first hand");
         foreach (TockPlayer item in players)
         {
+            Debug.Log("player : " + item.name + " building pawn list");
+            item.RpcBuildLists();
+            Debug.Log("player : " + item.name + " building first hand");
             item.TargetBuildFirstHand(NetworkServer.objects[item.netId].connectionToClient);
+            Debug.Log("player : " + item.name + " waiting for his hand to be 5");
+            yield return new WaitUntil(() => item.Hand.Count == 5);
         }
+        Debug.Log("waitforallplayers finish, NextPlayer");
+        NextPlayer();
     }
     #endregion
     /// <summary>
@@ -234,6 +381,7 @@ public class GameMaster : NetworkBehaviour
     /// </summary>
     public void NextPlayer()
     {
+        this.ClearDescription();
         if (isServer)
         {
             activePlayerIndex++;
@@ -241,15 +389,241 @@ public class GameMaster : NetworkBehaviour
             {
                 activePlayerIndex = 0;
             }
-            //text.text = "Beginning turn of player : " + players[activePlayerIndex].name;
-            Debug.Log(players[activePlayerIndex].name);
+            //Debug.Log(players[activePlayerIndex].name);
             players[activePlayerIndex].TargetBeginTurn(NetworkServer.objects[players[activePlayerIndex].netId].connectionToClient);
+            //TestVictory();
+        }
+    }
 
+    public void TestVictory()
+    {
+        if (isServer)
+        {
+            foreach (int player in AllPawns.Keys)
+            {
+                int nbPawnsInHouse = 0;
+                foreach (Pawn item in AllPawns[player])
+                {
+                    if (item.Status == PawnStatusEnum.IN_HOUSE)
+                    {
+                        nbPawnsInHouse++;
+                    }
+                }
+                if (nbPawnsInHouse == 4)
+                {
+                    LocalPlayer.RpcEndGame(players[player].netId.ToString()); ;
+                }
+            }
         }
     }
 
     public void PlayCard(int indexCard)
     {
-        LocalPlayer.PlayCard(indexCard);
+        if (!displayRuleFullscreen)
+        {
+            if (LocalPlayer.CardSelected != null)
+            {
+                LocalPlayer.UnSelectAll();
+
+            }
+            this.DisplayDescription(LocalPlayer.Hand[indexCard]);
+            LocalPlayer.PlayCard(indexCard);
+
+        }
+    }
+
+    public void OnCardHovered(int indexCardHovered)
+    {
+        if (LocalPlayer.Hand != null && LocalPlayer.Hand.Count  == 5 && !displayRuleFullscreen)
+        {
+            DisplayDescription(LocalPlayer.Hand[indexCardHovered]);
+        }
+
+    }
+
+    public void DisplayDescription(Card cardHovered)
+    {
+            TxtRules.text = cardHovered.Description;
+            LocalPlayer.DisplayProjection(cardHovered);
+        
+    }
+
+    public void OnCardExit(int cardExited)
+    {
+        LocalPlayer.UnSelectAll();
+
+        if (LocalPlayer.Hand != null && LocalPlayer.Hand.Count == 5 && LocalPlayer.CardSelected == null )
+        {
+            this.ClearDescription();
+        }
+        else if (LocalPlayer.CardSelected != null)
+        {
+            DisplayDescription(LocalPlayer.CardSelected);
+        }
+    }
+
+    public void ClearDescription()
+    {
+        TxtRules.text = String.Empty;
+
+    }
+
+    #region ProgressList
+    public int ProgressListAdd(string pawnTarget)
+    {
+        Pawn target = GameObject.Find(pawnTarget).GetComponent<Pawn>();
+
+        int position = 18 * target.OwningPlayerIndex;
+        ProgressList[position] = pawnTarget;
+        //Debug.Log("Added : " + pawnTarget + "- to ProgressDico at position : " + position);
+
+        return position;
+    }
+
+    public int[] ExchangeCompute(Pawn target1, Pawn target2)
+    {
+        int[] nbMoves = new int[2];
+
+        nbMoves[0] = (TestPosition(ProgressList.IndexOf(target2.name) - target1.OwningPlayerIndex * 18)) - target1.Progress;
+        nbMoves[1] = (TestPosition(ProgressList.IndexOf(target1.name) - target2.OwningPlayerIndex * 18)) - target2.Progress;
+
+        return nbMoves;
+    }
+
+    public List<Pawn> ProgressListGetPawnsInRange(int startIndex, int lastIndex)
+    {
+        //Debug.Log("Check between " + startIndex + " and " + lastIndex);
+        List<Pawn> returnList = new List<Pawn>();
+        for (int i = startIndex; i <= lastIndex; i++)
+        {
+            if (!String.IsNullOrEmpty(ProgressList[TestPosition(i)]))
+            {
+                returnList.Add(GameObject.Find(ProgressList[TestPosition(i)]).GetComponent<Pawn>());
+            }
+        }
+        return returnList;
+    }
+
+    public int ProgressListMovePawn(string pawnTarget, int nbCell)
+    {
+        Pawn target = GameObject.Find(pawnTarget).GetComponent<Pawn>();
+        int newPosition = target.ProgressInDictionnary + nbCell;
+
+        ProgressListRemove(pawnTarget);
+
+        if (target.Progress < 71)
+        {
+            newPosition = TestPosition(newPosition);
+            ProgressList[newPosition] = pawnTarget;
+            //Debug.Log("Moved : " + target + " for " + nbCell + " cells in ProgressDico, new position : " + newPosition);
+        }
+        else
+        {
+            HouseList[(74 - target.Progress) + (target.OwningPlayerIndex * 4)] = pawnTarget;
+            //Debug.Log("Moved : " + target + " for " + nbCell + " cells in ProgressDico, entering House at : " + HouseList[HouseList.IndexOf(pawnTarget)] + " , new Position : " + newPosition);
+        }
+        return newPosition;
+    }
+
+    public void ProgressListRemove(string pawnTarget)
+    {
+        if (ProgressList.Contains(pawnTarget))
+        {
+            ProgressList[ProgressList.IndexOf(pawnTarget)] = String.Empty;
+
+        }
+        else
+        {
+            if (HouseList.Contains(pawnTarget))
+            {
+                HouseList[HouseList.IndexOf(pawnTarget)] = String.Empty;
+            }
+        }
+    }
+
+    public bool ProgressListTestHouseFree(int progress, int playerIndex)
+    {
+        //Debug.Log("Test House Free - progress tested : " + progress + " - playerindex tested : " + playerIndex + " - position tested : " + ((74 - progress) + 4 * playerIndex));
+        return !String.IsNullOrEmpty(HouseList[(74-progress) + 4 * playerIndex]);
+    }
+
+    static public int TestPosition(int position)
+    {
+        int rPosition = position;
+
+        if (position > 71) rPosition -= 72;
+        if (position < 0) rPosition += 72;
+
+        return rPosition;
+    }
+
+    #endregion
+    #region Popup Window
+    private void OnGUI()
+    {
+        if (displayRuleFullscreen)
+        {
+            StringBuilder displayedText = new StringBuilder();
+            displayedText.AppendLine("Base Rules :").AppendLine().AppendLine(RulesText);
+
+
+            
+            if (LocalPlayer.CardSelected != null)
+            {
+                displayedText.AppendLine("Effect of the selected card :").AppendLine().AppendLine().AppendLine(LocalPlayer.CardSelected.Description);
+            }
+            FullscreenRect = GUI.ModalWindow(1, FullscreenRect, CloseWindow, displayedText.ToString() );
+        }
+
+    }
+
+    private void CloseWindow(int id)
+    {
+        Rect buttonRect = new Rect((FullscreenRect.width - (FullscreenRect.width / 4)) / 2, FullscreenRect.height - FullscreenRect.height /6, FullscreenRect.width / 4, FullscreenRect.height / 8);
+        if (GUI.Button(buttonRect, "Close"))
+        {
+            displayRuleFullscreen = false ;
+        }
+
+    }
+
+    public void DisplayRuleWindow(bool display)
+    {
+        displayRuleFullscreen = display;
+    }
+
+#endregion
+    public void DebugSelectedCard()
+    {
+        DebugTock.DebugCard(LocalPlayer.CardSelected);
+    }
+
+    public void QuitSession()
+    {
+        if (isServer)
+        {
+            GameObject.FindObjectOfType<NetworkLobbyManager>().ServerReturnToLobby();
+        }
+        else
+        {
+            GameObject.FindObjectOfType<NetworkLobbyManager>().SendReturnToLobby();
+        }
+
+    }
+
+    public void ChangeCamera(bool previous = false)
+    {
+        KeyValuePair<Vector3, Quaternion> cameraPosition = new KeyValuePair<Vector3, Quaternion>();
+        if (!previous)
+        {
+            cameraPosition = CameraPositions.NextCamera();
+        }
+        else
+        {
+            cameraPosition = CameraPositions.PreviousCamera();
+        }
+        Camera.main.transform.SetPositionAndRotation(cameraPosition.Key, cameraPosition.Value);
+        //Camera.main.transform.Translate(cameraPosition.Key);
+        //Camera.main.transform.LookAt(new Vector3(0, 0, 0));
     }
 }
