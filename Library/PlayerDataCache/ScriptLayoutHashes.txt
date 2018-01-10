@@ -1,4 +1,4 @@
-Metro
+WindowsStandalone
 SceneListBegin?
 Assets/NetworkLobby.unity
 Assets/Game.unity
