@@ -27,7 +27,7 @@ public class CameraPositions : MonoBehaviour {
         }
     }
 
-    public KeyValuePair<Vector3,Quaternion> NextCamera()
+    public KeyValuePair<Vector3,Quaternion> NextCameraPosition()
     {
         currentPosition++;
         if (currentPosition == PositionsList.Count)
@@ -37,7 +37,7 @@ public class CameraPositions : MonoBehaviour {
         return new KeyValuePair<Vector3, Quaternion>(PositionsList[currentPosition].position, PositionsList[currentPosition].rotation);
     }
 
-    public KeyValuePair<Vector3, Quaternion> PreviousCamera()
+    public KeyValuePair<Vector3, Quaternion> PreviousCameraPosition()
     {
         currentPosition--;
         if (currentPosition < 0)
@@ -47,7 +47,7 @@ public class CameraPositions : MonoBehaviour {
         return new KeyValuePair<Vector3, Quaternion>(PositionsList[currentPosition].position, PositionsList[currentPosition].rotation);
     }
 
-    public KeyValuePair<Vector3, Quaternion> GetCameraforPlayer(int playerIndex)
+    public KeyValuePair<Vector3, Quaternion> GetCameraPositionforPlayer(int playerIndex)
     {
         currentPosition = playerIndex * 2;
         return new KeyValuePair<Vector3, Quaternion>(PositionsList[currentPosition].position, PositionsList[currentPosition].rotation);

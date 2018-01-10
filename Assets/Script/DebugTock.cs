@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -18,12 +19,14 @@ public class DebugTock : MonoBehaviour {
     {
         Debug.Log("Card : " + cardInspected.name);
         Debug.Log("Possible targets : ");
-        foreach (Pawn item in cardInspected.possibleTargets)
+        foreach (String item in cardInspected.possibleTargetsS)
         {
-            Debug.Log("name : " + item.name);
-            Debug.Log("status : " + item.Status);
-            Debug.Log("Progress : " + item.Progress);
-            Debug.Log("ProgressInDico : " + item.ProgressInDictionnary);
+            Pawn pawnTarget = GameObject.Find(item).GetComponent<Pawn>();
+
+            Debug.Log("name : " + pawnTarget.name);
+            Debug.Log("status : " + pawnTarget.Status);
+            Debug.Log("Progress : " + pawnTarget.Progress);
+            Debug.Log("ProgressInDico : " + pawnTarget.ProgressInDictionnary);
         }
     }
 

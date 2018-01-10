@@ -12,6 +12,9 @@ namespace Prototype.NetworkLobby
         public RectTransform lobbyServerList;
         public RectTransform lobbyPanel;
 
+        public RectTransform lobbyMatchMakerSubPanel;
+        public RectTransform lobbyDirectPlaySubPanel;
+
         public InputField ipInput;
         public InputField matchNameInput;
 
@@ -24,6 +27,20 @@ namespace Prototype.NetworkLobby
 
             matchNameInput.onEndEdit.RemoveAllListeners();
             matchNameInput.onEndEdit.AddListener(onEndEditGameName);
+        }
+
+        public void OnClickMatchMaker()
+        {
+            lobbyManager.backDelegate = lobbyManager.SimpleBackClbk;
+
+            lobbyManager.ChangeTo(lobbyMatchMakerSubPanel);
+        }
+
+        public void OnClickDirectPlay()
+        {
+            lobbyManager.backDelegate = lobbyManager.SimpleBackClbk;
+
+            lobbyManager.ChangeTo(lobbyDirectPlaySubPanel);
         }
 
         public void OnClickHost()

@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 3c15f8cafc421c54f84f23059d3181bb
+guid: affc52d457af5b545bf37f8ad4c91fb3
 timeCreated: 1507802555
 licenseType: Free
 TrueTypeFontImporter:
@@ -12,7 +12,8 @@ TrueTypeFontImporter:
   fontName: Imagine Font
   fontNames:
   - Imagine Font
-  fallbackFontReferences: []
+  fallbackFontReferences:
+  - {fileID: 12800000, guid: 3c15f8cafc421c54f84f23059d3181bb, type: 3}
   customCharacters: 
   fontRenderingMode: 0
   ascentCalculationMode: 1

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Xml;
 using UnityEngine;
+using UnityEngine.Experimental.UIElements;
 using UnityEngine.Networking;
 
 /// <summary>
@@ -11,18 +12,18 @@ using UnityEngine.Networking;
 /// </summary>
 public class Card : NetworkBehaviour
 {
-    private const String DESCRIPTIONFILE = "Texts/Descriptions";
-    private const String DESC_MOVE = "Move";
-    private const String DESC_MOVEORENTER = "MoveOrEnter";
-    private const String DESC_MOVEOTHER = "MoveOther";
-    private const String DESC_MOVEBACKWARD = "MoveBackWard";
-    private const String DESC_EXCHANGE = "Exchange";
-    private const String DESC_MOVEWIPEALL = "MoveWipeAll";
-    private const String DESC_MOVEMANY = "MoveMany";
-    private const String VALUEINTEXT = "[VALUE]";
+    /*public const String DESCRIPTIONFILE = "Texts/Descriptions";
+    public const String DESC_MOVE = "Move";
+    public const String DESC_MOVEORENTER = "MoveOrEnter";
+    public const String DESC_MOVEOTHER = "MoveOther";
+    public const String DESC_MOVEBACKWARD = "MoveBackWard";
+    public const String DESC_EXCHANGE = "Exchange";
+    public const String DESC_MOVEWIPEALL = "MoveWipeAll";
+    public const String DESC_MOVEMANY = "MoveMany";
+    public const String VALUEINTEXT = "[VALUE]";
 
     private static Dictionary<String, String> dicoDescription;
-
+    */
     [SyncVar]
     public CardsColorsEnum Color;
     [SyncVar(hook = "OnChangeValue")]
@@ -31,6 +32,10 @@ public class Card : NetworkBehaviour
     public SelectionFilterEnum ColorFilter;
 
     private String description;
+    public Sprite EffectImage;
+
+    private Sprite colorImage;
+
     public delegate void CardEffect(Pawn target, Pawn otherTarget = null);
     public CardEffect Effect;
 
@@ -41,6 +46,7 @@ public class Card : NetworkBehaviour
 
     //Pawn which can be played by this card after projection
     public List<Pawn> possibleTargets;
+    public SyncListString possibleTargetsS;
 
     static private GameMaster gMaster;
 
@@ -60,7 +66,7 @@ public class Card : NetworkBehaviour
             gMaster = value;
         }
     }
-
+    /*
     public Dictionary<string, string> DicoDescription
     {
         get
@@ -77,7 +83,7 @@ public class Card : NetworkBehaviour
             dicoDescription = value;
         }
     }
-
+    */
     public string Description
     {
         get
@@ -87,11 +93,32 @@ public class Card : NetworkBehaviour
 
         set
         {
+            /*EffectImage = Resources.Load<Sprite>("Icons/" + description);
             description = DicoDescription[value];
-            description = description.Replace(VALUEINTEXT, ((int)this.Value).ToString());
+
+            description = description.Replace(VALUEINTEXT, ((int)this.Value).ToString());*/
+            description = value;
         }
     }
 
+    public Sprite ColorImage
+    {
+        get
+        {
+            if (colorImage==null)
+            {
+                colorImage = Resources.Load<Sprite>("Icons/Cards/Colors/" + Color.ToString());
+            }
+            return colorImage;
+        }
+
+        set
+        {
+            colorImage = value;
+        }
+    }
+
+    /*
     private void buildDicoDescription()
     {
         dicoDescription = new Dictionary<string, string>();
@@ -109,16 +136,6 @@ public class Card : NetworkBehaviour
                 }
             }
 
-            /*foreach (string line in allLines.text)
-
-            {
-                string[] linesplitted = line.Split(';');
-                if (linesplitted.Length == 2)
-                {
-                    dicoDescription.Add(linesplitted[0], linesplitted[1]);
-                }
-            }*/
-
         }
         catch (Exception e)
         {
@@ -126,7 +143,7 @@ public class Card : NetworkBehaviour
         }
     }
 
-
+    */
     // Use this for initialization
     void Start()
     {
@@ -150,6 +167,7 @@ public class Card : NetworkBehaviour
     public void Initialize(CardsColorsEnum color, CardsValuesEnum value)
     {
         Color = color;
+        
         Value = value;
 
     }
@@ -166,6 +184,7 @@ public class Card : NetworkBehaviour
         Illustration = Resources.Load<Material>("Materials/Cards/" + this.name);
         this.gameObject.transform.GetChild(1).GetComponentInChildren<MeshRenderer>().material = Illustration;
 
+
     }
 
     #region Card Effect
@@ -180,7 +199,7 @@ public class Card : NetworkBehaviour
             case CardsValuesEnum.ACE:
             case CardsValuesEnum.KING:
                 Effect = MoveOrEnter;
-                Description = DESC_MOVEORENTER;
+                Description = DicoDescription.DESC_MOVEORENTER;
                 ColorFilter = SelectionFilterEnum.OWNPAWNS;
                 Projections.Add(ParteuFilter);
                 break;
@@ -199,14 +218,14 @@ public class Card : NetworkBehaviour
                 break;*/
             case CardsValuesEnum.FOUR:
                 Effect = MoveBackward;
-                Description = DESC_MOVEBACKWARD;
+                Description = DicoDescription.DESC_MOVEBACKWARD;
                 ColorFilter = SelectionFilterEnum.OWNPAWNS;
                 Projections.Add(OnBoardFilter);
                 Projections.Add(MoveFilter);
                 break;
             case CardsValuesEnum.FIVE:
                 Effect = Move;
-                Description = DESC_MOVEOTHER;
+                Description = DicoDescription.DESC_MOVEOTHER;
                 ColorFilter = SelectionFilterEnum.OTHERPAWNS;
                 Projections.Add(OnBoardFilter);
                 Projections.Add(IdleFilter);
@@ -220,20 +239,20 @@ public class Card : NetworkBehaviour
                 break;*/
             case CardsValuesEnum.JACK:
                 Effect = Exchange;
-                Description = DESC_EXCHANGE;
+                Description = DicoDescription.DESC_EXCHANGE;
                 ColorFilter = SelectionFilterEnum.OWNPAWNS;
                 Projections.Add(OnBoardFilter);
                 Projections.Add(IdleFilter);
                 break;
             case CardsValuesEnum.JOKER:
                 Effect = JOKER;
-                Description = DESC_MOVEWIPEALL;
+                Description = DicoDescription.DESC_MOVEWIPEALL;
                 ColorFilter = SelectionFilterEnum.OWNPAWNS;
                 Projections.Add(ParteuFilter);
                 break;
             default:
                 Effect = Move;
-                Description = DESC_MOVE;
+                Description = DicoDescription.DESC_MOVE;
                 ColorFilter = SelectionFilterEnum.OWNPAWNS;
                 Projections.Add(OnBoardFilter);
                 Projections.Add(MoveFilter);
@@ -428,7 +447,7 @@ public class Card : NetworkBehaviour
     public bool MakeProjections(List<Pawn> listToTest)
     {
         bool playable = true;
-        possibleTargets.Clear();
+        possibleTargetsS.Clear();
         //IF the card is Seven, use the projection function specific to the seven
         if (this.Effect == MoveMany)
         {
@@ -452,16 +471,16 @@ public class Card : NetworkBehaviour
                 }
                 if (playable)
                 {
-                    possibleTargets.Add(item);
+                    possibleTargetsS.Add(item.name);
                 }
             }
         }
         if (this.Effect == this.Exchange && getNbOfPawnOnBoard() < 2)
         {
-            possibleTargets.Clear();
+            possibleTargetsS.Clear();
         }
 
-        return possibleTargets.Count > 0;
+        return possibleTargetsS.Count > 0;
     }
 
     /// <summary>
@@ -491,7 +510,7 @@ public class Card : NetworkBehaviour
                 //IF the pawn can move for minimum 1 cell, add it to possibles argets
                 if (movementAdded > 1)
                 {
-                    possibleTargets.Add(pawnTested);
+                    possibleTargetsS.Add(pawnTested.name);
                 }
             }
         }

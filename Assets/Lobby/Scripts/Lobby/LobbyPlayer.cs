@@ -19,6 +19,7 @@ namespace Prototype.NetworkLobby
         static List<int> _colorInUse = new List<int>();
 
         public Button colorButton;
+        public Button randomColorButton;
         public InputField nameInput;
         public Button readyButton;
         public Button waitingPlayerButton;
@@ -112,7 +113,7 @@ namespace Prototype.NetworkLobby
             CheckRemoveButton();
 
             if (playerColor == Color.white)
-                CmdColorChange();
+                CmdColorChange(true);
 
             ChangeReadyButtonColor(JoinColor);
 
@@ -133,6 +134,10 @@ namespace Prototype.NetworkLobby
             colorButton.onClick.RemoveAllListeners();
             colorButton.onClick.AddListener(OnColorClicked);
 
+            randomColorButton.onClick.RemoveAllListeners();
+            randomColorButton.onClick.AddListener(OnRandomColorClicked);
+
+
             readyButton.onClick.RemoveAllListeners();
             readyButton.onClick.AddListener(OnReadyClicked);
 
@@ -140,6 +145,7 @@ namespace Prototype.NetworkLobby
             //the add button if we reach maxLocalPlayer. We pass 0, as it was already counted on OnClientEnterLobby
             if (LobbyManager.s_Singleton != null) LobbyManager.s_Singleton.OnPlayersNumberModified(0);
         }
+
 
         //This enable/disable the remove button depending on if that is the only local player or not
         public void CheckRemoveButton()
@@ -205,8 +211,14 @@ namespace Prototype.NetworkLobby
         //so that all client get the new value throught syncvar
         public void OnColorClicked()
         {
-            CmdColorChange();
+            CmdColorChange(false);
         }
+
+        private void OnRandomColorClicked()
+        {
+            CmdColorChange(true);
+        }
+
 
         public void OnReadyClicked()
         {
@@ -251,9 +263,9 @@ namespace Prototype.NetworkLobby
         //====== Server Command
 
         [Command]
-        public void CmdColorChange()
+        public void CmdColorChange(bool random)
         {
-            playerColor = ColorManager.ChangeColor(playerColor);
+            playerColor = ColorManager.ChangeColor(playerColor,random);
             //int idx = System.Array.IndexOf(Colors, playerColor);
             /*int idx = this.slot;
             int inUseIdx = _colorInUse.IndexOf(idx);

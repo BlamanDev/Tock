@@ -18,6 +18,8 @@ public class TockPlayer : NetworkBehaviour
 
     private PlayerHand playerHand;
 
+    public bool ActivePlayer = false;
+
     #region temp attributes
     //Number of playable card in the player's hand
     private int nbPlayableCards = 0;
@@ -30,9 +32,6 @@ public class TockPlayer : NetworkBehaviour
     #endregion
     //Color of the player
     [SyncVar]
-    public PlayerColorEnum PlayerColorE = PlayerColorEnum.Clear;
-
-    [SyncVar]
     public Color PlayerColor;
 
 
@@ -42,6 +41,9 @@ public class TockPlayer : NetworkBehaviour
     #region References
     static private Deck gameDeck;
 
+    static private GameObject discardCardIcons;
+
+    private Image playerColorDisplayed;
     //Prefab used for the Pawn
     static public GameObject PawnPrefab;
     //references to the the component used by the script
@@ -49,7 +51,8 @@ public class TockPlayer : NetworkBehaviour
     static private TockBoard board;
 
 
-    public Image[] DisplayedHand;
+    private Image[] displayedHand;
+    private Image[] displaySelectedCard;
     #endregion
     #region Seven card
     //Number of movement left for the Seven card
@@ -59,6 +62,8 @@ public class TockPlayer : NetworkBehaviour
     #endregion
     //for debugging
     private Text debugPlayerText;
+
+
     #region Popup
     private Rect windowRect;
     private String winnerName = "";
@@ -195,6 +200,77 @@ public class TockPlayer : NetworkBehaviour
         }
     }
 
+    public Image[] DisplayedHand
+    {
+        get
+        {
+            if (displayedHand == null || displayedHand.Length < 5)
+            {
+                displayedHand = GameObject.Find("CardsInHand").GetComponentsInChildren<Image>();
+            }
+
+            return displayedHand;
+        }
+
+        set
+        {
+            displayedHand = value;
+        }
+    }
+
+    public Image[] DisplaySelectedCard
+    {
+        get
+        {
+            if ( displaySelectedCard == null || displaySelectedCard.Length < 5)
+            {
+                displaySelectedCard = GameObject.Find("SelectedCardInHand").GetComponentsInChildren<Image>();
+            }
+            return displaySelectedCard;
+        }
+
+        set
+        {
+            displaySelectedCard = value;
+        }
+    }
+
+    public static GameObject DiscardCardIcons
+    {
+        get
+        {
+            if (discardCardIcons == null)
+            {
+                discardCardIcons = GameObject.Find("DiscardCardIcons");
+            }
+            return discardCardIcons;
+        }
+
+        set
+        {
+            discardCardIcons = value;
+        }
+    }
+
+    public Image PlayerColorDisplayed
+    {
+        get
+        {
+            if (playerColorDisplayed == null)
+            {
+                playerColorDisplayed = GameObject.Find("PlayerColorDisplayed").GetComponent<Image>();
+                playerColorDisplayed.color = PlayerColor;
+
+            }
+            return playerColorDisplayed;
+        }
+
+        set
+        {
+            playerColorDisplayed = value;
+        }
+    }
+
 
 
     #endregion
@@ -234,15 +310,20 @@ public class TockPlayer : NetworkBehaviour
 
         if (isLocalPlayer)
         {
-            DisplayMovementLeft.SetActive(false);
-            DisplayedHand = GameObject.Find("CardsInHand").GetComponentsInChildren<Image>();
+            DiscardCardIcons.SetActive(false);
             Hand.OnAdd += DisplayCard;
             Hand.OnRemove += ClearCard;
             //Camera.main.enabled = false;
             //Camera playerCam = GameObject.Find("Camera_" + this.PlayerIndex).GetComponent<Camera>();
-            Camera.main.backgroundColor = this.PlayerColor;
-            KeyValuePair<Vector3, Quaternion> cameraPosition = GameMaster.CameraPositions.GetCameraforPlayer(PlayerIndex);
-            Camera.main.transform.SetPositionAndRotation(cameraPosition.Key, cameraPosition.Value);
+            //Camera.main.backgroundColor = this.PlayerColor;
+            //KeyValuePair<Vector3, Quaternion> cameraPosition = GameMaster.CameraPositions.GetCameraPositionforPlayer(PlayerIndex);
+            //Camera.main.transform.SetPositionAndRotation(cameraPosition.Key, cameraPosition.Value);
+            GameObject.FindObjectOfType<TockBoard>().SetInitialPostion(PlayerIndex);
+            if (!isServer)
+            {
+                GameObject.FindObjectOfType<BtnGameBegin>().DisplayGameCanvas();
+
+            }
             //playerCam.enabled = true;
         }
     }
@@ -320,7 +401,7 @@ public class TockPlayer : NetworkBehaviour
     /// <summary>
     /// Test the if the cards in the Player's Hand can be played
     /// </summary>
-    public void Projection()
+    public void CmdProjection()
     {
         nbPlayableCards = 0;
         //Test each card in the Player's Hand
@@ -342,6 +423,7 @@ public class TockPlayer : NetworkBehaviour
         if (nbPlayableCards == 0)
         {
             this.switchAllCardsClick(true);
+            DiscardCardIcons.SetActive(true);
         }
     }
     #endregion
@@ -381,6 +463,22 @@ public class TockPlayer : NetworkBehaviour
             DisplayedHand[playerHand.IndexOf(item)].GetComponent<Button>().enabled = enable;
         }
     }
+
+    public void UnSelectAllCards()
+    {
+        foreach (Image item in DisplaySelectedCard)
+        {
+            item.color = Color.clear;
+            
+        }
+    }
+
+    public void SelectCard(int cardSelected)
+    {
+        UnSelectAllCards();
+        DisplaySelectedCard[cardSelected].color = Color.white;
+    }
+
 
     #endregion
     #region Drawing
@@ -483,6 +581,7 @@ public class TockPlayer : NetworkBehaviour
                     MovementLeft = 7;
                     DisplayMovementLeft.SetActive(true);
                 }*/
+                SelectCard(cardPlayed);
                 this.SelectPawn();
             }
         }
@@ -562,13 +661,20 @@ public class TockPlayer : NetworkBehaviour
         }
     }
 
+    public void DisplayProjection()
+    {
+        DisplayProjection(CardSelected);
+    }
+
     public void DisplayProjection(Card cardToDisplay)
     {
+        UnSelectAllPawns();
         //Subscribe  on the Event OnClick on every pawns then turn on the halo selection
-        foreach (Pawn item in cardToDisplay.possibleTargets)
+        foreach (String item in cardToDisplay.possibleTargetsS)
         {
-            item.EventOnPawnSelected += PawnSelection;
-            item.SwitchHalo(true, PlayerColor);
+            Pawn pawnTarget = GameObject.Find(item).GetComponent<Pawn>();
+            pawnTarget.EventOnPawnSelected += PawnSelection;
+            pawnTarget.SwitchHalo(true, PlayerColor);
         }
 
     }
@@ -580,10 +686,10 @@ public class TockPlayer : NetworkBehaviour
     private void PawnSelection(Pawn Selection)
     {
         pawnSelected = Selection;
-        UnSelectAll();
+        UnSelectAllPawns();
     }
 
-    public void UnSelectAll()
+    public void UnSelectAllPawns()
     {
         foreach (Pawn item in GameObject.FindObjectsOfType<Pawn>())
         {
@@ -661,15 +767,19 @@ public class TockPlayer : NetworkBehaviour
     private void PlayExchange()
     {
         firstPawnSelected = pawnSelected;
-        UnSelectAll();
+        UnSelectAllPawns();
         //Compute the selection of pawns to be switched
         CardSelected.MakeProjections(GMaster.GetPawnsFiltered(SelectionFilterEnum.ALLPAWNS, firstPawnSelected.OwningPlayerIndex));
-        CardSelected.possibleTargets.Remove(firstPawnSelected);
+        CmdRemovePawnFromPossibleTargets(CardSelected, firstPawnSelected);
         pawnSelected = null;
         //Relaunch the selection process 
         SelectPawn(true);
     }
 
+    private void CmdRemovePawnFromPossibleTargets(Card cardTargetted, Pawn target)
+    {
+        cardTargetted.possibleTargetsS.Remove(target.name);
+    }
     /// <summary>
     /// Wait for a second pawn to be selected and apply the Jack card effect
     /// </summary>
@@ -712,14 +822,14 @@ public class TockPlayer : NetworkBehaviour
                     //Debug.Log(item.name + " haven't finished moving");
                     yield return item.waitForFinishedMoving();
                     //Debug.Log(item.name + " have finished moving");
-
                     break;
                 }
             }
         }
        // Debug.Log("All pawn have finished moving");
         GMaster.TestVictory();
-        Projection();
+        ActivePlayer = true;
+        CmdProjection();
         //Debug.Assert(!allPawnIdling, "All Pawn are idling");
     }
 
@@ -812,7 +922,11 @@ public class TockPlayer : NetworkBehaviour
         {
             DisplayedHand[playerHand.IndexOf(item)].GetComponent<Button>().enabled = false;
         }
+        DiscardCardIcons.SetActive(false);
+
+        UnSelectAllCards();
         CmdTestVictory();
+        ActivePlayer = false;
         CmdEndTurn();
     }
 

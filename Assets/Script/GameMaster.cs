@@ -25,6 +25,11 @@ public class GameMaster : NetworkBehaviour
 
     static private CameraPositions cameraPositions;
 
+    public GrpCardEffect GrpCardEffect;
+
+    public Canvas RulesPopup;
+    public Canvas GameCanvas;
+
     //Prefab used for the Pawn
     static public GameObject PawnPrefab;
     static public GameObject CardPrefab;
@@ -32,7 +37,7 @@ public class GameMaster : NetworkBehaviour
     static private int nextColor = -1;
 
     //For debugging
-    static private Text debugText;
+    public Text DebugText;
 
     static private Text txtRules;
 
@@ -84,23 +89,6 @@ public class GameMaster : NetworkBehaviour
         set
         {
             txtRules = value;
-        }
-    }
-
-    public static Text DebugText
-    {
-        get
-        {
-            if (debugText == null)
-            {
-                debugText = GameObject.Find("TextGameMaster").GetComponent<Text>();
-            }
-            return debugText;
-        }
-
-        set
-        {
-            debugText = value;
         }
     }
 
@@ -164,7 +152,6 @@ public class GameMaster : NetworkBehaviour
         }
     }
 
-
     #endregion
     #region initialisation
     // Use this for initialization
@@ -173,7 +160,6 @@ public class GameMaster : NetworkBehaviour
         //Attach to Event AllPawnCreated
         PawnSpawner.EventAllPawnsCreated += buildPawnList;
         AllPawns = new Dictionary<int, List<Pawn>>();
-        GameObject.Find("LblBaseRules").GetComponent<Text>().text = RulesText;
 
 
         if (isServer)
@@ -254,9 +240,8 @@ public class GameMaster : NetworkBehaviour
             if (!AllPawns.ContainsKey(item.OwningPlayerIndex))
             {
                 AllPawns[item.OwningPlayerIndex] = new List<Pawn>();
-                MeshRenderer cellOfPlayer = GameObject.Find("Cell_J" + item.OwningPlayerIndex).GetComponent<MeshRenderer>();
+                MeshRenderer cellOfPlayer = GameObject.Find("Zone_J" + item.OwningPlayerIndex).GetComponent<MeshRenderer>();
                 cellOfPlayer.material.color = item.PlayerColor;
-
             }
             AllPawns[item.OwningPlayerIndex].Add(item);
 
@@ -348,31 +333,34 @@ public class GameMaster : NetworkBehaviour
     /// <returns></returns>
     IEnumerator waitForAllPlayers()
     {
-        Debug.Log("Getting Lobby GameObject");
         NetworkLobbyManager lobbyby = GameObject.FindObjectOfType<NetworkLobbyManager>();
-        Debug.Log("waitUntil all players are connected");
+        //Debug.Log("waitUntil all players are connected");
         yield return new WaitUntil(() => players.Count == lobbyby.numPlayers);
-        Debug.Log("Getting the pawnspawnner");
+        //Debug.Log("Getting the pawnspawnner");
         PawnSpawner spawner = GameObject.FindObjectOfType<PawnSpawner>();
         //If there is a PawnSpawner in the scene, create the pawns
         
         if (spawner != null)
         {
-            Debug.Log("There is a spawnner, beginning spawning of pawns");
+            //Debug.Log("There is a spawnner, beginning spawning of pawns");
             spawner.PopulatePawns();
         }
         //Build the first hand for each players
-        Debug.Log("Foreach player, build list of pawns and first hand");
+        //Debug.Log("Foreach player, build list of pawns and first hand");
         foreach (TockPlayer item in players)
         {
-            Debug.Log("player : " + item.name + " building pawn list");
+            //Debug.Log("player : " + item.name + " building pawn list");
             item.RpcBuildLists();
-            Debug.Log("player : " + item.name + " building first hand");
+            //Debug.Log("player : " + item.name + " building first hand");
             item.TargetBuildFirstHand(NetworkServer.objects[item.netId].connectionToClient);
-            Debug.Log("player : " + item.name + " waiting for his hand to be 5");
+            //Debug.Log("player : " + item.name + " waiting for his hand to be 5");
             yield return new WaitUntil(() => item.Hand.Count == 5);
         }
-        Debug.Log("waitforallplayers finish, NextPlayer");
+        //Debug.Log("waitforallplayers finish, NextPlayer");
+        Color tempColor = LocalPlayer.PlayerColor;
+        tempColor.a = 190/255f;
+
+        GameObject.Find("PlayerColorDisplayed").GetComponent<Image>().color = tempColor;
         NextPlayer();
     }
     #endregion
@@ -381,6 +369,7 @@ public class GameMaster : NetworkBehaviour
     /// </summary>
     public void NextPlayer()
     {
+        GrpCardEffect.SelectedCard = null;
         this.ClearDescription();
         if (isServer)
         {
@@ -419,14 +408,17 @@ public class GameMaster : NetworkBehaviour
 
     public void PlayCard(int indexCard)
     {
+
         if (!displayRuleFullscreen)
         {
-            if (LocalPlayer.CardSelected != null)
-            {
-                LocalPlayer.UnSelectAll();
 
-            }
-            this.DisplayDescription(LocalPlayer.Hand[indexCard]);
+            /*if (LocalPlayer.CardSelected != null)
+            {
+                LocalPlayer.UnSelectAllPawns();
+                //LocalPlayer.UnSelectAllCards();
+            }*/
+            GrpCardEffect.SelectedCard = LocalPlayer.Hand[indexCard];
+            //this.DisplayDescription(LocalPlayer.Hand[indexCard], true);
             LocalPlayer.PlayCard(indexCard);
 
         }
@@ -434,37 +426,46 @@ public class GameMaster : NetworkBehaviour
 
     public void OnCardHovered(int indexCardHovered)
     {
-        if (LocalPlayer.Hand != null && LocalPlayer.Hand.Count  == 5 && !displayRuleFullscreen)
+        if (LocalPlayer.ActivePlayer && LocalPlayer.Hand != null && LocalPlayer.Hand.Count  == 5 && !displayRuleFullscreen )
         {
             DisplayDescription(LocalPlayer.Hand[indexCardHovered]);
         }
-
+        
     }
 
     public void DisplayDescription(Card cardHovered)
     {
-            TxtRules.text = cardHovered.Description;
-            LocalPlayer.DisplayProjection(cardHovered);
+        GrpCardEffect.DisplayCardEffect(cardHovered);
+        LocalPlayer.DisplayProjection(cardHovered);
         
     }
 
     public void OnCardExit(int cardExited)
     {
-        LocalPlayer.UnSelectAll();
+        if (LocalPlayer.ActivePlayer)
+        {
+            if(LocalPlayer.CardSelected != null)
+            {
+                LocalPlayer.DisplayProjection();
 
-        if (LocalPlayer.Hand != null && LocalPlayer.Hand.Count == 5 && LocalPlayer.CardSelected == null )
-        {
-            this.ClearDescription();
-        }
-        else if (LocalPlayer.CardSelected != null)
-        {
-            DisplayDescription(LocalPlayer.CardSelected);
+            }
+            else
+            {
+                LocalPlayer.UnSelectAllPawns();
+            }
+
+            if (LocalPlayer.Hand != null && LocalPlayer.Hand.Count == 5)
+            {
+                this.ClearDescription();
+            }
+            
+
         }
     }
 
     public void ClearDescription()
     {
-        TxtRules.text = String.Empty;
+        GrpCardEffect.ClearCardEffect();
 
     }
 
@@ -559,37 +560,10 @@ public class GameMaster : NetworkBehaviour
 
     #endregion
     #region Popup Window
-    private void OnGUI()
+    public void DisplayRuleWindow()
     {
-        if (displayRuleFullscreen)
-        {
-            StringBuilder displayedText = new StringBuilder();
-            displayedText.AppendLine("Base Rules :").AppendLine().AppendLine(RulesText);
-
-
-            
-            if (LocalPlayer.CardSelected != null)
-            {
-                displayedText.AppendLine("Effect of the selected card :").AppendLine().AppendLine().AppendLine(LocalPlayer.CardSelected.Description);
-            }
-            FullscreenRect = GUI.ModalWindow(1, FullscreenRect, CloseWindow, displayedText.ToString() );
-        }
-
-    }
-
-    private void CloseWindow(int id)
-    {
-        Rect buttonRect = new Rect((FullscreenRect.width - (FullscreenRect.width / 4)) / 2, FullscreenRect.height - FullscreenRect.height /6, FullscreenRect.width / 4, FullscreenRect.height / 8);
-        if (GUI.Button(buttonRect, "Close"))
-        {
-            displayRuleFullscreen = false ;
-        }
-
-    }
-
-    public void DisplayRuleWindow(bool display)
-    {
-        displayRuleFullscreen = display;
+        GameCanvas.enabled = false;
+        RulesPopup.enabled = true;
     }
 
 #endregion
@@ -616,11 +590,11 @@ public class GameMaster : NetworkBehaviour
         KeyValuePair<Vector3, Quaternion> cameraPosition = new KeyValuePair<Vector3, Quaternion>();
         if (!previous)
         {
-            cameraPosition = CameraPositions.NextCamera();
+            cameraPosition = CameraPositions.NextCameraPosition();
         }
         else
         {
-            cameraPosition = CameraPositions.PreviousCamera();
+            cameraPosition = CameraPositions.PreviousCameraPosition();
         }
         Camera.main.transform.SetPositionAndRotation(cameraPosition.Key, cameraPosition.Value);
         //Camera.main.transform.Translate(cameraPosition.Key);
