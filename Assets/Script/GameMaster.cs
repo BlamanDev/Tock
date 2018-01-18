@@ -1,14 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using Assets.Script;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
-using UnityEngine.Events;
 using System;
-using System.IO;
-using System.Text;
+using cakeslice;
 
 /// <summary>
 /// Script for the GameMaster
@@ -22,8 +19,6 @@ public class GameMaster : NetworkBehaviour
     static public GameMaster GMaster = null;
     //List of players, static to be accessible on players connection
     static public List<TockPlayer> players = new List<TockPlayer>();
-
-    static private CameraPositions cameraPositions;
 
     public GrpCardEffect GrpCardEffect;
 
@@ -43,7 +38,6 @@ public class GameMaster : NetworkBehaviour
 
     //Contains the list of Pawns sorted by color
     static public Dictionary<int, List<Pawn>> AllPawns;
-    public IProgressDictionnary progressDictionnary;
 
     public SyncListString ProgressList = new SyncListString();
     public SyncListString HouseList = new SyncListString();
@@ -65,6 +59,7 @@ public class GameMaster : NetworkBehaviour
             if (localPlayer == null)
             {
                 localPlayer = findLocalPlayer();
+                Camera.main.GetComponent<OutlineEffect>().lineColor2 = localPlayer.PlayerColor;
             }
             return localPlayer;
         }
@@ -134,31 +129,12 @@ public class GameMaster : NetworkBehaviour
         }
     }
 
-    public static CameraPositions CameraPositions
-    {
-        get
-        {
-            if (cameraPositions == null)
-            {
-                cameraPositions = GameObject.FindObjectOfType<CameraPositions>();
-
-            }
-            return cameraPositions;
-        }
-
-        set
-        {
-            cameraPositions = value;
-        }
-    }
-
     #endregion
     #region initialisation
     // Use this for initialization
     void Start()
     {
         //Attach to Event AllPawnCreated
-        PawnSpawner.EventAllPawnsCreated += buildPawnList;
         AllPawns = new Dictionary<int, List<Pawn>>();
 
 
@@ -174,7 +150,7 @@ public class GameMaster : NetworkBehaviour
             {
                 HouseList.Add("");
             }
-            Debug.Log("HouseList has " + HouseList.Count + " space");
+            //Debug.Log("HouseList has " + HouseList.Count + " space");
         }
         else
         {
@@ -199,13 +175,13 @@ public class GameMaster : NetworkBehaviour
     {
         if (GMaster == null)
         {
-            //DontDestroyOnLoad(gameObject);
             GMaster = this;
         }
         else if (GMaster != this)
         {
             Destroy(gameObject);
         }
+        players.Clear();
     }
 
     private void OnEnable()
@@ -302,23 +278,6 @@ public class GameMaster : NetworkBehaviour
     #endregion
     #region Players Methods
     /// <summary>
-    /// Cycle between colors and return the next one
-    /// </summary>
-    /// <returns></returns>
-    static public PlayerColorEnum GiveNewPlayerColor()
-    {
-        nextColor++;
-        //if nextcolor > number of possible color
-        if (nextColor > 3)
-        {
-            nextColor = 0;
-        }
-
-        PlayerColorEnum colorReturned = (PlayerColorEnum)nextColor;
-        return colorReturned;
-    }
-
-    /// <summary>
     /// Find the local player
     /// </summary>
     /// <returns></returns>
@@ -334,29 +293,21 @@ public class GameMaster : NetworkBehaviour
     IEnumerator waitForAllPlayers()
     {
         NetworkLobbyManager lobbyby = GameObject.FindObjectOfType<NetworkLobbyManager>();
-        //Debug.Log("waitUntil all players are connected");
         yield return new WaitUntil(() => players.Count == lobbyby.numPlayers);
-        //Debug.Log("Getting the pawnspawnner");
         PawnSpawner spawner = GameObject.FindObjectOfType<PawnSpawner>();
         //If there is a PawnSpawner in the scene, create the pawns
         
         if (spawner != null)
         {
-            //Debug.Log("There is a spawnner, beginning spawning of pawns");
             spawner.PopulatePawns();
         }
         //Build the first hand for each players
-        //Debug.Log("Foreach player, build list of pawns and first hand");
         foreach (TockPlayer item in players)
         {
-            //Debug.Log("player : " + item.name + " building pawn list");
             item.RpcBuildLists();
-            //Debug.Log("player : " + item.name + " building first hand");
             item.TargetBuildFirstHand(NetworkServer.objects[item.netId].connectionToClient);
-            //Debug.Log("player : " + item.name + " waiting for his hand to be 5");
             yield return new WaitUntil(() => item.Hand.Count == 5);
         }
-        //Debug.Log("waitforallplayers finish, NextPlayer");
         Color tempColor = LocalPlayer.PlayerColor;
         tempColor.a = 190/255f;
 
@@ -378,9 +329,7 @@ public class GameMaster : NetworkBehaviour
             {
                 activePlayerIndex = 0;
             }
-            //Debug.Log(players[activePlayerIndex].name);
             players[activePlayerIndex].TargetBeginTurn(NetworkServer.objects[players[activePlayerIndex].netId].connectionToClient);
-            //TestVictory();
         }
     }
 
@@ -411,14 +360,7 @@ public class GameMaster : NetworkBehaviour
 
         if (!displayRuleFullscreen)
         {
-
-            /*if (LocalPlayer.CardSelected != null)
-            {
-                LocalPlayer.UnSelectAllPawns();
-                //LocalPlayer.UnSelectAllCards();
-            }*/
             GrpCardEffect.SelectedCard = LocalPlayer.Hand[indexCard];
-            //this.DisplayDescription(LocalPlayer.Hand[indexCard], true);
             LocalPlayer.PlayCard(indexCard);
 
         }
@@ -575,7 +517,7 @@ public class GameMaster : NetworkBehaviour
     public void QuitSession()
     {
         if (isServer)
-        {
+        {          
             GameObject.FindObjectOfType<NetworkLobbyManager>().ServerReturnToLobby();
         }
         else
@@ -585,19 +527,5 @@ public class GameMaster : NetworkBehaviour
 
     }
 
-    public void ChangeCamera(bool previous = false)
-    {
-        KeyValuePair<Vector3, Quaternion> cameraPosition = new KeyValuePair<Vector3, Quaternion>();
-        if (!previous)
-        {
-            cameraPosition = CameraPositions.NextCameraPosition();
-        }
-        else
-        {
-            cameraPosition = CameraPositions.PreviousCameraPosition();
-        }
-        Camera.main.transform.SetPositionAndRotation(cameraPosition.Key, cameraPosition.Value);
-        //Camera.main.transform.Translate(cameraPosition.Key);
-        //Camera.main.transform.LookAt(new Vector3(0, 0, 0));
-    }
+    
 }

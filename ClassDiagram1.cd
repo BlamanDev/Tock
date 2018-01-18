@@ -1,0 +1,250 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="ColorManager" Collapsed="true">
+    <Position X="6.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IAAAAIAAAIAAAgAAAAAAAAAAAAAAAECAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Lobby\Scripts\ColorManager.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="BtnGameBegin" Collapsed="true">
+    <Position X="3" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAACAAgAAAAAAAAAAAAAAIACAAAQBAAAAAAAQ=</HashCode>
+      <FileName>Assets\Script\BtnGameBegin.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Card" Collapsed="true">
+    <Position X="4.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QAQAQAAgAKggESEgIESCBBgEAgCEIAAAhAIwgABAgAA=</HashCode>
+      <FileName>Assets\Script\Card.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DebugTock" Collapsed="true">
+    <Position X="8.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAACAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Script\DebugTock.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Deck" Collapsed="true">
+    <Position X="10" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAKIAACAAAAAAAAAAAIAAAAAAAAAAAAAIQAA=</HashCode>
+      <FileName>Assets\Script\Deck.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DicoDescription" Collapsed="true">
+    <Position X="11.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AEQAC4BBAKCAAAAAAAgAAAAAAAgAAAAgEACAAEBBAAA=</HashCode>
+      <FileName>Assets\Script\DicoDescription.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GameMaster" Collapsed="true">
+    <Position X="6.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IERBYCIAAScAoBATAABqIAAAQIEAKCQAIgQREAIwKEA=</HashCode>
+      <FileName>Assets\Script\GameMaster.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GhostPawn" Collapsed="true">
+    <Position X="8.25" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QAQAQAAIACAAAQAAAAAAAAAAAAACAAAAQEAAAACSAAA=</HashCode>
+      <FileName>Assets\Script\GhostPawn.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GrpCardEffect" Collapsed="true">
+    <Position X="10" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AEQAAIoAAGEAAAAAARAAAQEAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Script\GrpCardEffect.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PlayerHand" Collapsed="true">
+    <Position X="11.75" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAIAAAAAAAAAAAAAAAEABIAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Script\Hand.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="HandEventArgs" Collapsed="true">
+    <Position X="11.75" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AABAAAAAQAAAAAAAAEAAAABAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Script\Hand.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="NetworkLobbyHook" Collapsed="true">
+    <Position X="0.5" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Script\NetworkLobbyHook.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Pawn" Collapsed="true">
+    <Position X="8.25" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QAcwAIAMArAiIQAIBAAWAAACPgAsAiAAYEgQARCWKAQ=</HashCode>
+      <FileName>Assets\Script\Pawn.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PawnSpawner" Collapsed="true">
+    <Position X="10" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AARAAAAAACAAAAAAAAACAAAgAgAAAAAIAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Script\PawnSpawner.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Popup" Collapsed="true">
+    <Position X="3" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AgQAAAAAACAAggAAQAAAAAAAAAAAAAAAAAEAAACAAAA=</HashCode>
+      <FileName>Assets\Script\Popup.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SpawnPositions" Collapsed="true">
+    <Position X="4.75" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAACAAAAAgIAAAAAAAAAAAAAAAAAEAAAAAAAA=</HashCode>
+      <FileName>Assets\Script\SpawnPositions.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TockBoard" Collapsed="true">
+    <Position X="6.5" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQEAABAACBAAAAAAAQCAAAABAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Script\TockBoard.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TockPlayer" Collapsed="true">
+    <Position X="8.25" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>MBxAAWIAESEHwBTACcwTIDggFiAiM0QAcIiJMSjAAEU=</HashCode>
+      <FileName>Assets\Script\TockPlayer.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Prototype.NetworkLobby.DraggablePanel" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="3" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Lobby\Scripts\DraggablePanel.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="Prototype.NetworkLobby.EventSystemChecker" Collapsed="true">
+    <Position X="4.75" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEA=</HashCode>
+      <FileName>Assets\Lobby\Scripts\EventSystemChecker.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Prototype.NetworkLobby.LobbyCountdownPanel" Collapsed="true">
+    <Position X="3" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Lobby\Scripts\Lobby\LobbyCountdownPanel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Prototype.NetworkLobby.LobbyHook" Collapsed="true">
+    <Position X="0.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Lobby\Scripts\Lobby\LobbyHook.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Prototype.NetworkLobby.LobbyInfoPanel" Collapsed="true">
+    <Position X="4.75" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAQACAAAAAAAAAAAgAAAABAA=</HashCode>
+      <FileName>Assets\Lobby\Scripts\Lobby\LobbyInfoPanel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Prototype.NetworkLobby.LobbyMainMenu" Collapsed="true">
+    <Position X="6.5" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIAAQAoAkEgAAggAAAgQAAAAAAAAAAICAAAAEAQACAA=</HashCode>
+      <FileName>Assets\Lobby\Scripts\Lobby\LobbyMainMenu.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Prototype.NetworkLobby.LobbyManager" Collapsed="true">
+    <Position X="8.25" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IBIBoAAD8CAAglACETFQEpAIBUIQgAgAAABEGEAKAAQ=</HashCode>
+      <FileName>Assets\Lobby\Scripts\Lobby\LobbyManager.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Prototype.NetworkLobby.LobbyPlayer" Collapsed="true">
+    <Position X="10" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IEILAAAAQAIEBABAAQkAAAEIEESMIAAggAEAgAMGJAA=</HashCode>
+      <FileName>Assets\Lobby\Scripts\Lobby\LobbyPlayer.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Prototype.NetworkLobby.LobbyPlayerList" Collapsed="true">
+    <Position X="11.75" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQEAAAAAAAAEAAQABgAAAAAABAAACAAAAgAAAAACCA=</HashCode>
+      <FileName>Assets\Lobby\Scripts\Lobby\LobbyPlayerList.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Prototype.NetworkLobby.LobbyServerEntry" Collapsed="true">
+    <Position X="3" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>CAAAAAAAIAAAAAAAAAAAAAACAAAAAAAAAAAAAACAAAI=</HashCode>
+      <FileName>Assets\Lobby\Scripts\Lobby\LobbyServerEntry.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Prototype.NetworkLobby.LobbyServerList" Collapsed="true">
+    <Position X="4.75" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ABIICAAAAAgCAAAAEAAAAAAIAAAAAAAAAAACAgAgCAA=</HashCode>
+      <FileName>Assets\Lobby\Scripts\Lobby\LobbyServerList.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Prototype.NetworkLobby.LobbyTopPanel" Collapsed="true">
+    <Position X="6.5" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAACAAABAAAAAAAAAgAAAAAAEIAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Lobby\Scripts\Lobby\LobbyTopPanel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Enum Name="CardsColorsEnum" Collapsed="true">
+    <Position X="3" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>BAAAAACAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAgAAAA=</HashCode>
+      <FileName>Assets\Script\Enums\CardsColorsEnum.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="CardsValuesEnum" Collapsed="true">
+    <Position X="4.75" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAQAAAABABAAJAiAAAAAABIAAAAAAAAABAQgBAAAg=</HashCode>
+      <FileName>Assets\Script\Enums\CardsValuesEnum.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="PawnMoveEnum" Collapsed="true">
+    <Position X="6.5" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAABAAACAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Script\Enums\PawnMoveEnum.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="PawnStatusEnum" Collapsed="true">
+    <Position X="8.25" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAEEAAAEAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAIAAA=</HashCode>
+      <FileName>Assets\Script\Enums\PawnStatusEnum.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="SelectionFilterEnum" Collapsed="true">
+    <Position X="10" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAACAAAAAAAAQAAAAAAAAAAAAAAIAAAA=</HashCode>
+      <FileName>Assets\Script\Enums\SelectionFilterEnum.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

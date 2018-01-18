@@ -1,7 +1,6 @@
 ﻿using System;
 
 using System.Collections.Generic;
-using Assets.Script;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
@@ -34,6 +33,8 @@ public class TockPlayer : NetworkBehaviour
     [SyncVar]
     public Color PlayerColor;
 
+    public ColorBlock SelectionColors;
+    public ColorBlock DiscardColors;
 
     [SyncVar]
     public int PlayerIndex;
@@ -224,7 +225,7 @@ public class TockPlayer : NetworkBehaviour
         {
             if ( displaySelectedCard == null || displaySelectedCard.Length < 5)
             {
-                displaySelectedCard = GameObject.Find("SelectedCardInHand").GetComponentsInChildren<Image>();
+                displaySelectedCard = GameObject.Find("SelectedCardInHand").GetComponentsInChildren<Image>(true);
             }
             return displaySelectedCard;
         }
@@ -271,17 +272,55 @@ public class TockPlayer : NetworkBehaviour
         }
     }
 
+    /*public ColorBlock SelectionColors
+    {
+        get
+        {
+            if (selectionColors.normalColor != Color.white)
+            {
+                selectionColors.normalColor = Color.white;
+                selectionColors.disabledColor = Color.grey;
+                selectionColors.highlightedColor = Color.green;
+                selectionColors.colorMultiplier = 5;
+            }
+            return selectionColors;
+        }
+
+        set
+        {
+            selectionColors = value;
+        }
+    }
+
+    public ColorBlock DiscardColors
+    {
+        get
+        {
+            if (discardColors.normalColor != Color.white)
+            {
+                discardColors.highlightedColor = Color.red;
+                discardColors.normalColor = Color.white;
+                discardColors.disabledColor = Color.grey;
+                discardColors.colorMultiplier = 5;
+            }
+
+            return discardColors;
+        }
+
+        set
+        {
+            discardColors = value;
+        }
+    }*/
+
 
 
     #endregion
     #endregion
     #region initialization
-    /// <summary>
-    /// Find the references, add tag, name player
-    /// </summary>
     void Start()
     {
-
+        
     }
 
     // Update is called once per frame
@@ -291,14 +330,12 @@ public class TockPlayer : NetworkBehaviour
     }
 
     /// <summary>
-    /// Ask for a new Color to the GameMaster and add this Player to the player list of the GameMaster
+    /// Add this Player to the player list of the GameMaster
     /// </summary>
     public void Awake()
     {
-        //colorize player
-        //PlayerColor = GameMaster.GiveNewPlayerColor();
-
         GameMaster.players.Add(this);
+
     }
 
     /// <summary>
@@ -311,20 +348,15 @@ public class TockPlayer : NetworkBehaviour
         if (isLocalPlayer)
         {
             DiscardCardIcons.SetActive(false);
+
             Hand.OnAdd += DisplayCard;
             Hand.OnRemove += ClearCard;
-            //Camera.main.enabled = false;
-            //Camera playerCam = GameObject.Find("Camera_" + this.PlayerIndex).GetComponent<Camera>();
-            //Camera.main.backgroundColor = this.PlayerColor;
-            //KeyValuePair<Vector3, Quaternion> cameraPosition = GameMaster.CameraPositions.GetCameraPositionforPlayer(PlayerIndex);
-            //Camera.main.transform.SetPositionAndRotation(cameraPosition.Key, cameraPosition.Value);
-            GameObject.FindObjectOfType<TockBoard>().SetInitialPostion(PlayerIndex);
+            GameObject.FindObjectOfType<TockBoard>().SetInitialCameraPostion(PlayerIndex);
             if (!isServer)
             {
                 GameObject.FindObjectOfType<BtnGameBegin>().DisplayGameCanvas();
 
             }
-            //playerCam.enabled = true;
         }
     }
 
@@ -411,12 +443,14 @@ public class TockPlayer : NetworkBehaviour
             if (!item.MakeProjections(GMaster.GetPawnsFiltered(item.ColorFilter, PlayerIndex)))
             {
                 DisplayedHand[playerHand.IndexOf(item)].GetComponent<Button>().enabled = false;
+
             }
             //ELSE enable the card button and increment nbPlayableCards
             else
             {
                 nbPlayableCards++;
                 DisplayedHand[playerHand.IndexOf(item)].GetComponent<Button>().enabled = true;
+
             }
         }
         //IF no cards are playable, enable all card button
@@ -454,6 +488,7 @@ public class TockPlayer : NetworkBehaviour
         HandEventArgs HEA = (HandEventArgs)e;
         DisplayedHand[HEA.CardPosition].material = HEA.Card.Illustration;
         DisplayedHand[HEA.CardPosition].GetComponent<Button>().enabled = false;
+
     }
 
     private void switchAllCardsClick(bool enable = false)
@@ -468,7 +503,7 @@ public class TockPlayer : NetworkBehaviour
     {
         foreach (Image item in DisplaySelectedCard)
         {
-            item.color = Color.clear;
+            item.enabled = false;
             
         }
     }
@@ -476,7 +511,7 @@ public class TockPlayer : NetworkBehaviour
     public void SelectCard(int cardSelected)
     {
         UnSelectAllCards();
-        DisplaySelectedCard[cardSelected].color = Color.white;
+        DisplaySelectedCard[cardSelected].enabled = true;
     }
 
 
@@ -835,41 +870,6 @@ public class TockPlayer : NetworkBehaviour
 
     #endregion
     #region ProgressDictionnary
-    /// <summary>
-    /// Add a new pawn to the ProgressDictionnary on the client
-    /// </summary>
-    /// <param name="target">string - name of the pawn to be added</param>
-    [ClientRpc]
-    public void RpcAddtoProgressDictionnary(string target)
-    {
-        int newProgress = GMaster.progressDictionnary.Add(target);
-        GameObject.Find(target).GetComponent<Pawn>().ProgressInDictionnary = newProgress;
-    }
-
-    /// <summary>
-    /// Update the position of a pawn in the ProgressDictionnary on the client
-    /// </summary>
-    /// <param name="target">string - name of the pawn to move</param>
-    /// <param name="nbMoves">int - number of moves</param>
-    [ClientRpc]
-    public void RpcMoveinProgressDictionnary(string target, int nbMoves)
-    {
-        int newProgress = GMaster.progressDictionnary.Move(target, nbMoves);
-        GameObject.Find(target).GetComponent<Pawn>().ProgressInDictionnary = newProgress;
-    }
-
-    /// <summary>
-    /// Remove a pawn from the ProgressDictionnary on the client
-    /// </summary>
-    /// <param name="target">string - name of the pawn to remove</param>
-    [ClientRpc]
-    public void RpcRemovefromProgressDictionnary(string target)
-    {
-        GMaster.progressDictionnary.Remove(target);
-        Debug.Log("Removed : " + target + " from ProgressDico");
-
-    }
-
     [Command]
     public void CmdAddtoProgressDictionnary(string target)
     {
@@ -888,7 +888,7 @@ public class TockPlayer : NetworkBehaviour
     public void CmdRemovefromProgressDictionnary(string target)
     {
         GMaster.ProgressListRemove(target);
-        Debug.Log("Removed : " + target + " from ProgressDico");
+        //Debug.Log("Removed : " + target + " from ProgressDico");
 
     }
 

@@ -66,24 +66,7 @@ public class Card : NetworkBehaviour
             gMaster = value;
         }
     }
-    /*
-    public Dictionary<string, string> DicoDescription
-    {
-        get
-        {
-            if (dicoDescription == null)
-            {
-                buildDicoDescription();
-            }
-            return dicoDescription;
-        }
 
-        set
-        {
-            dicoDescription = value;
-        }
-    }
-    */
     public string Description
     {
         get
@@ -93,10 +76,6 @@ public class Card : NetworkBehaviour
 
         set
         {
-            /*EffectImage = Resources.Load<Sprite>("Icons/" + description);
-            description = DicoDescription[value];
-
-            description = description.Replace(VALUEINTEXT, ((int)this.Value).ToString());*/
             description = value;
         }
     }
@@ -118,32 +97,6 @@ public class Card : NetworkBehaviour
         }
     }
 
-    /*
-    private void buildDicoDescription()
-    {
-        dicoDescription = new Dictionary<string, string>();
-        TextAsset allLines = new TextAsset();
-        try
-        {
-            allLines = Resources.Load<TextAsset>(DESCRIPTIONFILE);
-            using (XmlReader reader = XmlReader.Create(new StringReader(allLines.text)))
-            {
-                reader.Read();
-                reader.ReadSubtree();
-                while (reader.Read())
-                {
-                    dicoDescription.Add(reader.GetAttribute("name"), reader.GetAttribute("description"));
-                }
-            }
-
-        }
-        catch (Exception e)
-        {
-            Debug.Log("Problem building dicoDescription : " + e.Message);
-        }
-    }
-
-    */
     // Use this for initialization
     void Start()
     {
@@ -395,7 +348,7 @@ public class Card : NetworkBehaviour
             //Test if there is a pawn on the destination and if it is in house
             if ((progressToCheck > 70) && (GMaster.ProgressListTestHouseFree(progressToCheck, target.OwningPlayerIndex)))
             {
-                Debug.Log(target.name + " : " + "A Pawn is in this HOUSE Cell => can't move");
+                //Debug.Log(target.name + " : " + "A Pawn is in this HOUSE Cell => can't move");
                 Playable = false;
             }
         }

@@ -1,8 +1,4 @@
-﻿using Assets.Script;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
 
@@ -11,10 +7,6 @@ using UnityEngine.UI;
 /// </summary>
 public class PawnSpawner : NetworkBehaviour
 {
-    //Event triggered when all the pawns are created
-    public delegate void OnAllPawnsCreation();
-    [SyncEvent]
-    public static event OnAllPawnsCreation EventAllPawnsCreated;
 
     //The prefab used for the Pawn GameObject
     public GameObject PawnPrefab;
@@ -87,33 +79,14 @@ public class PawnSpawner : NetworkBehaviour
             text = GameObject.Find("TextPawnSpawner").GetComponent<Text>();
         }
 
-        /*if (playerList.Length <= 0)
-        {
-            playerList = FindObjectsOfType<TockPlayer>();
-        }*/
-
         //FOR EACH player, create 4 pawns
         //foreach (String color in Enum.GetNames(typeof(PlayerColorEnum)))
         foreach (TockPlayer player in GameMaster.players)
         {
-            //text.text += "Populating " + color + " Pawn : ";
-            /*if (!color.Equals(PlayerColorEnum.Clear.ToString()))
-            {
-                for (int i = 1; i <= 4; i++)
-                {
-                    text.text += CreatePawn(((PlayerColorEnum)Enum.Parse(typeof(PlayerColorEnum), color)), i) + " ";
-                }
-            }*/
             for (int i = 1; i <= 4; i++)
             {
                 CreatePawn(player, i);
             }
-            //Trigger Event, used to tell the GameMaster to build his dictionnary of Pawns
-            //EventAllPawnsCreated();
-
-            //Build the pawn list of each player
-            //player.RpcBuildPawnList();
-
         }
     }
 }

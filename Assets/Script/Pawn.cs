@@ -1,7 +1,5 @@
-﻿using System;
+﻿using cakeslice;
 using System.Collections;
-using System.Collections.Generic;
-using Assets.Script;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -26,12 +24,6 @@ public class Pawn : NetworkBehaviour
     [SyncVar(hook = "OnChangeOnBoard")]
     public bool OnBoard = false;
 
-    private bool wipeAllPawns = false;
-
-    //Owning player of this Pawn
-    [SyncVar(hook = "OnChangePlayerColorE")]
-    public PlayerColorEnum PlayerColorE;
-
     //Owning player of this Pawn
     [SyncVar(hook = "OnChangeOwningPlayerIndex")]
     public int OwningPlayerIndex;
@@ -40,7 +32,7 @@ public class Pawn : NetworkBehaviour
     public Color PlayerColor;
 
     [SyncVar(hook = "OnChangeStatus")]
-    private PawnStatusEnum status=PawnStatusEnum.OUT;
+    private PawnStatusEnum status = PawnStatusEnum.OUT;
 
     public PawnMoveEnum MoveType = PawnMoveEnum.NORMAL;
 
@@ -52,7 +44,9 @@ public class Pawn : NetworkBehaviour
     //Components of the pawn
     private Animator pawnAnimator;
     private MeshRenderer pawnMeshRenderer;
+    private MeshRenderer selectionMeshRenderer;
     private Light selectableLight;
+    private Outline outliner;
     #endregion
     static private GameMaster gMaster;
 
@@ -184,6 +178,40 @@ public class Pawn : NetworkBehaviour
             }
         }
     }
+
+    public MeshRenderer SelectionMeshRenderer
+    {
+        get
+        {
+            if (selectionMeshRenderer == null)
+            {
+                selectionMeshRenderer = this.GetComponentsInChildren<MeshRenderer>(true)[1];
+            }
+            return selectionMeshRenderer;
+        }
+
+        set
+        {
+            selectionMeshRenderer = value;
+        }
+    }
+
+    public Outline Outliner
+    {
+        get
+        {
+            if (outliner == null)
+            {
+                outliner = this.GetComponentInChildren<Outline>();
+            }
+            return outliner;
+        }
+
+        set
+        {
+            outliner = value;
+        }
+    }
     #endregion
 
     #endregion
@@ -213,23 +241,6 @@ public class Pawn : NetworkBehaviour
     {
     }
 
-
-    /// <summary>
-    /// Event called when changing the owning Player
-    /// </summary>
-    /// <param name="newColor"></param>
-    public void OnChangePlayerColorE(PlayerColorEnum newColor)
-    {
-        PlayerColorE = newColor;
-        //Change the material color of the pawn
-        PawnMeshRenderer.material.color = PlayerColorEnumToColor(newColor);
-
-        //Pawn named after its color and index
-        this.name = newColor.ToString() + PawnIndex.ToString();
-        //Get the out position for this pawn
-        outPosition = SpawnPositions.getOutPosition(newColor, PawnIndex);
-    }
-
     public void OnChangePlayerColor(Color newColor)
     {
         PlayerColor = newColor;
@@ -241,7 +252,7 @@ public class Pawn : NetworkBehaviour
     {
         OwningPlayerIndex = newIndex;
         this.name = newIndex.ToString() + "-" + PawnIndex.ToString();
-        outPosition = SpawnPositions.getOutPosition(this.name);
+        outPosition = SpawnPositions.GetOutPosition(this.name);
 
     }
 
@@ -250,34 +261,7 @@ public class Pawn : NetworkBehaviour
     /// </summary>
     public override void OnStartClient()
     {
-        //OnChangePlayerColorE(PlayerColorE);
         OnChangeOwningPlayerIndex(OwningPlayerIndex);
-    }
-
-    /// <summary>
-    /// Convert a PlayerColorEnum into a Color
-    /// </summary>
-    /// <param name="newColor"></param>
-    /// <returns></returns>
-    private Color PlayerColorEnumToColor(PlayerColorEnum newColor)
-    {
-        Color color = Color.clear;
-        switch (newColor)
-        {
-            case PlayerColorEnum.Blue:
-                color = Color.blue;
-                break;
-            case PlayerColorEnum.Green:
-                color = Color.green;
-                break;
-            case PlayerColorEnum.Red:
-                color = Color.red;
-                break;
-            case PlayerColorEnum.Yellow:
-                color = Color.yellow;
-                break;
-        }
-        return color;
     }
 
     /// <summary>
@@ -339,7 +323,7 @@ public class Pawn : NetworkBehaviour
         if (animationProgress == Progress)
         {
             PawnAnimator.SetFloat(speedHash, 0);
-            if (Progress>70)
+            if (Progress > 70)
             {
                 Status = PawnStatusEnum.IN_HOUSE;
 
@@ -355,24 +339,16 @@ public class Pawn : NetworkBehaviour
     public void OnChangeStatus(PawnStatusEnum newStatus)
     {
         Status = newStatus;
-        Debug.Log(this.name + " - new status : " + newStatus);
+        //Debug.Log(this.name + " - new status : " + newStatus);
     }
     #endregion
 
     #region methods
     /// <summary>
-    /// Set the color, index, layer used and out position of the pawn
+    /// Set the color, index, owning player and out position of the pawn
     /// </summary>
     /// <param name="color"></param>
     /// <param name="pawnIndex"></param>
-    public void Initialize(PlayerColorEnum color, int pawnIndex)
-    {
-        this.PawnIndex = pawnIndex;
-        PlayerColorE = color;
-        this.transform.position = outPosition.transform.position;
-
-    }
-
     public void Initialize(TockPlayer player, int pawnIndex)
     {
         this.PawnIndex = pawnIndex;
@@ -402,7 +378,7 @@ public class Pawn : NetworkBehaviour
     public void Move(int nbCell, bool wipeAllPawns = false, int speed = 1)
     {
         Status = PawnStatusEnum.MOVING;
-        
+
         PawnAnimator.SetFloat(speedHash, (nbCell > 0 ? speed : -speed));
         Progress += nbCell;
         if (wipeAllPawns)
@@ -455,8 +431,7 @@ public class Pawn : NetworkBehaviour
     /// <param name="playerColor"></param>
     public void SwitchHalo(bool on, Color playerColor)
     {
-        ActualHaloColor = playerColor;
-        SelectableLight.enabled = on;
+        Outliner.color = on?1:0;
     }
 
     /// <summary>
@@ -464,7 +439,7 @@ public class Pawn : NetworkBehaviour
     /// </summary>
     public void OnMouseDown()
     {
-        if (SelectableLight.enabled)
+        if (Outliner.color > 0)
         {
             EventOnPawnSelected(this);
         }
@@ -475,9 +450,9 @@ public class Pawn : NetworkBehaviour
     /// </summary>
     public void OnMouseOver()
     {
-        if (SelectableLight.enabled)
+        if (Outliner.color > 0)
         {
-            SelectableLight.color = Color.grey;
+            Outliner.color = 2;
         }
     }
 
@@ -486,9 +461,9 @@ public class Pawn : NetworkBehaviour
     /// </summary>
     public void OnMouseExit()
     {
-        if (SelectableLight.enabled)
+        if (Outliner.color > 0)
         {
-            SelectableLight.color = ActualHaloColor;
+            Outliner.color = 1;
         }
     }
     #endregion

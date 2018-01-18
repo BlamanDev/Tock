@@ -1,7 +1,4 @@
-﻿using Assets.Script;
-using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -27,33 +24,21 @@ public class SpawnPositions : NetworkBehaviour {
 	}
 
     /// <summary>
-    /// Return a GameObject with the start position corresponding to the given color
+    /// Return a GameObject with the start position corresponding to the given player Index
     /// </summary>
-    /// <param name="color"></param>
-    /// <returns></returns>
-    public GameObject getStartPosition(PlayerColorEnum color)
-    {
-        return Positions[color.ToString()];
-    }
-
+    /// <param name="playerIndex">int - index of player</param>
+    /// <returns>GameObject corresponding to a player position</returns>
     public GameObject getStartPosition(int playerIndex)
     {
         return Positions[playerIndex.ToString()];
     }
 
     /// <summary>
-    /// Return a GameObject with the out position corresponding to the given color and pawnIndex
+    /// Return a GameObject with the out position corresponding to the given name
     /// </summary>
-    /// <param name="color"></param>
-    /// <param name="pawnIndex"></param>
+    /// <param name="name">name of the pawn</param>
     /// <returns></returns>
-    public GameObject getOutPosition(PlayerColorEnum color, int pawnIndex)
-    {
-        return Positions[color.ToString()+pawnIndex.ToString()];
-
-    }
-
-    public GameObject getOutPosition(string name)
+    public GameObject GetOutPosition(string name)
     {
         return Positions[name];
 

@@ -1,11 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Networking;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using Assets.Script;
-using System;
 
 namespace Prototype.NetworkLobby
 {
@@ -33,7 +29,6 @@ namespace Prototype.NetworkLobby
         public string playerName = "";
         [SyncVar(hook = "OnMyColor")]
         public Color playerColor = Color.clear;
-        public PlayerColorEnum playerColorE = PlayerColorEnum.Clear;
 
         public Color OddRowColor = new Color(250.0f / 255.0f, 250.0f / 255.0f, 250.0f / 255.0f, 1.0f);
         public Color EvenRowColor = new Color(180.0f / 255.0f, 180.0f / 255.0f, 180.0f / 255.0f, 1.0f);
@@ -266,62 +261,6 @@ namespace Prototype.NetworkLobby
         public void CmdColorChange(bool random)
         {
             playerColor = ColorManager.ChangeColor(playerColor,random);
-            //int idx = System.Array.IndexOf(Colors, playerColor);
-            /*int idx = this.slot;
-            int inUseIdx = _colorInUse.IndexOf(idx);
-
-            if (idx < 0) idx = 0;
-
-            //idx = (idx + 1) % Colors.Length;
-            idx = (idx ) % Colors.Length ;
-
-            bool alreadyInUse = false;
-
-            do
-            {
-                alreadyInUse = false;
-                for (int i = 0; i < _colorInUse.Count; ++i)
-                {
-                    if (_colorInUse[i] == idx)
-                    {//that color is already in use
-                        alreadyInUse = true;
-                        idx = (idx+1 ) % Colors.Length;
-                    }
-                }
-            }
-            while (alreadyInUse);
-
-            if (inUseIdx >= 0)
-            {//if we already add an entry in the colorTabs, we change it
-                _colorInUse[inUseIdx] = idx;
-            }
-            else
-            {//else we add it
-                _colorInUse.Add(idx);
-            }
-            //playerColorE = (PlayerColorEnum)idx;
-            playerColor = Colors[idx];*/
-        }
-
-        private Color PlayerColorEnumToColor(PlayerColorEnum newColor)
-        {
-            Color color = Color.clear;
-            switch (newColor)
-            {
-                case PlayerColorEnum.Blue:
-                    color = Color.blue;
-                    break;
-                case PlayerColorEnum.Green:
-                    color = Color.green;
-                    break;
-                case PlayerColorEnum.Red:
-                    color = Color.red;
-                    break;
-                case PlayerColorEnum.Yellow:
-                    color = Color.yellow;
-                    break;
-            }
-            return color;
         }
 
 

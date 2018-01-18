@@ -1,9 +1,6 @@
 ﻿using UnityEngine;
 using Prototype.NetworkLobby;
-using System.Collections;
 using UnityEngine.Networking;
-using Assets.Script;
-using System;
 
 public class NetworkLobbyHook : LobbyHook 
 {

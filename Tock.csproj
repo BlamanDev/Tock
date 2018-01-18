@@ -7,7 +7,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{17255C8B-8CF9-216F-CC00-3856D313E5D7}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <AssemblyName>Assembly-CSharp.dll</AssemblyName>
+    <AssemblyName>Assembly-CSharp</AssemblyName>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{E097FAD1-6243-4DAD-9C02-E9B9EFC3FFC1};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <TargetFrameworkIdentifier>.NETFramework</TargetFrameworkIdentifier>
@@ -313,9 +313,7 @@
     <Compile Include="Assets\Lobby\Scripts\Lobby\LobbyServerEntry.cs" />
     <Compile Include="Assets\Lobby\Scripts\Lobby\LobbyServerList.cs" />
     <Compile Include="Assets\Lobby\Scripts\Lobby\LobbyTopPanel.cs" />
-    <Compile Include="Assets\Script\BtnCamera.cs" />
     <Compile Include="Assets\Script\BtnGameBegin.cs" />
-    <Compile Include="Assets\Script\CameraPositions.cs" />
     <Compile Include="Assets\Script\Card.cs" />
     <Compile Include="Assets\Script\DebugTock.cs" />
     <Compile Include="Assets\Script\Deck.cs" />
@@ -324,21 +322,18 @@
     <Compile Include="Assets\Script\Enums\CardsValuesEnum.cs" />
     <Compile Include="Assets\Script\Enums\PawnMoveEnum.cs" />
     <Compile Include="Assets\Script\Enums\PawnStatusEnum.cs" />
-    <Compile Include="Assets\Script\Enums\PawnTestedEnum.cs" />
-    <Compile Include="Assets\Script\Enums\PlayerColorEnum.cs" />
-    <Compile Include="Assets\Script\Enums\RulesWindowsEnum.cs" />
     <Compile Include="Assets\Script\Enums\SelectionFilterEnum.cs" />
     <Compile Include="Assets\Script\GameMaster.cs" />
     <Compile Include="Assets\Script\GhostPawn.cs" />
     <Compile Include="Assets\Script\GrpCardEffect.cs" />
     <Compile Include="Assets\Script\Hand.cs" />
-    <Compile Include="Assets\Script\IProgressDictionnary.cs" />
-    <Compile Include="Assets\Script\MainCamera.cs" />
     <Compile Include="Assets\Script\NetworkLobbyHook.cs" />
+    <Compile Include="Assets\Script\Outline\LinkedSet.cs" />
+    <Compile Include="Assets\Script\Outline\Outline.cs" />
+    <Compile Include="Assets\Script\Outline\OutlineEffect.cs" />
     <Compile Include="Assets\Script\Pawn.cs" />
     <Compile Include="Assets\Script\PawnSpawner.cs" />
     <Compile Include="Assets\Script\Popup.cs" />
-    <Compile Include="Assets\Script\ProgressDictionnary.cs" />
     <Compile Include="Assets\Script\SpawnPositions.cs" />
     <Compile Include="Assets\Script\TockBoard.cs" />
     <Compile Include="Assets\Script\TockPlayer.cs" />
@@ -346,7 +341,16 @@
   <ItemGroup>
     <None Include="Assets\Lobby\Documentation.txt" />
     <None Include="Assets\Lobby\Instruction.txt" />
+    <None Include="Assets\Plugins\DFT Games\Localization\Demo\AllTexts.txt" />
+    <None Include="Assets\Plugins\DFT Games\Localization\Demo\Resources\localization\English.txt" />
+    <None Include="Assets\Plugins\DFT Games\Localization\Demo\Resources\localization\Italian.txt" />
+    <None Include="Assets\Plugins\DFT Games\Localization\Demo\Resources\localization\Japanese.txt" />
+    <None Include="Assets\Plugins\DFT Games\Localization\Documentation.txt" />
+    <None Include="Assets\Plugins\OutlineEffect\Resources\OutlineBufferShader.shader" />
+    <None Include="Assets\Plugins\OutlineEffect\Resources\OutlineShader.shader" />
     <None Include="Assets\Resources\Fonts\OpenSans\License!.txt" />
+    <None Include="Assets\Resources\Shader\OutlineBufferShader.shader" />
+    <None Include="Assets\Resources\Shader\OutlineShader.shader" />
     <None Include="Assets\Resources\Texts\Descriptions.xml" />
     <None Include="Assets\Resources\Texts\Rules.txt" />
   </ItemGroup>

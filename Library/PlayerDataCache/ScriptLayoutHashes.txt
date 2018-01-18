@@ -1,4 +1,4 @@
-WindowsStandalone
+Metro
 SceneListBegin?
 Assets/NetworkLobby.unity
 Assets/Game.unity
@@ -51,7 +51,6 @@ f61c0793411f10cf5fbfa1473fef5ef2 UnityEngine.UI.dll:UnityEngine.UI.ToggleGroup
 86d36c43c53541d667100dc90b89cfba UnityEngine.UI.dll:UnityEngine.EventSystems.TouchInputModule
 1b8c02d0aa82fbf036a2b9b2d713eec3 UnityEngine.UI.dll:UnityEngine.UI.VerticalLayoutGroup
 72372a6732732299b6dd9f3032fde16b Assembly-CSharp.dll:Prototype.NetworkLobby.LobbyInfoPanel
-05524b8f659e7bfe5756d1335fec24ba Assembly-CSharp.dll:.BtnCamera
 479897263a5c144fe5e7e70173a31220 Assembly-CSharp.dll:.Card
 a35dc9cca2faebc5f5f1aeb9e8e47bbe UnityEngine.UI.dll:UnityEngine.UI.AspectRatioFitter
 05524b8f659e7bfe5756d1335fec24ba UnityEngine.UI.dll:UnityEngine.EventSystems.BaseInput
@@ -132,7 +131,7 @@ b652bab7433e9280fd26edfba48fbec9 Assembly-CSharp.dll:.GameMaster
 05524b8f659e7bfe5756d1335fec24ba Assembly-CSharp.dll:.SpawnPositions
 2596b6d52a58dd9454fc185c6bb9bf98 Assembly-CSharp.dll:.GhostPawn
 0e0671daccfdc07c5a4a410c6329cba4 Assembly-CSharp.dll:Prototype.NetworkLobby.LobbyTopPanel
-968be59a8049e9d5c24cb3cb944addb6 Assembly-CSharp.dll:Prototype.NetworkLobby.LobbyPlayer
+c68eb4e654231e5e35cc905f9fbe931b Assembly-CSharp.dll:Prototype.NetworkLobby.LobbyPlayer
 32e8fe00b63ed946490b898f6024a2f2 Facebook.Unity.Settings.dll:Facebook.Unity.Settings.FacebookSettings
 fc1e0f4d8439d9928083474691511a13 UnityEngine.Networking.dll:UnityEngine.Networking.NetworkAnimator
 05524b8f659e7bfe5756d1335fec24ba UnityEngine.Networking.dll:UnityEngine.Networking.NetworkBehaviour
@@ -149,7 +148,7 @@ e9bdabf9265d758d56f01bb188916fa8 UnityEngine.Networking.dll:UnityEngine.Networki
 73843688b51256aed059f049c540bca8 UnityEngine.Networking.dll:UnityEngine.Networking.NetworkTransformChild
 528ea1fd7c01796fc60c4e2f172ea229 UnityEngine.Networking.dll:UnityEngine.Networking.NetworkTransformVisualizer
 df6aeb63fbebd945225555e0079a2661 Assembly-CSharp.dll:.Popup
-8fd390293741f8d3278fcc9e17126812 Assembly-CSharp.dll:.Pawn
+2044f3ac4ce3ccb7ca370fb0eb59a282 Assembly-CSharp.dll:.Pawn
 05524b8f659e7bfe5756d1335fec24ba Assembly-CSharp.dll:.NetworkLobbyHook
 f77ec405d664b4bc5cba8b5c8bc5d666 Assembly-CSharp.dll:.PawnSpawner
 05524b8f659e7bfe5756d1335fec24ba UnityEngine.TestRunner.dll:UnityEngine.TestTools.TestRunner.Callbacks.PlayModeRunnerCallback
@@ -163,11 +162,11 @@ bc68edb0af574bf79f9550ead8ebae5c UnityEngine.HoloLens.dll:UnityEngine.Audio.Audi
 463516d5b5fe8e67a0a24c48f2095b04 UnityEngine.HoloLens.dll:UnityEngine.EventSystems.HoloLensInputModule
 c2275a8bfbb9f9942cad75ecdfded41d UnityEngine.HoloLens.dll:UnityEngine.XR.WSA.SpatialMappingCollider
 45f3431f0103c41611e8d4eec3d439df UnityEngine.HoloLens.dll:UnityEngine.XR.WSA.SpatialMappingRenderer
-05524b8f659e7bfe5756d1335fec24ba Assembly-CSharp.dll:.CameraPositions
 05524b8f659e7bfe5756d1335fec24ba Assembly-CSharp.dll:.DicoDescription
 9de3a22eca9aefadba2d10d5987cefe3 UnityEngine.SpatialTracking.dll:UnityEngine.SpatialTracking.TrackedPoseDriver
 5c86cfc0865d615587db9c6559d26815 Assembly-CSharp.dll:.GrpCardEffect
 05524b8f659e7bfe5756d1335fec24ba Assembly-CSharp.dll:Prototype.NetworkLobby.DraggablePanel
 8b786692ad8256bf911665b48ee5ac64 Assembly-CSharp.dll:.Deck
-f56186e4abd334ede03d2fae5e114a11 Assembly-CSharp.dll:.MainCamera
 239d2cc8d353bbfcbefc27fa8f0221cc Assembly-CSharp.dll:Prototype.NetworkLobby.LobbyServerList
+56441db03d5b4bb548b050e61dd1186e Assembly-CSharp.dll:cakeslice.OutlineEffect
+02f0bc5e25b41bdc131009e4484fe1db Assembly-CSharp.dll:cakeslice.Outline

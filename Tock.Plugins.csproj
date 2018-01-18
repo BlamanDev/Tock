@@ -7,7 +7,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{FDDD5293-BEBE-0B37-16A2-004E872E3237}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <AssemblyName>Assembly-CSharp-firstpass.dll</AssemblyName>
+    <AssemblyName>Assembly-CSharp-firstpass</AssemblyName>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{E097FAD1-6243-4DAD-9C02-E9B9EFC3FFC1};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <TargetFrameworkIdentifier>.NETFramework</TargetFrameworkIdentifier>
@@ -294,12 +294,26 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Plugins\DFT Games\Localization\Demo\Scripts\MenuManager.cs" />
+    <Compile Include="Assets\Plugins\DFT Games\Localization\Scripts\Locale.cs" />
+    <Compile Include="Assets\Plugins\DFT Games\Localization\Scripts\Localize.cs" />
+    <Compile Include="Assets\Plugins\DFT Games\Localization\Scripts\LocalizeBase.cs" />
+    <Compile Include="Assets\Plugins\DFT Games\Localization\Scripts\LocalizeImage.cs" />
     <Compile Include="Assets\Plugins\TaskManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Lobby\Documentation.txt" />
     <None Include="Assets\Lobby\Instruction.txt" />
+    <None Include="Assets\Plugins\DFT Games\Localization\Demo\AllTexts.txt" />
+    <None Include="Assets\Plugins\DFT Games\Localization\Demo\Resources\localization\English.txt" />
+    <None Include="Assets\Plugins\DFT Games\Localization\Demo\Resources\localization\Italian.txt" />
+    <None Include="Assets\Plugins\DFT Games\Localization\Demo\Resources\localization\Japanese.txt" />
+    <None Include="Assets\Plugins\DFT Games\Localization\Documentation.txt" />
+    <None Include="Assets\Plugins\OutlineEffect\Resources\OutlineBufferShader.shader" />
+    <None Include="Assets\Plugins\OutlineEffect\Resources\OutlineShader.shader" />
     <None Include="Assets\Resources\Fonts\OpenSans\License!.txt" />
+    <None Include="Assets\Resources\Shader\OutlineBufferShader.shader" />
+    <None Include="Assets\Resources\Shader\OutlineShader.shader" />
     <None Include="Assets\Resources\Texts\Descriptions.xml" />
     <None Include="Assets\Resources\Texts\Rules.txt" />
   </ItemGroup>
