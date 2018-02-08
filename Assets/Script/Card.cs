@@ -12,18 +12,9 @@ using UnityEngine.Networking;
 /// </summary>
 public class Card : NetworkBehaviour
 {
-    /*public const String DESCRIPTIONFILE = "Texts/Descriptions";
-    public const String DESC_MOVE = "Move";
-    public const String DESC_MOVEORENTER = "MoveOrEnter";
-    public const String DESC_MOVEOTHER = "MoveOther";
-    public const String DESC_MOVEBACKWARD = "MoveBackWard";
-    public const String DESC_EXCHANGE = "Exchange";
-    public const String DESC_MOVEWIPEALL = "MoveWipeAll";
-    public const String DESC_MOVEMANY = "MoveMany";
-    public const String VALUEINTEXT = "[VALUE]";
+    public const String CARDS_COLOR_ICONS_PATH = "Icons/Cards/Colors/";
+    public const String ILLUSTRATIONS_PATH = "Materials/Cards/";
 
-    private static Dictionary<String, String> dicoDescription;
-    */
     [SyncVar]
     public CardsColorsEnum Color;
     [SyncVar(hook = "OnChangeValue")]
@@ -45,8 +36,16 @@ public class Card : NetworkBehaviour
     public Material Illustration;
 
     //Pawn which can be played by this card after projection
-    public List<Pawn> possibleTargets;
+    //public List<Pawn> possibleTargets;
     public SyncListString possibleTargetsS;
+
+    public bool Playable
+    {
+        get
+        {
+            return possibleTargetsS.Count > 0;
+        }
+    }
 
     static private GameMaster gMaster;
 
@@ -86,7 +85,7 @@ public class Card : NetworkBehaviour
         {
             if (colorImage==null)
             {
-                colorImage = Resources.Load<Sprite>("Icons/Cards/Colors/" + Color.ToString());
+                colorImage = Resources.Load<Sprite>(CARDS_COLOR_ICONS_PATH + Color.ToString());
             }
             return colorImage;
         }
@@ -134,7 +133,7 @@ public class Card : NetworkBehaviour
         Value = value;
         this.name = value.ToString() + "_" + Color.ToString();
         initCard(value);
-        Illustration = Resources.Load<Material>("Materials/Cards/" + this.name);
+        Illustration = Resources.Load<Material>(ILLUSTRATIONS_PATH + this.name);
         this.gameObject.transform.GetChild(1).GetComponentInChildren<MeshRenderer>().material = Illustration;
 
 
@@ -383,6 +382,10 @@ public class Card : NetworkBehaviour
         {
             Playable = MoveFilter(target);
         }
+        else
+        {
+            Playable = !GMaster.ProgressList[18 * target.OwningPlayerIndex].StartsWith(target.OwningPlayerIndex.ToString()) ;
+        }
         return Playable;
     }
 
@@ -428,11 +431,10 @@ public class Card : NetworkBehaviour
                 }
             }
         }
-        if (this.Effect == this.Exchange && getNbOfPawnOnBoard() < 2)
+        if (this.Effect == this.Exchange && getNbOfPawnIdle() < 2)
         {
             possibleTargetsS.Clear();
         }
-
         return possibleTargetsS.Count > 0;
     }
 
@@ -487,8 +489,22 @@ public class Card : NetworkBehaviour
 
     private int getNbOfPawnOnBoard()
     {
+        Pawn[] pawnsOnBoard = getPawnsOnBoard();
+        return pawnsOnBoard.Length;
+    }
+
+    private static Pawn[] getPawnsOnBoard()
+    {
         Pawn[] pawnsOnBoard = GameObject.FindObjectsOfType<Pawn>();
         pawnsOnBoard = Array.FindAll(pawnsOnBoard, x => x.OnBoard);
+        return pawnsOnBoard;
+    }
+
+    private int getNbOfPawnIdle()
+    {
+        Pawn[] pawnsOnBoard = getPawnsOnBoard();
+        pawnsOnBoard = Array.FindAll(pawnsOnBoard, x => x.Status == PawnStatusEnum.IDLE);
         return pawnsOnBoard.Length;
+
     }
 }

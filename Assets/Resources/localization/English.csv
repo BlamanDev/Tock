@@ -1,0 +1,59 @@
+﻿BtnMatchMaking;Match Making
+BtnDirectPlay;Direct Play
+LblStatus;Status
+LblHost;Host
+BtnBack;Back
+BtnQuit;Quit
+LblMatchMaker;Match Maker
+LblFindAGame;Find a game
+Language;Language
+LblCreateAGame;Create a game
+BtnListServers;Servers List
+PHGameName;Game name
+BtnCreateGame;Create Game
+BtnJoin;Join
+MatchMakerHost;Match Maker Host
+LblConnecting;Connecting...
+BtnCancel;Cancel
+LblServerName;Server
+LblSlots;Slots
+LblNoServerFound;No server found
+BtnPrevious;Previous
+BtnNext;Next
+Offline;Offline
+None;None
+LblManualConnection;Manual Connection
+BtnPlayAndHost;Play and Host
+LblJoinAGame;Join a game
+BtnDedicatedServer;Dedicated server
+DedicatedServer;Dedicated server
+LblDirectPlayWarning1;"This is a direct play server, it is not listed in ""List servers"""
+LblDirectPlayWarning2;Other players have to connect using your IP address
+BtnBegin;Let's begin !
+LblWait;Please Wait...
+LblBasicRules;Rules
+Close;Close
+ClientError;Client error
+MatchStarting;Match starting in...
+READY;Ready
+Kicked;Kicked by the server
+LblCardEffect;Cards effects
+LblMovementLeft;Movements left
+LblSelectedCard;Selected Card
+Victory;Victory !!!
+Defeat;Defeat...
+ACE;ACE
+TWO;TWO
+THREE;THREE
+FOUR;FOUR
+FIVE;FIVE
+SIX;SIX
+SEVEN;SEVEN
+EIGHT;EIGHT
+NINE;NINE
+TEN;TEN
+JACK;JACK
+QUEEN;QUEEN
+KING;KING
+JOKER;JOKER
+OF;of

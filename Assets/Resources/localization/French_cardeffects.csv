@@ -1,0 +1,7 @@
+﻿Move;Avance un pion de la valeur de la carte (12 pour la DAME)
+MoveOrEnter;Fais entrer un pion sur le plateau ou avance un pion de la valeur de la carte (13 pour le ROI)
+MoveOther;Avance un pion adverse de la valeur de la carte
+MoveBackWard;Recule un pion de la valeur de la carte
+Exchange;Echange la position d'un de vos pions avec tout autre pion
+MoveWipeAll;Fais entrer un pion sur le plateau ou avance un pion de la valeur de la carte et mange tout les pions sur son passage
+MoveMany;Permet de répartir la valeur de la carte en point de mouvement entre plusieurs de vos pions

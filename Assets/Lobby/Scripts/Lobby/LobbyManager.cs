@@ -5,11 +5,14 @@ using UnityEngine.Networking;
 using UnityEngine.Networking.Types;
 using UnityEngine.Networking.Match;
 using System.Collections;
-
+using DFTGames.Localization;
+using System.Net;
+using System.Net.Sockets;
+using System;
 
 namespace Prototype.NetworkLobby
 {
-    public class LobbyManager : NetworkLobbyManager 
+    public class LobbyManager : NetworkLobbyManager
     {
         static short MsgKicked = MsgType.Highest + 1;
 
@@ -48,7 +51,7 @@ namespace Prototype.NetworkLobby
         public bool _isMatchmaking = false;
 
         protected bool _disconnectServer = false;
-        
+
         protected ulong _currentMatchID;
 
         protected LobbyHook _lobbyHooks;
@@ -63,8 +66,13 @@ namespace Prototype.NetworkLobby
             GetComponent<Canvas>().enabled = true;
 
             DontDestroyOnLoad(gameObject);
+            if (!Locale.currentLanguageHasBeenSet)
+            {
+                Locale.currentLanguageHasBeenSet = true;
+                Localize.SetCurrentLanguage(Locale.PlayerLanguage);
+            }
 
-            SetServerInfo("Offline", "None");
+            SetServerInfo(Locale.CurrentLanguageStrings["Offline"], Locale.CurrentLanguageStrings["None"]);
         }
 
         public override void OnLobbyClientSceneChanged(NetworkConnection conn)
@@ -138,7 +146,7 @@ namespace Prototype.NetworkLobby
             else
             {
                 backButton.gameObject.SetActive(false);
-                SetServerInfo("Offline", "None");
+                SetServerInfo(Locale.CurrentLanguageStrings["Offline"], Locale.CurrentLanguageStrings["None"]);
                 _isMatchmaking = false;
             }
         }
@@ -146,7 +154,7 @@ namespace Prototype.NetworkLobby
         public void DisplayIsConnecting()
         {
             var _this = this;
-            infoPanel.Display("Connecting...", "Cancel", () => { _this.backDelegate(); });
+            infoPanel.Display(Locale.CurrentLanguageStrings["LblConnecting"], Locale.CurrentLanguageStrings["BtnCancel"], () => { _this.backDelegate(); });
         }
 
         public void SetServerInfo(string status, string host)
@@ -161,7 +169,7 @@ namespace Prototype.NetworkLobby
         public void GoBackButton()
         {
             backDelegate();
-			topPanel.isInGame = false;
+            topPanel.isInGame = false;
         }
 
         // ----------------- Server management
@@ -180,20 +188,20 @@ namespace Prototype.NetworkLobby
         {
             ChangeTo(mainMenuPanel);
         }
-                 
+
         public void StopHostClbk()
         {
             if (_isMatchmaking)
             {
-				matchMaker.DestroyMatch((NetworkID)_currentMatchID, 0, OnDestroyMatch);
-				_disconnectServer = true;
+                matchMaker.DestroyMatch((NetworkID)_currentMatchID, 0, OnDestroyMatch);
+                _disconnectServer = true;
             }
             else
             {
                 StopHost();
             }
 
-            
+
             ChangeTo(mainMenuPanel);
         }
 
@@ -226,7 +234,7 @@ namespace Prototype.NetworkLobby
 
         public void KickedMessageHandler(NetworkMessage netMsg)
         {
-            infoPanel.Display("Kicked by Server", "Close", null);
+            infoPanel.Display(Locale.CurrentLanguageStrings["Kicked by Server"], Locale.CurrentLanguageStrings["Close"], null);
             netMsg.conn.Disconnect();
         }
 
@@ -239,20 +247,32 @@ namespace Prototype.NetworkLobby
             ChangeTo(lobbyPanel);
             backDelegate = StopHostClbk;
             //SetServerInfo("Hosting", networkAddress);
-            //SetServerInfo("Hosting", Network.player.ipAddress);
+            string ip = "";
+#if UNITY_WSA_10_0
+            
+#else
+                        string host = Dns.GetHostName();
+
+            // Your standard code here
+            ip = Array.Find<IPAddress>(Dns.GetHostByName(host).AddressList, x => x.AddressFamily == AddressFamily.InterNetwork).ToString();
+
+#endif
+            //GetResolvedConnecionIPAddress(LobbyManager.singleton.networkAddress, out plouf);
+            SetServerInfo("Hosting", ip); 
 
         }
 
-		public override void OnMatchCreate(bool success, string extendedInfo, MatchInfo matchInfo)
-		{
-			base.OnMatchCreate(success, extendedInfo, matchInfo);
-            _currentMatchID = (System.UInt64)matchInfo.networkId;
-		}
 
-		public override void OnDestroyMatch(bool success, string extendedInfo)
-		{
-			base.OnDestroyMatch(success, extendedInfo);
-			if (_disconnectServer)
+        public override void OnMatchCreate(bool success, string extendedInfo, MatchInfo matchInfo)
+        {
+            base.OnMatchCreate(success, extendedInfo, matchInfo);
+            _currentMatchID = (System.UInt64)matchInfo.networkId;
+        }
+
+        public override void OnDestroyMatch(bool success, string extendedInfo)
+        {
+            base.OnDestroyMatch(success, extendedInfo);
+            if (_disconnectServer)
             {
                 StopMatchMaker();
                 StopHost();
@@ -341,15 +361,15 @@ namespace Prototype.NetworkLobby
 
         public override void OnLobbyServerPlayersReady()
         {
-			bool allready = true;
-			for(int i = 0; i < lobbySlots.Length; ++i)
-			{
-				if(lobbySlots[i] != null)
-					allready &= lobbySlots[i].readyToBegin;
-			}
+            bool allready = true;
+            for (int i = 0; i < lobbySlots.Length; ++i)
+            {
+                if (lobbySlots[i] != null)
+                    allready &= lobbySlots[i].readyToBegin;
+            }
 
-			if(allready)
-				StartCoroutine(ServerCountdownCoroutine());
+            if (allready)
+                StartCoroutine(ServerCountdownCoroutine());
         }
 
         public IEnumerator ServerCountdownCoroutine()
@@ -417,12 +437,13 @@ namespace Prototype.NetworkLobby
         public override void OnClientError(NetworkConnection conn, int errorCode)
         {
             ChangeTo(mainMenuPanel);
-            infoPanel.Display("Cient error : " + (errorCode == 6 ? "timeout" : errorCode.ToString()), "Close", null);
+            infoPanel.Display(Locale.CurrentLanguageStrings["CientError"] + " : " + (errorCode == 6 ? "timeout" : errorCode.ToString()), Locale.CurrentLanguageStrings["Close"], null);
         }
 
         public void QuitGame()
         {
             Application.Quit();
         }
+
     }
 }

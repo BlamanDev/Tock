@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DFTGames.Localization;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -6,7 +7,7 @@ using System.Xml;
 using UnityEngine;
 
 public class DicoDescription : MonoBehaviour {
-    public const String DESCRIPTIONFILE = "Texts/Descriptions";
+    public const String DESCRIPTION_SUFFIX = "_cardeffects";
     public const String CARDEFFECTSPRITEFOLDER = "Icons/Cards/Effects";
     public const String DESC_MOVE = "Move";
     public const String DESC_MOVEORENTER = "MoveOrEnter";
@@ -51,7 +52,7 @@ public class DicoDescription : MonoBehaviour {
         }
     }
 
-    public Dictionary<string, string> DicoText
+    public static Dictionary<string, string> DicoText
     {
         get
         {
@@ -68,14 +69,27 @@ public class DicoDescription : MonoBehaviour {
         }
     }
 
-    private void buildDicoText()
+    private static void buildDicoText()
     {
         dicoText = new Dictionary<string, string>();
         TextAsset allLines = new TextAsset();
         try
         {
-            allLines = Resources.Load<TextAsset>(DESCRIPTIONFILE);
-            using (XmlReader reader = XmlReader.Create(new StringReader(allLines.text)))
+            allLines = Resources.Load<TextAsset>(Locale.STR_LOCALIZATION_PREFIX + Locale.currentLanguage + DESCRIPTION_SUFFIX);
+                // We wplit on newlines to retrieve the key pairs
+                string[] lines = allLines.text.Split(new string[] { "\r\n", "\n\r", "\n" }, System.StringSplitOptions.RemoveEmptyEntries);
+                
+                for (int i = 0; i < lines.Length; i++)
+                {
+                    string[] pairs = lines[i].Split(new char[] { '\t', '=', ';' }, 2);
+                    if (pairs.Length == 2)
+                    {
+                        DicoText.Add(pairs[0].Trim(), pairs[1].Trim());
+                    }
+                }
+            
+
+            /*using (XmlReader reader = XmlReader.Create(new StringReader(allLines.text)))
             {
                 reader.Read();
                 reader.ReadSubtree();
@@ -83,7 +97,8 @@ public class DicoDescription : MonoBehaviour {
                 {
                     dicoText.Add(reader.GetAttribute("name"), reader.GetAttribute("description"));
                 }
-            }
+            }*/
+
 
         }
         catch (Exception e)

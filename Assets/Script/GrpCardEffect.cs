@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DFTGames.Localization;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -65,7 +66,7 @@ public class GrpCardEffect : MonoBehaviour
 
             
             LblSelectedCard.enabled = (cardToDisplay == SelectedCard);
-            CardValueText.text = cardToDisplay.Value.ToString();
+            CardValueText.text = Locale.CurrentLanguageStrings[cardToDisplay.Value.ToString()];
             CardColorImage.enabled = true;
             CardColorImage.sprite = cardToDisplay.ColorImage;
 

@@ -1,2 +1,59 @@
-BtnMatchMaking;Internet
-BtnDirectPlay;Reseau local
+﻿BtnMatchMaking;Partie en ligne
+BtnDirectPlay;Connexion directe
+LblStatus;Status
+LblHost;Hote
+BtnBack;Retour
+BtnQuit;Quitter
+LblMatchMaker;En ligne
+LblFindAGame;Chercher une partie
+Language;Langue
+LblCreateAGame;Chercher une partie
+BtnListServers;Liste des serveurs
+PHGameName;Nom de la partie
+BtnCreateGame;Créer une partie
+BtnJoin;Joindre
+MatchMakerHost;Hote en ligne
+LblConnecting;Connection en cours...
+BtnCancel;Annuler
+LblServerName;Serveur
+LblSlots;Emplacements
+LblNoServerFound;Aucun serveur trouvé
+BtnPrevious;Précédent
+BtnNext;Suivant
+Offline;Hors-ligne
+None;Aucun
+LblManualConnection;Connexion directe
+BtnPlayAndHost;Heberger et Jouer
+LblJoinAGame;Rejoindre une partie
+BtnDedicatedServer;Serveur dedié
+DedicatedServer;Serveur dedié
+LblDirectPlayWarning1;Le serveur est en connexion directe, il ne sera pas listé dans le matchmaking
+LblDirectPlayWarning2;Les autres joueurs doivent se connecter en utilisant son adresse IP
+BtnBegin;Commencer !
+LblWait;Veuillez patienter...
+LblBasicRules;Régles
+Close;Fermer
+ClientError;Erreur client
+MatchStarting;Début de la partie dans...
+READY;Prêt
+Kicked;Ejecté par le serveur
+LblCardEffect;Effets des cartes
+LblMovementLeft;Mouvements Restants
+LblSelectedCard;Carte selectionnée
+Victory;Victoire !!!
+Defeat;Defaite...
+ACE;AS
+TWO;DEUX
+THREE;TROIS
+FOUR;QUATRE
+FIVE;CINQ
+SIX;SIX
+SEVEN;SEPT
+EIGHT;HUIT
+NINE;NEUF
+TEN;DIX
+JACK;VALET
+QUEEN;DAME
+KING;ROI
+JOKER;JOKER
+OF;de

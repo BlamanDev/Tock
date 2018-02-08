@@ -1,0 +1,8 @@
+﻿- You have to play an ACE, a KING or a JOKER to make a Pawn enter the Board
+
+- If you can't play a card, you have to discard one
+- If your Pawn arrive on another Pawn cell, this one will be eaten
+- A Pawn on his Entry cannot be passed, moved or eaten
+- A Pawn on House Cells cannot be eaten
+
+- The Winner is the player who succeed to bring his all four pawn to their house cells

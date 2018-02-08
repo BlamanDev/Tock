@@ -1,0 +1,7 @@
+﻿Move;Move forward one of your Pawn for card's value cells (12 for the QUEEN)
+MoveOrEnter;Take your selected outboard Pawn on the board OR move forward one of your onboard Pawn for card's value cells (13 for the KING)
+MoveOther;Move forward one of the opponents Pawn for card's value cells
+MoveBackWard;Move backward one of your Pawn for card's value cells
+Exchange;Exchange the position of one of your onboard Pawn with any another inboard Pawn
+MoveWipeAll;Move forward one of your Pawn for card's value cells and wipe every Pawn encoutered (18 for the JOKER)
+MoveMany;Distribute card's value movements between your inboard Pawns

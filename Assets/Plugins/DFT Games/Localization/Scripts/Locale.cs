@@ -6,9 +6,9 @@ namespace DFTGames.Localization
 {
     public static class Locale
     {
-        const string STR_LOCALIZATION_KEY = "locale";
-        const string STR_LOCALIZATION_PREFIX = "localization/";
-        static string currentLanguage;
+        public const string STR_LOCALIZATION_KEY = "locale";
+        public const string STR_LOCALIZATION_PREFIX = "localization/";
+        public static string currentLanguage;
         static bool currentLanguageFileHasBeenFound = false;
         public static bool currentLanguageHasBeenSet = false;
         public static Dictionary<string, string> CurrentLanguageStrings = new Dictionary<string, string>();

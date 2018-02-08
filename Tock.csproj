@@ -303,6 +303,7 @@
     <Compile Include="Assets\Lobby\Scripts\ColorManager.cs" />
     <Compile Include="Assets\Lobby\Scripts\DraggablePanel.cs" />
     <Compile Include="Assets\Lobby\Scripts\EventSystemChecker.cs" />
+    <Compile Include="Assets\Lobby\Scripts\LanguageManager.cs" />
     <Compile Include="Assets\Lobby\Scripts\Lobby\LobbyCountdownPanel.cs" />
     <Compile Include="Assets\Lobby\Scripts\Lobby\LobbyHook.cs" />
     <Compile Include="Assets\Lobby\Scripts\Lobby\LobbyInfoPanel.cs" />
@@ -315,8 +316,10 @@
     <Compile Include="Assets\Lobby\Scripts\Lobby\LobbyTopPanel.cs" />
     <Compile Include="Assets\Script\BtnGameBegin.cs" />
     <Compile Include="Assets\Script\Card.cs" />
+    <Compile Include="Assets\Script\CardEffectPopup.cs" />
     <Compile Include="Assets\Script\DebugTock.cs" />
     <Compile Include="Assets\Script\Deck.cs" />
+    <Compile Include="Assets\Script\DescriptionLine.cs" />
     <Compile Include="Assets\Script\DicoDescription.cs" />
     <Compile Include="Assets\Script\Enums\CardsColorsEnum.cs" />
     <Compile Include="Assets\Script\Enums\CardsValuesEnum.cs" />
@@ -334,6 +337,7 @@
     <Compile Include="Assets\Script\Pawn.cs" />
     <Compile Include="Assets\Script\PawnSpawner.cs" />
     <Compile Include="Assets\Script\Popup.cs" />
+    <Compile Include="Assets\Script\RulesLocalize.cs" />
     <Compile Include="Assets\Script\SpawnPositions.cs" />
     <Compile Include="Assets\Script\TockBoard.cs" />
     <Compile Include="Assets\Script\TockPlayer.cs" />
@@ -341,18 +345,23 @@
   <ItemGroup>
     <None Include="Assets\Lobby\Documentation.txt" />
     <None Include="Assets\Lobby\Instruction.txt" />
-    <None Include="Assets\Plugins\DFT Games\Localization\Demo\AllTexts.txt" />
-    <None Include="Assets\Plugins\DFT Games\Localization\Demo\Resources\localization\English.txt" />
-    <None Include="Assets\Plugins\DFT Games\Localization\Demo\Resources\localization\Italian.txt" />
-    <None Include="Assets\Plugins\DFT Games\Localization\Demo\Resources\localization\Japanese.txt" />
     <None Include="Assets\Plugins\DFT Games\Localization\Documentation.txt" />
     <None Include="Assets\Plugins\OutlineEffect\Resources\OutlineBufferShader.shader" />
     <None Include="Assets\Plugins\OutlineEffect\Resources\OutlineShader.shader" />
+    <None Include="Assets\Plugins\dmk Fixed Function Shader Collection\Shaders\Unlit_color_cutout.shader" />
+    <None Include="Assets\Plugins\dmk Fixed Function Shader Collection\Shaders\Unlit_texture_color.shader" />
+    <None Include="Assets\Plugins\dmk Fixed Function Shader Collection\Shaders\Unlit_texture_color_lightmap.shader" />
+    <None Include="Assets\Plugins\dmk Fixed Function Shader Collection\Shaders\unlit_cutout_lightmapped.shader" />
+    <None Include="Assets\Plugins\dmk Fixed Function Shader Collection\Shaders\unlit_trans_color.shader" />
+    <None Include="Assets\Plugins\dmk Fixed Function Shader Collection\Shaders\unlit_trans_color_Zoff.shader" />
+    <None Include="Assets\Plugins\dmk Fixed Function Shader Collection\read_me.txt" />
     <None Include="Assets\Resources\Fonts\OpenSans\License!.txt" />
     <None Include="Assets\Resources\Shader\OutlineBufferShader.shader" />
     <None Include="Assets\Resources\Shader\OutlineShader.shader" />
     <None Include="Assets\Resources\Texts\Descriptions.xml" />
     <None Include="Assets\Resources\Texts\Rules.txt" />
+    <None Include="Assets\Resources\localization\English_rules.txt" />
+    <None Include="Assets\Resources\localization\French_rules.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="GenerateTargetFrameworkMonikerAttribute" />

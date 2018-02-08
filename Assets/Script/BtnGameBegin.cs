@@ -18,7 +18,7 @@ public class BtnGameBegin : MonoBehaviour {
     public void GameBegin()
     {
         DisplayGameCanvas();
-        Deck.GetComponentInChildren<MeshRenderer>().enabled = true;
+        //Deck.GetComponentInChildren<MeshRenderer>().enabled = true;
         NetworkGameMaster.GameBegin();
     }
 

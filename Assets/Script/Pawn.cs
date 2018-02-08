@@ -31,6 +31,8 @@ public class Pawn : NetworkBehaviour
     [SyncVar(hook = "OnChangePlayerColor")]
     public Color PlayerColor;
 
+    private Color selectionColor;
+
     [SyncVar(hook = "OnChangeStatus")]
     private PawnStatusEnum status = PawnStatusEnum.OUT;
 
@@ -47,6 +49,8 @@ public class Pawn : NetworkBehaviour
     private MeshRenderer selectionMeshRenderer;
     private Light selectableLight;
     private Outline outliner;
+    public GameObject Selection;
+
     #endregion
     static private GameMaster gMaster;
 
@@ -185,7 +189,15 @@ public class Pawn : NetworkBehaviour
         {
             if (selectionMeshRenderer == null)
             {
-                selectionMeshRenderer = this.GetComponentsInChildren<MeshRenderer>(true)[1];
+                selectionMeshRenderer = Selection.GetComponentInChildren<MeshRenderer>(true);
+                selectionColor = selectionMeshRenderer.material.color;
+                float h, s, v;
+                Color.RGBToHSV(selectionColor, out h, out s, out v);
+                if (h > (65f / 255f) && h < (155f / 255f))
+                {
+                    selectionColor = Color.HSVToRGB(1 - h, 0, v);
+
+                }
             }
             return selectionMeshRenderer;
         }
@@ -202,7 +214,11 @@ public class Pawn : NetworkBehaviour
         {
             if (outliner == null)
             {
-                outliner = this.GetComponentInChildren<Outline>();
+                outliner = this.GetComponentInChildren<Outline>(true);
+                if (SystemInfo.deviceType != DeviceType.Handheld)
+                {
+                    outliner.enabled = true;
+                }
             }
             return outliner;
         }
@@ -212,6 +228,23 @@ public class Pawn : NetworkBehaviour
             outliner = value;
         }
     }
+
+    /*public GameObject Selection
+    {
+        get
+        {
+            if (selection == null)
+            {
+                selection = this.GetComponentsInChildren<GameObject>(true)[1];
+            }
+            return selection;
+        }
+
+        set
+        {
+            selection = value;
+        }
+    }*/
     #endregion
 
     #endregion
@@ -233,19 +266,12 @@ public class Pawn : NetworkBehaviour
     public delegate void OnPawnSelected(Pawn pawnSelected);
     public event OnPawnSelected EventOnPawnSelected;
 
-    /// <summary>
-    /// Event called when the pawn is created
-    /// Get the component attached to the pawn
-    /// </summary> 
-    private void OnEnable()
-    {
-    }
 
     public void OnChangePlayerColor(Color newColor)
     {
         PlayerColor = newColor;
         PawnMeshRenderer.material.color = newColor;
-
+        //Selection.GetComponentInChildren<MeshRenderer>().material.color = 
     }
 
     public void OnChangeOwningPlayerIndex(int newIndex)
@@ -431,7 +457,15 @@ public class Pawn : NetworkBehaviour
     /// <param name="playerColor"></param>
     public void SwitchHalo(bool on, Color playerColor)
     {
-        Outliner.color = on?1:0;
+        /*if (SystemInfo.deviceType == DeviceType.Handheld)
+        {
+            Outliner.enabled = on;
+
+        }
+        Outliner.color = on?1:0;*/
+        Selection.SetActive(on);
+        SelectionMeshRenderer.material.color = selectionColor;
+
     }
 
     /// <summary>
@@ -439,7 +473,8 @@ public class Pawn : NetworkBehaviour
     /// </summary>
     public void OnMouseDown()
     {
-        if (Outliner.color > 0)
+        //if (Outliner.color > 0)
+        if (Selection.activeInHierarchy)
         {
             EventOnPawnSelected(this);
         }
@@ -450,9 +485,11 @@ public class Pawn : NetworkBehaviour
     /// </summary>
     public void OnMouseOver()
     {
-        if (Outliner.color > 0)
+        //if (Outliner.color > 0)
+        if (Selection.activeInHierarchy)
         {
-            Outliner.color = 2;
+            //Outliner.color = 2;
+            SelectionMeshRenderer.material.color = PlayerColor;
         }
     }
 
@@ -461,10 +498,15 @@ public class Pawn : NetworkBehaviour
     /// </summary>
     public void OnMouseExit()
     {
-        if (Outliner.color > 0)
+        /*if (Outliner.color > 0)
         {
             Outliner.color = 1;
+        }*/
+        if (Selection.activeInHierarchy)
+        {
+            SelectionMeshRenderer.material.color = selectionColor;
         }
+
     }
     #endregion
     #endregion

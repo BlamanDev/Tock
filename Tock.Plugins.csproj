@@ -294,28 +294,31 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Plugins\DFT Games\Localization\Demo\Scripts\MenuManager.cs" />
     <Compile Include="Assets\Plugins\DFT Games\Localization\Scripts\Locale.cs" />
     <Compile Include="Assets\Plugins\DFT Games\Localization\Scripts\Localize.cs" />
     <Compile Include="Assets\Plugins\DFT Games\Localization\Scripts\LocalizeBase.cs" />
     <Compile Include="Assets\Plugins\DFT Games\Localization\Scripts\LocalizeImage.cs" />
-    <Compile Include="Assets\Plugins\TaskManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Lobby\Documentation.txt" />
     <None Include="Assets\Lobby\Instruction.txt" />
-    <None Include="Assets\Plugins\DFT Games\Localization\Demo\AllTexts.txt" />
-    <None Include="Assets\Plugins\DFT Games\Localization\Demo\Resources\localization\English.txt" />
-    <None Include="Assets\Plugins\DFT Games\Localization\Demo\Resources\localization\Italian.txt" />
-    <None Include="Assets\Plugins\DFT Games\Localization\Demo\Resources\localization\Japanese.txt" />
     <None Include="Assets\Plugins\DFT Games\Localization\Documentation.txt" />
     <None Include="Assets\Plugins\OutlineEffect\Resources\OutlineBufferShader.shader" />
     <None Include="Assets\Plugins\OutlineEffect\Resources\OutlineShader.shader" />
+    <None Include="Assets\Plugins\dmk Fixed Function Shader Collection\Shaders\Unlit_color_cutout.shader" />
+    <None Include="Assets\Plugins\dmk Fixed Function Shader Collection\Shaders\Unlit_texture_color.shader" />
+    <None Include="Assets\Plugins\dmk Fixed Function Shader Collection\Shaders\Unlit_texture_color_lightmap.shader" />
+    <None Include="Assets\Plugins\dmk Fixed Function Shader Collection\Shaders\unlit_cutout_lightmapped.shader" />
+    <None Include="Assets\Plugins\dmk Fixed Function Shader Collection\Shaders\unlit_trans_color.shader" />
+    <None Include="Assets\Plugins\dmk Fixed Function Shader Collection\Shaders\unlit_trans_color_Zoff.shader" />
+    <None Include="Assets\Plugins\dmk Fixed Function Shader Collection\read_me.txt" />
     <None Include="Assets\Resources\Fonts\OpenSans\License!.txt" />
     <None Include="Assets\Resources\Shader\OutlineBufferShader.shader" />
     <None Include="Assets\Resources\Shader\OutlineShader.shader" />
     <None Include="Assets\Resources\Texts\Descriptions.xml" />
     <None Include="Assets\Resources\Texts\Rules.txt" />
+    <None Include="Assets\Resources\localization\English_rules.txt" />
+    <None Include="Assets\Resources\localization\French_rules.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="GenerateTargetFrameworkMonikerAttribute" />

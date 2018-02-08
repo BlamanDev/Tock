@@ -9,6 +9,7 @@ public class TockBoard : NetworkBehaviour
 {
     public int NB_CASES;
     private Coroutine cameraRotation;
+    public float RotationWaitTime = 0.01f;
 	// Use this for initialization
 	void Start () {
 		
@@ -55,7 +56,7 @@ public class TockBoard : NetworkBehaviour
         while(true)
         {
             Camera.main.transform.RotateAround(this.transform.position, Vector3.up, angle);
-            yield return new WaitForEndOfFrame();
+            yield return new WaitForSecondsRealtime(RotationWaitTime);
         }
     }
 }

@@ -29,7 +29,7 @@ namespace DFTGames.Localization
 
         #region Private Fields
 
-        private Text text;
+        protected Text text;
 
         #endregion
 

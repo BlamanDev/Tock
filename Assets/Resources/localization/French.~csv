@@ -1,0 +1,30 @@
+BtnMatchMaking;Internet
+BtnDirectPlay;Réseau local
+LblStatus;Status
+LblHost;Hote
+BtnBack;Retour
+BtnQuit;Quitter
+LblMatchMaker;Internet
+LblFindAGame;Chercher une partie
+LblCreateAGame;Chercher une partie
+BtnListServers;Liste des serveurs
+PHGameName;Nom de la partie
+BtnCreateGame;Créer une partie
+BtnJoin;Joindre
+MatchMakerHost;Hote Match Maker
+LblConnecting;Connection en cours...
+BtnCancel;Annuler
+LblServerName;Serveur
+LblSlots;Emplacements
+LblNoServerFound;Aucun serveur trouvé
+BtnPrevious;Précédent
+BtnNext;Suivant
+Offline;Hors-ligne
+None;Aucun
+LblManualConnection;Réseau local
+BtnPlayAndHost;Heberger et Jouer
+LblJoinAGame;Rejoindre une partie
+BtnDedicatedServer;Serveur dedié
+DedicatedServer;Serveur dedié
+LblDirectPlayWarning1;Le serveur est en réseau local, il ne sera pas listé dans le matchmaking
+LblDirectPlayWarning2;Les autres joueurs doivent se connecter en utilisant son adresse IP

@@ -17,10 +17,12 @@ public class GameMaster : NetworkBehaviour
     #region properties
     //Used for the Singleton
     static public GameMaster GMaster = null;
-    //List of players, static to be accessible on players connection
-    static public List<TockPlayer> players = new List<TockPlayer>();
+    //List of players
+    private List<TockPlayer> players ;
 
     public GrpCardEffect GrpCardEffect;
+
+    private NetworkLobbyManager lobbyby; 
 
     public Canvas RulesPopup;
     public Canvas GameCanvas;
@@ -46,6 +48,8 @@ public class GameMaster : NetworkBehaviour
     private bool displayRuleFullscreen= false;
     private String rulesText = "";
 
+    [SyncVar]
+    private int numberOfPlayers;
 
     static private int activePlayerIndex = -1;
 
@@ -60,6 +64,17 @@ public class GameMaster : NetworkBehaviour
             {
                 localPlayer = findLocalPlayer();
                 Camera.main.GetComponent<OutlineEffect>().lineColor2 = localPlayer.PlayerColor;
+
+                Color tempColor = localPlayer.PlayerColor;
+                float h, s, v;
+                Color.RGBToHSV(tempColor, out h, out s, out v);
+                if (h>(65f/255f) && h < (155f/255f))
+                {
+                    tempColor = Color.HSVToRGB(1-h, 0, v);
+                    Camera.main.GetComponent<OutlineEffect>().lineColor1 = tempColor;
+
+
+                }
             }
             return localPlayer;
         }
@@ -129,6 +144,58 @@ public class GameMaster : NetworkBehaviour
         }
     }
 
+    public List<TockPlayer> Players
+    {
+        get
+        {
+            if (players == null)
+            {
+                players = new List<TockPlayer>();
+            }
+            return players;
+        }
+
+        set
+        {
+            players = value;
+        }
+    }
+
+    public int NumberOfPlayers
+    {
+        get
+        {
+            if (isServer)
+            {
+                numberOfPlayers = Lobbyby.numPlayers;
+            }
+            return numberOfPlayers;
+        }
+
+        set
+        {
+            numberOfPlayers = value;
+        }
+    }
+
+    public NetworkLobbyManager Lobbyby
+    {
+        get
+        {
+            if (isServer && lobbyby == null)
+            {
+                lobbyby = GameObject.FindObjectOfType<NetworkLobbyManager>();
+                NumberOfPlayers = lobbyby.numPlayers;
+            }
+            return lobbyby;
+        }
+
+        set
+        {
+            lobbyby = value;
+        }
+    }
+
     #endregion
     #region initialisation
     // Use this for initialization
@@ -136,8 +203,6 @@ public class GameMaster : NetworkBehaviour
     {
         //Attach to Event AllPawnCreated
         AllPawns = new Dictionary<int, List<Pawn>>();
-
-
         if (isServer)
         {
             GameObject.Find("BtnGameBegin").SetActive(true);
@@ -181,7 +246,7 @@ public class GameMaster : NetworkBehaviour
         {
             Destroy(gameObject);
         }
-        players.Clear();
+        Players.Clear();
     }
 
     private void OnEnable()
@@ -199,7 +264,7 @@ public class GameMaster : NetworkBehaviour
     /// </summary>
     public void GameBegin()
     {
-        StartCoroutine(waitForAllPlayers());
+        StartCoroutine(waitForAllPlayers(true));
     }
     #endregion
     #region Pawns Methods
@@ -283,36 +348,49 @@ public class GameMaster : NetworkBehaviour
     /// <returns></returns>
     private TockPlayer findLocalPlayer()
     {
-        return players.Find(x => x.isLocalPlayer);
+        TockPlayer localP = Players.Find(x => x.isLocalPlayer);
+        
+        return localP;
+    }
+
+    public void buildPlayersList()
+    {
+        StartCoroutine(waitForAllPlayers());
     }
 
     /// <summary>
     /// Wait for all players in the lobby to be connected to the scene
     /// </summary>
     /// <returns></returns>
-    IEnumerator waitForAllPlayers()
+    IEnumerator waitForAllPlayers(bool beginGame=false)
     {
-        NetworkLobbyManager lobbyby = GameObject.FindObjectOfType<NetworkLobbyManager>();
-        yield return new WaitUntil(() => players.Count == lobbyby.numPlayers);
-        PawnSpawner spawner = GameObject.FindObjectOfType<PawnSpawner>();
-        //If there is a PawnSpawner in the scene, create the pawns
-        
-        if (spawner != null)
+        while (players.Count != NumberOfPlayers)
         {
-            spawner.PopulatePawns();
+            players = new List<TockPlayer>(GameObject.FindObjectsOfType<TockPlayer>());
+            yield return new WaitForSeconds(0.1f);
         }
-        //Build the first hand for each players
-        foreach (TockPlayer item in players)
+        if (beginGame)
         {
-            item.RpcBuildLists();
-            item.TargetBuildFirstHand(NetworkServer.objects[item.netId].connectionToClient);
-            yield return new WaitUntil(() => item.Hand.Count == 5);
-        }
-        Color tempColor = LocalPlayer.PlayerColor;
-        tempColor.a = 190/255f;
+            PawnSpawner spawner = GameObject.FindObjectOfType<PawnSpawner>();
 
-        GameObject.Find("PlayerColorDisplayed").GetComponent<Image>().color = tempColor;
-        NextPlayer();
+            //If there is a PawnSpawner in the scene, create the pawns
+            if (spawner != null)
+            {
+                spawner.PopulatePawns();
+            }
+            //Build the first hand for each players
+            foreach (TockPlayer item in Players)
+            {
+                item.RpcBuildLists(Players.Count, item.name);
+                item.TargetBuildFirstHand(NetworkServer.objects[item.netId].connectionToClient);
+                yield return new WaitUntil(() => item.Hand.Count == 5);
+            }
+            Color tempColor = LocalPlayer.PlayerColor;
+            tempColor.a = 190 / 255f;
+
+            GameObject.Find("PlayerColorDisplayed").GetComponent<Image>().color = tempColor;
+            NextPlayer();
+        }
     }
     #endregion
     /// <summary>
@@ -325,11 +403,11 @@ public class GameMaster : NetworkBehaviour
         if (isServer)
         {
             activePlayerIndex++;
-            if (activePlayerIndex == players.Count)
+            if (activePlayerIndex == Players.Count)
             {
                 activePlayerIndex = 0;
             }
-            players[activePlayerIndex].TargetBeginTurn(NetworkServer.objects[players[activePlayerIndex].netId].connectionToClient);
+            Players[activePlayerIndex].TargetBeginTurn(NetworkServer.objects[Players[activePlayerIndex].netId].connectionToClient);
         }
     }
 
@@ -349,7 +427,7 @@ public class GameMaster : NetworkBehaviour
                 }
                 if (nbPawnsInHouse == 4)
                 {
-                    LocalPlayer.RpcEndGame(players[player].netId.ToString()); ;
+                    LocalPlayer.RpcEndGame(Players[player].netId.ToString()); ;
                 }
             }
         }
@@ -505,6 +583,7 @@ public class GameMaster : NetworkBehaviour
     public void DisplayRuleWindow()
     {
         GameCanvas.enabled = false;
+
         RulesPopup.enabled = true;
     }
 

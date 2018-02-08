@@ -1,0 +1,7 @@
+﻿- Vous devez jouer un AS, un ROI ou un JOKER pour faire entrer un pion sur le plateau
+- Si vous ne pouvez pas jouer de carte vous devez vous en défausser d'une
+- Si un pion arrive sur une case occupée par un autre pion, ce dernier sera mangé
+- Un pion sur sa case d'entrée ne peut être passé, mangé ou déplacé par un autre joueur
+- Un pion dans sa maison (les cases d'arrivée) ne peut être mangé
+- Un joueur gagne la partie quand tout ses pions sont dans sa maison
+

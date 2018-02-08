@@ -81,7 +81,7 @@ public class PawnSpawner : NetworkBehaviour
 
         //FOR EACH player, create 4 pawns
         //foreach (String color in Enum.GetNames(typeof(PlayerColorEnum)))
-        foreach (TockPlayer player in GameMaster.players)
+        foreach (TockPlayer player in GMaster.Players)
         {
             for (int i = 1; i <= 4; i++)
             {

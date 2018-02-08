@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using DFTGames.Localization;
 
 namespace Prototype.NetworkLobby
 {
@@ -59,7 +60,7 @@ namespace Prototype.NetworkLobby
             lobbyManager.backDelegate = lobbyManager.StopClientClbk;
             lobbyManager.DisplayIsConnecting();
 
-            lobbyManager.SetServerInfo("Connecting...", lobbyManager.networkAddress);
+            lobbyManager.SetServerInfo(Locale.CurrentLanguageStrings["LblConnecting"], lobbyManager.networkAddress);
         }
 
         public void OnClickDedicated()
@@ -69,7 +70,7 @@ namespace Prototype.NetworkLobby
 
             lobbyManager.backDelegate = lobbyManager.StopServerClbk;
 
-            lobbyManager.SetServerInfo("Dedicated Server", lobbyManager.networkAddress);
+            lobbyManager.SetServerInfo(Locale.CurrentLanguageStrings["DedicatedServer"], lobbyManager.networkAddress);
         }
 
         public void OnClickCreateMatchmakingGame()
@@ -86,7 +87,7 @@ namespace Prototype.NetworkLobby
             lobbyManager._isMatchmaking = true;
             lobbyManager.DisplayIsConnecting();
 
-            lobbyManager.SetServerInfo("Matchmaker Host", lobbyManager.matchHost);
+            lobbyManager.SetServerInfo(Locale.CurrentLanguageStrings["MatchMakerHost"], lobbyManager.matchHost);
         }
 
         public void OnClickOpenServerList()

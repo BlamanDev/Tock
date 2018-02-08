@@ -1,12 +1,14 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using DFTGames.Localization;
 
 namespace Prototype.NetworkLobby
 {
     public class LobbyTopPanel : MonoBehaviour
     {
         public bool isInGame = false;
+
 
         protected bool isDisplayed = true;
         protected Image panelImage;
@@ -42,5 +44,6 @@ namespace Prototype.NetworkLobby
                 panelImage.enabled = isDisplayed;
             }
         }
+
     }
 }
