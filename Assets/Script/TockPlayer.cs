@@ -50,7 +50,7 @@ public class TockPlayer : NetworkBehaviour
     static private GameMaster gMaster;
     static private TockBoard board;
 
-    private MeshRenderer deckModel;
+    private MeshRenderer lastCardPlayed;
 
     private Image[] displayedHand;
     private Image[] displaySelectedCard;
@@ -278,20 +278,20 @@ public class TockPlayer : NetworkBehaviour
         }
     }
 
-    public MeshRenderer DeckModel
+    public MeshRenderer LastCardPlayed
     {
         get
         {
-            if (deckModel == null)
+            if (lastCardPlayed == null)
             {
-                deckModel = GameObject.Find("DeckModel").GetComponent<MeshRenderer>();
+                lastCardPlayed = GameObject.Find("LastCardPlayed").GetComponent<MeshRenderer>();
             }
-            return deckModel;
+            return lastCardPlayed;
         }
 
         set
         {
-            deckModel = value;
+            lastCardPlayed = value;
         }
     }
 
@@ -649,7 +649,11 @@ public class TockPlayer : NetworkBehaviour
     [ClientRpc]
     public void RpcDisplayLastCardPlayed(String cardName)
     {
-        DeckModel.material = GameObject.Find(cardName).GetComponent<Card>().Illustration;
+        if (!LastCardPlayed.enabled)
+        {
+            LastCardPlayed.enabled = true;
+        }
+        LastCardPlayed.material = GameObject.Find(cardName).GetComponent<Card>().Illustration;
     }
     /// <summary>
     /// Wait for the new card drawed and add it to the player's hand
