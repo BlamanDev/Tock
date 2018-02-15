@@ -174,6 +174,7 @@ public class Card : NetworkBehaviour
                 ColorFilter = SelectionFilterEnum.OWNPAWNS;
                 Projections.Add(OnBoardFilter);
                 Projections.Add(MoveFilter);
+                Projections.Add(IdleFilter);
                 break;
             case CardsValuesEnum.FIVE:
                 Effect = Move;
