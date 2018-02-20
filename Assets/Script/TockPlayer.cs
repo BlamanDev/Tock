@@ -991,6 +991,10 @@ public class TockPlayer : NetworkBehaviour
     public void CmdMoveinProgressDictionnary(string target, int nbMoves)
     {
         int newProgress = GMaster.ProgressListMovePawn(target, nbMoves);
+        if (newProgress < -1)
+        {
+            newProgress = 70 + newProgress;
+        }
         GameObject.Find(target).GetComponent<Pawn>().ProgressInDictionnary = newProgress;
     }
 

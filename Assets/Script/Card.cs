@@ -174,7 +174,7 @@ public class Card : NetworkBehaviour
                 ColorFilter = SelectionFilterEnum.OWNPAWNS;
                 Projections.Add(OnBoardFilter);
                 Projections.Add(MoveFilter);
-                Projections.Add(IdleFilter);
+                //Projections.Add(IdleFilter);
                 break;
             case CardsValuesEnum.FIVE:
                 Effect = Move;
@@ -315,7 +315,7 @@ public class Card : NetworkBehaviour
         int progressToCheck = target.Progress + (nbMoves * (this.Effect == MoveBackward ? -1 : 1));
 
         //IF target has finished => not playable
-        if (progressToCheck > 74 || progressToCheck < 0  )
+        if (progressToCheck > 74 || progressToCheck < -4  )
         {
             //Debug.Log(target.name + " : Progress > 74 OR < 0 => can't move");
             Playable = false;

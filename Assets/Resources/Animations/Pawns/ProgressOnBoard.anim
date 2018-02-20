@@ -19,42 +19,48 @@ AnimationClip:
       m_Curve:
       - serializedVersion: 2
         time: 0
-        value: {x: -0.232, y: -0.35, z: 0.828}
+        value: {x: -0.647, y: -0.35, z: 0.828}
         inSlope: {x: 0, y: 0, z: Infinity}
-        outSlope: {x: 0.41826814, y: 0, z: Infinity}
+        outSlope: {x: 0.46111116, y: 0, z: Infinity}
         tangentMode: 0
       - serializedVersion: 2
-        time: 3.4666667
+        time: 0.9
+        value: {x: -0.232, y: -0.35, z: 0.828}
+        inSlope: {x: 0.46111116, y: 0, z: -0}
+        outSlope: {x: 0.41826814, y: 0, z: 0}
+        tangentMode: 0
+      - serializedVersion: 2
+        time: 4.366667
         value: {x: 1.2179962, y: -0.35, z: 0.828}
         inSlope: {x: 0.41826814, y: 0, z: Infinity}
-        outSlope: {x: Infinity, y: 0, z: -0.38926828}
+        outSlope: {x: Infinity, y: 0, z: -0.38926834}
         tangentMode: 0
       - serializedVersion: 2
-        time: 8.25
+        time: 9.15
         value: {x: 1.217996, y: -0.35, z: -1.034}
-        inSlope: {x: Infinity, y: 0, z: -0.38926828}
+        inSlope: {x: Infinity, y: 0, z: -0.38926834}
         outSlope: {x: -0.39220968, y: 0, z: Infinity}
         tangentMode: 0
       - serializedVersion: 2
-        time: 13
+        time: 13.9
         value: {x: -0.645, y: -0.35, z: -1.034}
         inSlope: {x: -0.39220968, y: 0, z: Infinity}
         outSlope: {x: Infinity, y: 0, z: 0.392}
         tangentMode: 0
       - serializedVersion: 2
-        time: 17.75
+        time: 18.65
         value: {x: -0.645, y: -0.35, z: 0.828}
         inSlope: {x: Infinity, y: 0, z: 0.392}
         outSlope: {x: 0.41399997, y: 0, z: Infinity}
         tangentMode: 0
       - serializedVersion: 2
-        time: 18.25
+        time: 19.15
         value: {x: -0.438, y: -0.35, z: 0.828}
         inSlope: {x: 0.41399997, y: 0, z: Infinity}
         outSlope: {x: Infinity, y: 0, z: -0.414}
         tangentMode: 0
       - serializedVersion: 2
-        time: 19.25
+        time: 20.15
         value: {x: -0.438, y: -0.35, z: 0.414}
         inSlope: {x: 0, y: 0, z: -0.414}
         outSlope: {x: 0, y: 0, z: Infinity}
@@ -107,7 +113,7 @@ AnimationClip:
     m_AdditiveReferencePoseClip: {fileID: 0}
     m_AdditiveReferencePoseTime: 0
     m_StartTime: 0
-    m_StopTime: 19.25
+    m_StopTime: 20.15
     m_OrientationOffsetY: 0
     m_Level: 0
     m_CycleOffset: 0
@@ -128,42 +134,48 @@ AnimationClip:
       m_Curve:
       - serializedVersion: 2
         time: 0
-        value: -0.232
+        value: -0.647
         inSlope: 0
-        outSlope: 0.41826814
+        outSlope: 0.46111116
         tangentMode: 65
       - serializedVersion: 2
-        time: 3.4666667
+        time: 0.9
+        value: -0.232
+        inSlope: 0.46111116
+        outSlope: 0.41826814
+        tangentMode: 69
+      - serializedVersion: 2
+        time: 4.366667
         value: 1.2179962
         inSlope: 0.41826814
         outSlope: Infinity
         tangentMode: 101
       - serializedVersion: 2
-        time: 8.25
+        time: 9.15
         value: 1.217996
         inSlope: Infinity
         outSlope: -0.39220968
         tangentMode: 71
       - serializedVersion: 2
-        time: 13
+        time: 13.9
         value: -0.645
         inSlope: -0.39220968
         outSlope: Infinity
         tangentMode: 101
       - serializedVersion: 2
-        time: 17.75
+        time: 18.65
         value: -0.645
         inSlope: Infinity
         outSlope: 0.41399997
         tangentMode: 71
       - serializedVersion: 2
-        time: 18.25
+        time: 19.15
         value: -0.438
         inSlope: 0.41399997
         outSlope: Infinity
         tangentMode: 101
       - serializedVersion: 2
-        time: 19.25
+        time: 20.15
         value: -0.438
         inSlope: 0
         outSlope: 0
@@ -185,37 +197,43 @@ AnimationClip:
         outSlope: Infinity
         tangentMode: 103
       - serializedVersion: 2
-        time: 3.4666667
+        time: 0.9
+        value: 0.828
+        inSlope: -0
+        outSlope: 0
+        tangentMode: 69
+      - serializedVersion: 2
+        time: 4.366667
         value: 0.828
         inSlope: Infinity
-        outSlope: -0.38926828
+        outSlope: -0.38926834
         tangentMode: 71
       - serializedVersion: 2
-        time: 8.25
+        time: 9.15
         value: -1.034
-        inSlope: -0.38926828
+        inSlope: -0.38926834
         outSlope: Infinity
         tangentMode: 101
       - serializedVersion: 2
-        time: 13
+        time: 13.9
         value: -1.034
         inSlope: Infinity
         outSlope: 0.392
         tangentMode: 71
       - serializedVersion: 2
-        time: 17.75
+        time: 18.65
         value: 0.828
         inSlope: 0.392
         outSlope: Infinity
         tangentMode: 101
       - serializedVersion: 2
-        time: 18.25
+        time: 19.15
         value: 0.828
         inSlope: Infinity
         outSlope: -0.414
         tangentMode: 71
       - serializedVersion: 2
-        time: 19.25
+        time: 20.15
         value: 0.414
         inSlope: -0.414
         outSlope: Infinity
@@ -236,6 +254,12 @@ AnimationClip:
         inSlope: 0
         outSlope: 0
         tangentMode: 136
+      - serializedVersion: 2
+        time: 0.9
+        value: -0.35
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 136
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
@@ -248,7 +272,42 @@ AnimationClip:
   m_HasMotionFloatCurves: 0
   m_GenerateMotionCurves: 1
   m_Events:
-  - time: 0.23333333
+  - time: 0
+    functionName: CheckProgress
+    data: 
+    objectReferenceParameter: {fileID: 0}
+    floatParameter: 0
+    intParameter: -4
+    messageOptions: 0
+  - time: 0.21666667
+    functionName: CheckProgress
+    data: 
+    objectReferenceParameter: {fileID: 0}
+    floatParameter: 0
+    intParameter: -3
+    messageOptions: 0
+  - time: 0.45
+    functionName: CheckProgress
+    data: 
+    objectReferenceParameter: {fileID: 0}
+    floatParameter: 0
+    intParameter: -2
+    messageOptions: 0
+  - time: 0.68333334
+    functionName: CheckProgress
+    data: 
+    objectReferenceParameter: {fileID: 0}
+    floatParameter: 0
+    intParameter: -1
+    messageOptions: 0
+  - time: 0.9
+    functionName: CheckProgress
+    data: 
+    objectReferenceParameter: {fileID: 0}
+    floatParameter: 0
+    intParameter: 0
+    messageOptions: 0
+  - time: 1.15
     functionName: CheckProgress
     data: 
     objectReferenceParameter: {fileID: 1694780657484650, guid: 4be833d69c0260941a50c93cfd90978f,
@@ -256,7 +315,7 @@ AnimationClip:
     floatParameter: 0
     intParameter: 1
     messageOptions: 0
-  - time: 0.48333332
+  - time: 1.4
     functionName: CheckProgress
     data: 
     objectReferenceParameter: {fileID: 1694780657484650, guid: 4be833d69c0260941a50c93cfd90978f,
@@ -264,7 +323,7 @@ AnimationClip:
     floatParameter: 0
     intParameter: 2
     messageOptions: 0
-  - time: 0.73333335
+  - time: 1.65
     functionName: CheckProgress
     data: 
     objectReferenceParameter: {fileID: 1694780657484650, guid: 4be833d69c0260941a50c93cfd90978f,
@@ -272,7 +331,7 @@ AnimationClip:
     floatParameter: 0
     intParameter: 3
     messageOptions: 0
-  - time: 0.98333335
+  - time: 1.9
     functionName: CheckProgress
     data: 
     objectReferenceParameter: {fileID: 1694780657484650, guid: 4be833d69c0260941a50c93cfd90978f,
@@ -280,7 +339,7 @@ AnimationClip:
     floatParameter: 0
     intParameter: 4
     messageOptions: 0
-  - time: 1.2333333
+  - time: 2.15
     functionName: CheckProgress
     data: 
     objectReferenceParameter: {fileID: 1694780657484650, guid: 4be833d69c0260941a50c93cfd90978f,
@@ -288,7 +347,7 @@ AnimationClip:
     floatParameter: 0
     intParameter: 5
     messageOptions: 0
-  - time: 1.4833333
+  - time: 2.4
     functionName: CheckProgress
     data: 
     objectReferenceParameter: {fileID: 1694780657484650, guid: 4be833d69c0260941a50c93cfd90978f,
@@ -296,7 +355,7 @@ AnimationClip:
     floatParameter: 0
     intParameter: 6
     messageOptions: 0
-  - time: 1.7333333
+  - time: 2.65
     functionName: CheckProgress
     data: 
     objectReferenceParameter: {fileID: 1694780657484650, guid: 4be833d69c0260941a50c93cfd90978f,
@@ -304,7 +363,7 @@ AnimationClip:
     floatParameter: 0
     intParameter: 7
     messageOptions: 0
-  - time: 1.9833333
+  - time: 2.8833334
     functionName: CheckProgress
     data: 
     objectReferenceParameter: {fileID: 1694780657484650, guid: 4be833d69c0260941a50c93cfd90978f,
@@ -312,7 +371,7 @@ AnimationClip:
     floatParameter: 0
     intParameter: 8
     messageOptions: 0
-  - time: 2.2166667
+  - time: 3.1333334
     functionName: CheckProgress
     data: 
     objectReferenceParameter: {fileID: 1694780657484650, guid: 4be833d69c0260941a50c93cfd90978f,
@@ -320,7 +379,7 @@ AnimationClip:
     floatParameter: 0
     intParameter: 9
     messageOptions: 0
-  - time: 2.4666667
+  - time: 3.3833334
     functionName: CheckProgress
     data: 
     objectReferenceParameter: {fileID: 1694780657484650, guid: 4be833d69c0260941a50c93cfd90978f,
@@ -328,7 +387,7 @@ AnimationClip:
     floatParameter: 0
     intParameter: 10
     messageOptions: 0
-  - time: 2.7166667
+  - time: 3.6166666
     functionName: CheckProgress
     data: 
     objectReferenceParameter: {fileID: 1694780657484650, guid: 4be833d69c0260941a50c93cfd90978f,
@@ -336,7 +395,7 @@ AnimationClip:
     floatParameter: 0
     intParameter: 11
     messageOptions: 0
-  - time: 2.9666667
+  - time: 3.8666666
     functionName: CheckProgress
     data: 
     objectReferenceParameter: {fileID: 1694780657484650, guid: 4be833d69c0260941a50c93cfd90978f,
@@ -344,7 +403,7 @@ AnimationClip:
     floatParameter: 0
     intParameter: 12
     messageOptions: 0
-  - time: 3.2166667
+  - time: 4.116667
     functionName: CheckProgress
     data: 
     objectReferenceParameter: {fileID: 1694780657484650, guid: 4be833d69c0260941a50c93cfd90978f,
@@ -352,7 +411,7 @@ AnimationClip:
     floatParameter: 0
     intParameter: 13
     messageOptions: 0
-  - time: 3.4666667
+  - time: 4.366667
     functionName: CheckProgress
     data: 
     objectReferenceParameter: {fileID: 1694780657484650, guid: 4be833d69c0260941a50c93cfd90978f,
@@ -360,420 +419,420 @@ AnimationClip:
     floatParameter: 0
     intParameter: 14
     messageOptions: 0
-  - time: 3.7666667
+  - time: 4.633333
     functionName: CheckProgress
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 15
     messageOptions: 0
-  - time: 4.016667
+  - time: 4.9
     functionName: CheckProgress
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 16
     messageOptions: 0
-  - time: 4.2833333
+  - time: 5.1666665
     functionName: CheckProgress
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 17
     messageOptions: 0
-  - time: 4.55
+  - time: 5.4333334
     functionName: CheckProgress
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 18
     messageOptions: 0
-  - time: 4.8166666
+  - time: 5.7
     functionName: CheckProgress
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 19
     messageOptions: 0
-  - time: 5.0833335
+  - time: 5.9666667
     functionName: CheckProgress
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 20
     messageOptions: 0
-  - time: 5.35
+  - time: 6.233333
     functionName: CheckProgress
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 21
     messageOptions: 0
-  - time: 5.6
+  - time: 6.5
     functionName: CheckProgress
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 22
     messageOptions: 0
-  - time: 5.866667
+  - time: 6.766667
     functionName: CheckProgress
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 23
     messageOptions: 0
-  - time: 6.133333
+  - time: 7.0333333
     functionName: CheckProgress
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 24
     messageOptions: 0
-  - time: 6.4
+  - time: 7.3
     functionName: CheckProgress
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 25
     messageOptions: 0
-  - time: 6.6666665
+  - time: 7.55
     functionName: CheckProgress
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 26
     messageOptions: 0
-  - time: 6.9166665
+  - time: 7.8333335
     functionName: CheckProgress
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 27
     messageOptions: 0
-  - time: 7.1833334
+  - time: 8.083333
     functionName: CheckProgress
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 28
     messageOptions: 0
-  - time: 7.45
+  - time: 8.35
     functionName: CheckProgress
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 29
     messageOptions: 0
-  - time: 7.7166667
+  - time: 8.616667
     functionName: CheckProgress
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 30
     messageOptions: 0
-  - time: 7.983333
+  - time: 8.883333
     functionName: CheckProgress
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 31
     messageOptions: 0
-  - time: 8.25
+  - time: 9.15
     functionName: CheckProgress
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 32
     messageOptions: 0
-  - time: 8.516666
+  - time: 9.416667
     functionName: CheckProgress
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 33
     messageOptions: 0
-  - time: 8.783334
+  - time: 9.683333
     functionName: CheckProgress
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 34
     messageOptions: 0
-  - time: 9.05
+  - time: 9.95
     functionName: CheckProgress
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 35
     messageOptions: 0
-  - time: 9.316667
+  - time: 10.216666
     functionName: CheckProgress
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 36
     messageOptions: 0
-  - time: 9.583333
+  - time: 10.483334
     functionName: CheckProgress
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 37
     messageOptions: 0
-  - time: 9.85
+  - time: 10.75
     functionName: CheckProgress
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 38
     messageOptions: 0
-  - time: 10.116667
+  - time: 11.016666
     functionName: CheckProgress
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 39
     messageOptions: 0
-  - time: 10.383333
+  - time: 11.283334
     functionName: CheckProgress
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 40
     messageOptions: 0
-  - time: 10.633333
+  - time: 11.533334
     functionName: CheckProgress
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 41
     messageOptions: 0
-  - time: 10.9
+  - time: 11.8
     functionName: CheckProgress
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 42
     messageOptions: 0
-  - time: 11.166667
+  - time: 12.066667
     functionName: CheckProgress
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 43
     messageOptions: 0
-  - time: 11.433333
+  - time: 12.333333
     functionName: CheckProgress
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 44
     messageOptions: 0
-  - time: 11.7
+  - time: 12.6
     functionName: CheckProgress
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 45
     messageOptions: 0
-  - time: 11.966666
+  - time: 12.866667
     functionName: CheckProgress
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 46
     messageOptions: 0
-  - time: 12.233334
+  - time: 13.133333
     functionName: CheckProgress
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 47
     messageOptions: 0
-  - time: 12.5
+  - time: 13.4
     functionName: CheckProgress
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 48
     messageOptions: 0
-  - time: 12.766666
+  - time: 13.666667
     functionName: CheckProgress
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 49
     messageOptions: 0
-  - time: 13
+  - time: 13.9
     functionName: CheckProgress
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 50
     messageOptions: 0
-  - time: 13.266666
+  - time: 14.166667
     functionName: CheckProgress
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 51
     messageOptions: 0
-  - time: 13.533334
+  - time: 14.433333
     functionName: CheckProgress
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 52
     messageOptions: 0
-  - time: 13.8
+  - time: 14.7
     functionName: CheckProgress
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 53
     messageOptions: 0
-  - time: 14.05
+  - time: 14.95
     functionName: CheckProgress
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 54
     messageOptions: 0
-  - time: 14.316667
+  - time: 15.216666
     functionName: CheckProgress
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 55
     messageOptions: 0
-  - time: 14.583333
+  - time: 15.483334
     functionName: CheckProgress
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 56
     messageOptions: 0
-  - time: 14.85
+  - time: 15.75
     functionName: CheckProgress
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 57
     messageOptions: 0
-  - time: 15.116667
+  - time: 16.016666
     functionName: CheckProgress
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 58
     messageOptions: 0
-  - time: 15.383333
+  - time: 16.283333
     functionName: CheckProgress
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 59
     messageOptions: 0
-  - time: 15.633333
+  - time: 16.533333
     functionName: CheckProgress
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 60
     messageOptions: 0
-  - time: 15.9
+  - time: 16.8
     functionName: CheckProgress
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 61
     messageOptions: 0
-  - time: 16.166666
+  - time: 17.066668
     functionName: CheckProgress
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 62
     messageOptions: 0
-  - time: 16.433332
+  - time: 17.333334
     functionName: CheckProgress
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 63
     messageOptions: 0
-  - time: 16.7
+  - time: 17.6
     functionName: CheckProgress
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 64
     messageOptions: 0
-  - time: 16.966667
+  - time: 17.866667
     functionName: CheckProgress
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 65
     messageOptions: 0
-  - time: 17.216667
+  - time: 18.116667
     functionName: CheckProgress
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 66
     messageOptions: 0
-  - time: 17.483334
+  - time: 18.383333
     functionName: CheckProgress
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 67
     messageOptions: 0
-  - time: 17.75
+  - time: 18.65
     functionName: CheckProgress
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 68
     messageOptions: 0
-  - time: 17.983334
+  - time: 18.883333
     functionName: CheckProgress
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 69
     messageOptions: 0
-  - time: 18.25
+  - time: 19.15
     functionName: CheckProgress
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 70
     messageOptions: 0
-  - time: 18.5
+  - time: 19.4
     functionName: CheckProgress
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 71
     messageOptions: 0
-  - time: 18.75
+  - time: 19.65
     functionName: CheckProgress
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 72
     messageOptions: 0
-  - time: 19
+  - time: 19.9
     functionName: CheckProgress
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 73
     messageOptions: 0
-  - time: 19.25
+  - time: 20.15
     functionName: CheckProgress
     data: 
     objectReferenceParameter: {fileID: 0}
