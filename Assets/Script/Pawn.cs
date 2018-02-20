@@ -324,6 +324,7 @@ public class Pawn : NetworkBehaviour
     /// <param name="other"></param>
     private void OnTriggerEnter(Collider other)
     {
+        Debug.Log("Collision : " + this.name + " est entré en collision avec " + other.name);
         //IF object collided is a Pawn
         if (isServer && MoveType != PawnMoveEnum.WIPENONE && other.name == "PawnModel")
         {
