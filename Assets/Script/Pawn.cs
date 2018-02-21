@@ -16,7 +16,7 @@ public class Pawn : NetworkBehaviour
 
     public int ProgressInDictionnary;
 
-    public float EntryFrame = 54f;
+    public float[] HardCodedFrames = { 54f,0f,1149f,1133f,1119f };
 
     //Index of the Pawn
     [SyncVar]
@@ -425,7 +425,7 @@ public class Pawn : NetworkBehaviour
         if (Status == PawnStatusEnum.ENTRY)
         {
             Status = PawnStatusEnum.MOVING;
-            PawnAnimator.PlayInFixedTime(StateHash, 0, EntryFrame / 60f);
+            PawnAnimator.PlayInFixedTime(StateHash, 0, HardCodedFrames[0] / 60f);
         }
         else
         {
