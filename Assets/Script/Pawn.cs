@@ -16,6 +16,8 @@ public class Pawn : NetworkBehaviour
 
     public int ProgressInDictionnary;
 
+    private int movementLeft = 0;
+
     public float[] HardCodedFrames = { 54f,0f,1149f,1133f,1119f };
 
     //Index of the Pawn
@@ -60,8 +62,9 @@ public class Pawn : NetworkBehaviour
     //Hash of Animator parameters
     static private int enterHash = Animator.StringToHash("EnterBoard");
     static private int exitHash = Animator.StringToHash("ExitBoard");
-    static private int StateHash = Animator.StringToHash("ProgressOnBoard");
+    static private int StateHash = Animator.StringToHash("MainCircuit");
     static private int speedHash = Animator.StringToHash("Speed");
+    static private int progressHash = Animator.StringToHash("Progress");
     #endregion
 
 
@@ -231,22 +234,6 @@ public class Pawn : NetworkBehaviour
         }
     }
 
-    /*public GameObject Selection
-    {
-        get
-        {
-            if (selection == null)
-            {
-                selection = this.GetComponentsInChildren<GameObject>(true)[1];
-            }
-            return selection;
-        }
-
-        set
-        {
-            selection = value;
-        }
-    }*/
     #endregion
 
     #endregion
@@ -370,6 +357,20 @@ public class Pawn : NetworkBehaviour
         }
     }
 
+    public void CheckingProgress()
+    {
+        Progress+=(movementLeft>0?1:-1);
+        PawnAnimator.SetInteger(progressHash,Progress);
+        movementLeft-=(movementLeft > 0 ? 1 : -1);
+
+        if (movementLeft == 0)
+        {
+            PawnAnimator.SetFloat(speedHash, 0);
+            Status = PawnStatusEnum.IDLE;
+            MoveType = PawnMoveEnum.NORMAL;
+        }
+    }
+
     public void OnChangeStatus(PawnStatusEnum newStatus)
     {
         Status = newStatus;
@@ -415,23 +416,23 @@ public class Pawn : NetworkBehaviour
         
 
         PawnAnimator.SetFloat(speedHash, (nbCell > 0 ? speed : -speed));
-        Progress += nbCell;
+        movementLeft = nbCell ;
         if (wipeAllPawns)
         {
             MoveType = PawnMoveEnum.WIPEALL;
         }
         //Update the position of the pawn in the ProgressDico
         GMaster.LocalPlayer.CmdMoveinProgressDictionnary(this.name, nbCell);
-        if (Status == PawnStatusEnum.ENTRY)
+        /*if (Status == PawnStatusEnum.ENTRY)
         {
             Status = PawnStatusEnum.MOVING;
             PawnAnimator.PlayInFixedTime(StateHash, 0, HardCodedFrames[0] / 60f);
         }
         else
-        {
+        {*/
             Status = PawnStatusEnum.MOVING;
             PawnAnimator.PlayInFixedTime(StateHash);
-        }
+        //}
     }
 
     /// <summary>
