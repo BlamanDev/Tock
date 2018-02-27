@@ -313,6 +313,7 @@ public class Pawn : NetworkBehaviour
     {
         Debug.Log("Collision : " + this.name + " est entré en collision avec " + other.name);
         //IF object collided is a Pawn
+
         if (isServer && MoveType != PawnMoveEnum.WIPENONE && other.name == "PawnModel")
         {
             Pawn pawnCollided = other.GetComponentInParent<Pawn>();
@@ -320,6 +321,10 @@ public class Pawn : NetworkBehaviour
             //Useful when pawns are switching positions
             if (this.Status == PawnStatusEnum.MOVING && pawnCollided.Status == PawnStatusEnum.IDLE)
             {
+                Animator animLocal = transform.Find("PawnModel").GetComponent<Animator>();
+                animLocal.SetTrigger("Avoidance");
+                animLocal.SetBool("Test", true);
+
                 //IF wipeAllPawns is true or if the other pawn is at the same postion in the progressDico
                 if (MoveType == PawnMoveEnum.WIPEALL || (pawnCollided.ProgressInDictionnary == this.ProgressInDictionnary))
                 {
