@@ -18,7 +18,10 @@ public class Pawn : NetworkBehaviour
 
     private int movementLeft = 0;
 
-    public float[] HardCodedFrames = { 54f,0f,1149f,1133f,1119f };
+    public bool skipNextCheck = true;
+    public bool lastMoveForward = true;
+
+    public float[] HardCodedFrames = { 54f, 0f, 1149f, 1133f, 1119f };
 
     //Index of the Pawn
     [SyncVar]
@@ -234,6 +237,7 @@ public class Pawn : NetworkBehaviour
         }
     }
 
+
     #endregion
 
     #endregion
@@ -296,7 +300,7 @@ public class Pawn : NetworkBehaviour
             Transform startTransform = SpawnPositions.getStartPosition(OwningPlayerIndex).transform;
             this.transform.position = startTransform.position;
             this.transform.rotation = startTransform.rotation;
-            
+
             PawnAnimator.SetTrigger(enterHash);
         }
         else
@@ -354,7 +358,7 @@ public class Pawn : NetworkBehaviour
                 if (Progress < -1)
                 {
                     Progress = 72 + Progress;
-                    
+
                 }
                 Status = PawnStatusEnum.IDLE;
             }
@@ -364,15 +368,37 @@ public class Pawn : NetworkBehaviour
 
     public void CheckingProgress()
     {
-        Progress+=(movementLeft>0?1:-1);
-        PawnAnimator.SetInteger(progressHash,Progress);
-        movementLeft-=(movementLeft > 0 ? 1 : -1);
+        AnimatorStateInfo actualstate = PawnAnimator.GetCurrentAnimatorStateInfo(0);
 
-        if (movementLeft == 0)
+        Debug.Log(actualstate.normalizedTime);
+        if (skipNextCheck)
         {
-            PawnAnimator.SetFloat(speedHash, 0);
-            Status = PawnStatusEnum.IDLE;
-            MoveType = PawnMoveEnum.NORMAL;
+            skipNextCheck = false;
+        }
+        else
+        {
+            Debug.Log("CheckingProgress - movementLeft = " + movementLeft + " - Progress = " + Progress);
+            Progress += (movementLeft > 0 ? 1 : -1);
+            PawnAnimator.SetInteger(progressHash, Progress);
+            movementLeft -= (movementLeft > 0 ? 1 : -1);
+
+            if (movementLeft == 0)
+            {
+                if (PawnAnimator.GetFloat(speedHash) < 0)
+                {
+                    //skipNextCheck = true;
+                }
+                PawnAnimator.SetFloat(speedHash, 0);
+                Status = PawnStatusEnum.IDLE;
+                MoveType = PawnMoveEnum.NORMAL;
+                if (Progress < -1)
+                {
+                    Progress = 72 + Progress;
+                    PawnAnimator.SetInteger(progressHash, Progress);
+                    lastMoveForward = true;
+                }
+            }
+
         }
     }
 
@@ -406,7 +432,7 @@ public class Pawn : NetworkBehaviour
     {
         OnBoard = true;
         this.Progress = 0;
-        
+
         GMaster.LocalPlayer.CmdAddtoProgressDictionnary(this.name);
     }
 
@@ -418,26 +444,18 @@ public class Pawn : NetworkBehaviour
     /// <param name="speed">int : speed of the animation</param>
     public void Move(int nbCell, bool wipeAllPawns = false, int speed = 1)
     {
-        
-
-        PawnAnimator.SetFloat(speedHash, (nbCell > 0 ? speed : -speed));
-        movementLeft = nbCell ;
+        skipNextCheck = (lastMoveForward != (nbCell > 0)) || Status == PawnStatusEnum.ENTRY;
+        lastMoveForward = nbCell > 0;
+        PawnAnimator.SetFloat(speedHash, (lastMoveForward ? speed : -speed));
+        movementLeft = nbCell;
         if (wipeAllPawns)
         {
             MoveType = PawnMoveEnum.WIPEALL;
         }
         //Update the position of the pawn in the ProgressDico
         GMaster.LocalPlayer.CmdMoveinProgressDictionnary(this.name, nbCell);
-        /*if (Status == PawnStatusEnum.ENTRY)
-        {
-            Status = PawnStatusEnum.MOVING;
-            PawnAnimator.PlayInFixedTime(StateHash, 0, HardCodedFrames[0] / 60f);
-        }
-        else
-        {*/
-            Status = PawnStatusEnum.MOVING;
-            PawnAnimator.PlayInFixedTime(StateHash);
-        //}
+        Status = PawnStatusEnum.MOVING;
+        PawnAnimator.PlayInFixedTime(StateHash);
     }
 
     /// <summary>
