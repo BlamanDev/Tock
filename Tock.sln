@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2017
+# Visual Studio 15
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tock", "Tock.csproj", "{17255C8B-8CF9-216F-CC00-3856D313E5D7}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tock.Plugins", "Tock.Plugins.csproj", "{FDDD5293-BEBE-0B37-16A2-004E872E3237}"

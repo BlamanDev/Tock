@@ -52,12 +52,20 @@ public class Pawn : NetworkBehaviour
     #region Components
     //Components of the pawn
     private Animator pawnAnimator;
+    private Animator localPawnAnimator;
     private MeshRenderer pawnMeshRenderer;
     private MeshRenderer selectionMeshRenderer;
     private Light selectableLight;
     private Outline outliner;
     public GameObject Selection;
 
+    public AudioSource audiosource01;
+    public AudioSource audiosource02;
+
+    public AudioClip audioclipHit;
+    public AudioClip audioclipMove;
+    public AudioClip audioclipDestroy;
+    public AudioClip audioclipOut;
     #endregion
     static private GameMaster gMaster;
 
@@ -68,6 +76,8 @@ public class Pawn : NetworkBehaviour
     static private int StateHash = Animator.StringToHash("MainCircuit");
     static private int speedHash = Animator.StringToHash("Speed");
     static private int progressHash = Animator.StringToHash("Progress");
+    static private int avoidanceHash = Animator.StringToHash("Avoidance"); // XB
+    static private int movingHash = Animator.StringToHash("Moving"); // XB
     #endregion
 
 
@@ -139,6 +149,24 @@ public class Pawn : NetworkBehaviour
         }
     }
 
+    // XB
+    public Animator LocalPawnAnimator
+    {
+        get
+        {
+            if (localPawnAnimator == null)
+            {
+                localPawnAnimator = transform.Find("PawnModel").GetComponent<Animator>();
+            }
+
+            return localPawnAnimator;
+        }
+        set
+        {
+            localPawnAnimator = value;
+        }
+    }
+
     public MeshRenderer PawnMeshRenderer
     {
         get
@@ -198,7 +226,7 @@ public class Pawn : NetworkBehaviour
             if (selectionMeshRenderer == null)
             {
                 selectionMeshRenderer = Selection.GetComponentInChildren<MeshRenderer>(true);
-                selectionColor = selectionMeshRenderer.material.color;
+                selectionColor = selectionMeshRenderer.material.color;               
                 float h, s, v;
                 Color.RGBToHSV(selectionColor, out h, out s, out v);
                 if (h > (65f / 255f) && h < (155f / 255f))
@@ -206,6 +234,8 @@ public class Pawn : NetworkBehaviour
                     selectionColor = Color.HSVToRGB(1 - h, 0, v);
 
                 }
+
+               
             }
             return selectionMeshRenderer;
         }
@@ -213,6 +243,13 @@ public class Pawn : NetworkBehaviour
         set
         {
             selectionMeshRenderer = value;
+            
+            // XB it was for change color of all children of pawn but ca marche pas ?
+            MeshRenderer[] meshRenderers = Selection.GetComponentsInChildren<MeshRenderer>(true);
+            foreach (MeshRenderer mr in meshRenderers)
+            {
+                mr.material.color = value.material.color;
+            }
         }
     }
 
@@ -243,8 +280,10 @@ public class Pawn : NetworkBehaviour
     #endregion
 
     // Use this for initialization
-    void Start()
+    void Start()        
     {
+        audiosource01 = gameObject.AddComponent<AudioSource>();
+        audiosource02 = gameObject.AddComponent<AudioSource>();
     }
 
     // Update is called once per frame
@@ -317,6 +356,9 @@ public class Pawn : NetworkBehaviour
     {
         Debug.Log("Collision : " + this.name + " est entré en collision avec " + other.name);
         //IF object collided is a Pawn
+        audiosource02.clip = audioclipHit;
+        audiosource02.Play();
+        LocalPawnAnimator.SetTrigger(avoidanceHash);
 
         if (isServer && MoveType != PawnMoveEnum.WIPENONE && other.name == "PawnModel")
         {
@@ -325,9 +367,7 @@ public class Pawn : NetworkBehaviour
             //Useful when pawns are switching positions
             if (this.Status == PawnStatusEnum.MOVING && pawnCollided.Status == PawnStatusEnum.IDLE)
             {
-                Animator animLocal = transform.Find("PawnModel").GetComponent<Animator>();
-                animLocal.SetTrigger("Avoidance");
-                animLocal.SetBool("Test", true);
+              
 
                 //IF wipeAllPawns is true or if the other pawn is at the same postion in the progressDico
                 if (MoveType == PawnMoveEnum.WIPEALL || (pawnCollided.ProgressInDictionnary == this.ProgressInDictionnary))
@@ -391,6 +431,11 @@ public class Pawn : NetworkBehaviour
                 PawnAnimator.SetFloat(speedHash, 0);
                 Status = PawnStatusEnum.IDLE;
                 MoveType = PawnMoveEnum.NORMAL;
+
+                LocalPawnAnimator.SetBool(movingHash, false); // XB    
+                audiosource01.loop = false; // XB  
+                audiosource01.Stop(); // XB  
+
                 if (Progress < -1)
                 {
                     Progress = 72 + Progress;
@@ -430,6 +475,9 @@ public class Pawn : NetworkBehaviour
     /// </summary>
     public void Enter()
     {
+        audiosource02.clip = audioclipOut; // XB
+        audiosource02.Play(); // XB
+
         OnBoard = true;
         this.Progress = 0;
 
@@ -456,6 +504,13 @@ public class Pawn : NetworkBehaviour
         GMaster.LocalPlayer.CmdMoveinProgressDictionnary(this.name, nbCell);
         Status = PawnStatusEnum.MOVING;
         PawnAnimator.PlayInFixedTime(StateHash);
+
+        audiosource01.clip = audioclipMove; //XB
+        audiosource01.loop = true;//XB
+        audiosource01.Play();//XB
+        LocalPawnAnimator.SetBool(movingHash, true); //XB
+
+        PawnAnimator.PlayInFixedTime(StateHash);
     }
 
     /// <summary>
@@ -476,6 +531,10 @@ public class Pawn : NetworkBehaviour
     /// </summary>
     public void Exit()
     {
+
+        audiosource02.clip = audioclipDestroy; // XB
+        audiosource02.Play(); // XB
+
         OnBoard = false;
         this.Progress = 0;
         this.ProgressInDictionnary = 0;
