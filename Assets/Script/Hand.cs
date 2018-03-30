@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Special list for handling the player's hand
+/// Special list for handling the player's hand or foot
 /// </summary>
 public class PlayerHand : List<Card>
 {

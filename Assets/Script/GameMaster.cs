@@ -532,7 +532,7 @@ public class GameMaster : NetworkBehaviour
 
         ProgressListRemove(pawnTarget);
 
-        if (target.Progress < 71)
+        if (target.Progress+nbCell < 71)
         {
             newPosition = TestPosition(newPosition);
             ProgressList[newPosition] = pawnTarget;
@@ -540,7 +540,7 @@ public class GameMaster : NetworkBehaviour
         }
         else
         {
-            HouseList[(74 - target.Progress) + (target.OwningPlayerIndex * 4)] = pawnTarget;
+            HouseList[(74 - (target.Progress + nbCell)) + (target.OwningPlayerIndex * 4)] = pawnTarget;
             //Debug.Log("Moved : " + target + " for " + nbCell + " cells in ProgressDico, entering House at : " + HouseList[HouseList.IndexOf(pawnTarget)] + " , new Position : " + newPosition);
         }
         return newPosition;

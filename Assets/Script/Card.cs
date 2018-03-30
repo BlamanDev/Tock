@@ -174,7 +174,7 @@ public class Card : NetworkBehaviour
                 ColorFilter = SelectionFilterEnum.OWNPAWNS;
                 Projections.Add(OnBoardFilter);
                 Projections.Add(MoveFilter);
-                //Projections.Add(IdleFilter);
+                Projections.Add(NotInHouseFilter);
                 break;
             case CardsValuesEnum.FIVE:
                 Effect = Move;
@@ -371,6 +371,10 @@ public class Card : NetworkBehaviour
         return target.Status == PawnStatusEnum.IDLE;
     }
 
+    public bool NotInHouseFilter(Pawn target)
+    {
+        return target.Status != PawnStatusEnum.IN_HOUSE;
+    }
     /// <summary>
     /// Test if the target is on the board, and if can make the move
     /// </summary>
@@ -479,7 +483,7 @@ public class Card : NetworkBehaviour
     }
     #endregion
     /// <summary>
-    /// Apply the card effect on the targetted pawn
+    /// Apply the card effect on the targetted pawn or plouf plouf
     /// </summary>
     /// <param name="target"></param>
     /// <param name="otherTarget"></param>

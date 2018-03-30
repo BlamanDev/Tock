@@ -582,6 +582,15 @@ Prefab:
       propertyPath: m_UseSimulator
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 224866057310412132, guid: c0978251ff7b10d4fb954a4b56acd9f0,
+        type: 2}
+      propertyPath: m_AnchoredPosition.x
+      value: 9.099609
+      objectReference: {fileID: 0}
+    - target: {fileID: 22405390, guid: c0978251ff7b10d4fb954a4b56acd9f0, type: 2}
+      propertyPath: m_AnchoredPosition.x
+      value: 11.5625
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: c0978251ff7b10d4fb954a4b56acd9f0, type: 2}
   m_IsPrefabParent: 0
